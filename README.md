@@ -14,3 +14,16 @@
 Settings → Pages → Source 選 `main` 分支 `/ (root)`。
 
 > 資料整理於 2026 年 10 月，多數 2026 年活動日期尚未公布，出發前請再確認官方資訊。
+
+# 行程&期望活動
+- 參考行程：[schedule.txt](schedule.txt)
+- 2026/12/05 早上安排富士環湖路跑
+  - 有 2 隊情侶路跑
+  - 有 1 隊情侶自由活動
+  - 建議分成兩個部分行程內容
+    - 路跑行程
+      - 需注意開跑路線：12/04 住宿：富士河口湖の森，交通：自駕
+    - 自由行程
+- 綜合評估參考行程，提供建議、調整、優缺項，列到 [schedule-suggestion.txt](schedule-suggestion.txt)
+  - suggestion 需經由作者審核，如果審核通過，才能修改 index.html
+
