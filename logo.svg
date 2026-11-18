@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="512" height="512">
+      <defs><clipPath id="logo-clip"><circle cx="60" cy="60" r="44"/></clipPath></defs>
+      <circle cx="60" cy="60" r="56" fill="#FFD65A" stroke="#2B2F55" stroke-width="5"/>
+      <g fill="#FFFFFF" stroke="#2B2F55" stroke-width="1.6" stroke-linejoin="round">
+        <path d="M60 4.5l2.2 4.4 4.4 2.2-4.4 2.2L60 17.7l-2.2-4.4-4.4-2.2 4.4-2.2z"/>
+        <path d="M17 34l1.6 3.2 3.2 1.6-3.2 1.6L17 43.6l-1.6-3.2-3.2-1.6 3.2-1.6z"/>
+        <path d="M103 34l1.6 3.2 3.2 1.6-3.2 1.6-1.6 3.2-1.6-3.2-3.2-1.6 3.2-1.6z"/>
+      </g>
+      <circle cx="60" cy="60" r="44" fill="#DCEEFF" stroke="#2B2F55" stroke-width="3.5"/>
+      <g clip-path="url(#logo-clip)">
+        <circle cx="34" cy="40" r="7.5" fill="#FF8A4C" stroke="#2B2F55" stroke-width="2.5"/>
+        <path d="M81 110 L88 44 L95 110" fill="#FF8FB8" stroke="#2B2F55" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M88 36v8M85.4 62h5.2M83.8 76h8.4" stroke="#2B2F55" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M12 112 L46 54 Q58 37 70 54 L100 112Z" fill="#8EC9FF" stroke="#2B2F55" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M37 68 L46 54 Q58 37 70 54 L79 68 Q74 62.5 69 69.5 Q63.5 61 58 69.5 Q52.5 61 47 69.5 Q42 62.5 37 68Z" fill="#FFFFFF" stroke="#2B2F55" stroke-width="3" stroke-linejoin="round"/>
+        <circle cx="49" cy="82" r="4.2" fill="#2B2F55"/><circle cx="67" cy="82" r="4.2" fill="#2B2F55"/>
+        <circle cx="50.4" cy="80.6" r="1.4" fill="#FFFFFF"/><circle cx="68.4" cy="80.6" r="1.4" fill="#FFFFFF"/>
+        <ellipse cx="42" cy="91" rx="5.5" ry="3.2" fill="#FF8FB8"/><ellipse cx="74" cy="91" rx="5.5" ry="3.2" fill="#FF8FB8"/>
+        <path d="M53 90 Q58 96 63 90" stroke="#2B2F55" stroke-width="2.6" fill="#FF8A4C" stroke-linecap="round" stroke-linejoin="round"/>
+        <g fill="#FFFFFF"><circle cx="24" cy="58" r="2"/><circle cx="74" cy="30" r="1.8"/><circle cx="100" cy="56" r="1.6"/><circle cx="50" cy="30" r="1.5"/></g>
+      </g>
+    </svg>
