@@ -210,6 +210,8 @@ li.is-next .stopcard{outline:2.5px solid var(--mint);outline-offset:1px}
 .chat-top small{color:var(--muted);font-size:12px}
 .status{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--mint);margin-right:4px;vertical-align:middle;border:1.5px solid var(--edge)}
 .status.off{background:var(--hair)}
+.livelink{display:block;margin:0 12px 10px;padding:8px 12px;border:2px dashed var(--edge);border-radius:14px;font-size:12.5px;text-decoration:none;background:var(--sun-soft)}
+.livelink b{color:var(--tang)}
 .keybtn{border:2px solid var(--edge);background:var(--paper);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
 .keypanel{padding:12px;border-bottom:2.5px solid var(--edge);background:var(--bg);display:grid;gap:8px;font-size:13.5px}
 .keypanel p{margin:0;color:var(--muted);font-size:12.5px}
@@ -285,7 +287,12 @@ li.is-next .stopcard{outline:2.5px solid var(--mint);outline-offset:1px}
 .phr{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:8px}
 .phrase{display:flex;justify-content:space-between;gap:10px;align-items:center;border:2px solid var(--edge);border-radius:14px;padding:8px 12px;cursor:pointer;background:var(--bg);text-align:left;width:100%}
 .phrase .jp{font-size:16px;font-weight:700;display:block}
-.phrase .zh{font-size:12.5px;color:var(--muted)}
+.phrase .zh{font-size:12.5px;color:var(--muted);display:block}
+.phrase .ro{font-size:11.5px;color:var(--tang);font-weight:700;display:block;margin:1px 0}
+#pcats .fbtn em{font-style:normal;font-family:var(--f-pop);font-size:10.5px;opacity:.7}
+.sos{background:var(--pink-soft);border:2px solid var(--edge);border-radius:14px;padding:8px 12px;font-size:13px;margin-bottom:10px;font-variant-numeric:tabular-nums}
+.sos b{display:block;font-size:13.5px}
+.big .ro{color:var(--tang);font-weight:700;margin-top:6px;font-size:clamp(16px,4.5vw,22px)}
 .phrase .say{font-size:11px;font-weight:900;color:var(--on);background:var(--sun);border:1.5px solid var(--edge);border-radius:999px;padding:2px 8px;white-space:nowrap}
 
 /* big phrase overlay */
@@ -450,7 +457,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
       <div class="chat-top">
         <svg viewBox="0 0 120 112" aria-hidden="true"><use href="#fuji"/></svg>
         <div><b>小富 ふじちゃん</b><small><span class="status off" id="dot"></span><span id="stxt">連線中…</span></small></div>
-        <button class="keybtn" id="keyBtn" type="button" aria-expanded="false" aria-controls="keyPanel" hidden>API 金鑰</button>
+        <button class="keybtn" id="keyBtn" type="button" aria-expanded="false" aria-controls="keyPanel" hidden>API 金鑰（選用）</button>
       </div>
       <form class="keypanel" id="keyPanel" hidden>
         <label for="apiKey"><b>貼上你的 Claude API 金鑰，就能和小富即時聊天</b></label>
@@ -459,6 +466,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
         <p>金鑰只存在這台裝置的瀏覽器裡，不會上傳到 GitHub。到 <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a> 建立金鑰並儲值，按實際用量計費。借別人手機用完記得按「清除金鑰」。</p>
       </form>
       <div class="msgs" id="msgs" aria-live="polite"></div>
+      <a class="livelink" id="liveLink" href="https://claude.ai/artifact/NbrFsoRRQKddqgFwsH1v7q" target="_blank" rel="noopener" hidden><b>想自由聊天？</b>在 Claude 裡開啟這本手冊，小富就能用你的 Claude 帳號即時回答，不用金鑰 ↗</a>
       <div class="quick" id="quick"></div>
       <form class="composer" id="composer">
         <input id="q" type="text" placeholder="問我任何旅遊問題，例如：下雨天去哪？" autocomplete="off" aria-label="輸入問題">
@@ -515,6 +523,8 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
       </div>
       <div class="box card">
         <h3><svg class="ic"><use href="#i-chat"/></svg>點一下放大給店員看</h3>
+        <div class="filters" id="pcats" role="group" aria-label="用語分類"></div>
+        <div class="sos" id="sos" hidden><b>緊急電話</b>110 警察・119 救護車／消防・日本觀光局 24 小時旅客熱線（有中文）050-3816-2787</div>
         <div class="phr" id="phr"></div>
       </div>
     </div>
@@ -524,7 +534,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 </div>
 
 <div class="big" id="big" hidden role="dialog" aria-modal="true" aria-label="放大日語">
-  <div><div class="jp" id="bigJp"></div><div class="zh" id="bigZh"></div><button id="bigClose" type="button">關閉</button></div>
+  <div><div class="jp" id="bigJp"></div><div class="ro" id="bigRo"></div><div class="zh" id="bigZh"></div><button id="bigClose" type="button">關閉</button></div>
 </div>
 <canvas id="confetti" aria-hidden="true"></canvas>
 
@@ -782,12 +792,26 @@ lEl.addEventListener("change",e=>{const c=e.target.dataset.c;if(!c)return;checks
 renderLists();
 
 /* ---------- phrases ---------- */
-const PH=[["すみません","不好意思（叫人、借過都能用）"],["これをください","我要這個"],["いくらですか？","多少錢？"],["トイレはどこですか？","廁所在哪裡？"],["写真を撮ってもらえますか？","可以幫我拍照嗎？"],["おすすめは何ですか？","有什麼推薦的？"],["カードは使えますか？","可以刷卡嗎？"],["ありがとうございます","謝謝您"]];
-const phr=document.getElementById("phr"), big=document.getElementById("big");
-phr.innerHTML=PH.map(([j,z],i)=>`<button class="phrase" type="button" data-p="${i}"><span><span class="jp">${j}</span><span class="zh">${z}</span></span><span class="say">放大</span></button>`).join("");
+const PH={
+ "基本":[["すみません","Sumimasen","不好意思（叫人、借過、道歉都能用）"],["ありがとうございます","Arigatō gozaimasu","謝謝您"],["大丈夫です","Daijōbu desu","沒關係／不用了"],["日本語が話せません","Nihongo ga hanasemasen","我不會說日文"],["写真を撮ってもらえますか？","Shashin o totte moraemasu ka?","可以幫我拍照嗎？"],["ここで写真を撮ってもいいですか？","Koko de shashin o tottemo ii desu ka?","這裡可以拍照嗎？"]],
+ "餐廳":[["二人です","Futari desu","兩位"],["予約しています","Yoyaku shite imasu","我有預約"],["中国語のメニューはありますか？","Chūgokugo no menyū wa arimasu ka?","有中文菜單嗎？"],["おすすめは何ですか？","Osusume wa nan desu ka?","有什麼推薦的？"],["これをください","Kore o kudasai","我要這個"],["お水をください","O-mizu o kudasai","請給我水"],["アレルギーがあります","Arerugī ga arimasu","我有過敏（再指給店員看是什麼）"],["持ち帰りできますか？","Mochikaeri dekimasu ka?","可以外帶嗎？"],["お会計をお願いします","O-kaikei o onegai shimasu","麻煩結帳"],["別々に払えますか？","Betsubetsu ni haraemasu ka?","可以分開付嗎？"]],
+ "購物":[["いくらですか？","Ikura desu ka?","多少錢？"],["カードは使えますか？","Kādo wa tsukaemasu ka?","可以刷卡嗎？"],["免税できますか？","Menzei dekimasu ka?","可以辦免稅嗎？"],["試着してもいいですか？","Shichaku shitemo ii desu ka?","可以試穿嗎？"],["他の色はありますか？","Hoka no iro wa arimasu ka?","有其他顏色嗎？"],["袋はいりません","Fukuro wa irimasen","不需要袋子"],["プレゼント用に包んでもらえますか？","Purezento-yō ni tsutsunde moraemasu ka?","可以幫我包成禮物嗎？"]],
+ "交通":[["この住所までお願いします","Kono jūsho made onegai shimasu","（計程車）請到這個地址"],["駅はどこですか？","Eki wa doko desu ka?","車站在哪裡？"],["このバスは河口湖駅に行きますか？","Kono basu wa Kawaguchiko-eki ni ikimasu ka?","這班巴士會到河口湖站嗎？"],["成田空港行きはどのホームですか？","Narita-kūkō yuki wa dono hōmu desu ka?","往成田機場是哪個月台？"],["切符はどこで買えますか？","Kippu wa doko de kaemasu ka?","哪裡可以買票？"],["タクシーを呼んでもらえますか？","Takushī o yonde moraemasu ka?","可以幫我叫計程車嗎？"],["ここで降ります","Koko de orimasu","我要在這裡下車"]],
+ "住宿":[["チェックインをお願いします","Chekku-in o onegai shimasu","我要辦入住"],["荷物を預かってもらえますか？","Nimotsu o azukatte moraemasu ka?","可以寄放行李嗎？"],["Wi-Fiのパスワードは何ですか？","Wai-fai no pasuwādo wa nan desu ka?","Wi-Fi 密碼是什麼？"],["チェックアウトは何時ですか？","Chekku-auto wa nanji desu ka?","幾點要退房？"],["お風呂は何時まで入れますか？","O-furo wa nanji made hairemasu ka?","溫泉（浴池）開到幾點？"]],
+ "緊急":[["トイレはどこですか？","Toire wa doko desu ka?","廁所在哪裡？"],["助けてください","Tasukete kudasai","請幫幫我"],["気分が悪いです","Kibun ga warui desu","我身體不舒服"],["病院に連れて行ってください","Byōin ni tsurete itte kudasai","請帶我去醫院"],["救急車を呼んでください","Kyūkyūsha o yonde kudasai","請叫救護車"],["警察を呼んでください","Keisatsu o yonde kudasai","請叫警察"],["財布をなくしました","Saifu o nakushimashita","我的錢包掉了"]]
+};
+const phr=document.getElementById("phr"), pcats=document.getElementById("pcats"), big=document.getElementById("big");
+let pcat=store.get("ft_pcat","基本"); if(!PH[pcat])pcat="基本";
+function renderPhr(){
+  pcats.innerHTML=Object.keys(PH).map(c=>`<button class="fbtn" type="button" aria-pressed="${c===pcat}" data-pc="${c}">${c}<em> ${PH[c].length}</em></button>`).join("");
+  phr.innerHTML=PH[pcat].map(([j,r,z],i)=>`<button class="phrase" type="button" data-p="${i}"><span><span class="jp">${j}</span><span class="ro">${r}</span><span class="zh">${z}</span></span><span class="say">放大</span></button>`).join("");
+  document.getElementById("sos").hidden=pcat!=="緊急";
+}
+pcats.addEventListener("click",e=>{const b=e.target.closest("[data-pc]");if(!b)return;pcat=b.dataset.pc;store.set("ft_pcat",pcat);renderPhr();const nb=pcats.querySelector(`[data-pc="${pcat}"]`);nb&&nb.focus()});
+renderPhr();
 let lastFocus=null;
-phr.addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b)return;lastFocus=b;const p=PH[+b.dataset.p];
-  document.getElementById("bigJp").textContent=p[0];document.getElementById("bigZh").textContent=p[1];big.hidden=false;document.getElementById("bigClose").focus()});
+phr.addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b)return;lastFocus=b;const p=PH[pcat][+b.dataset.p];
+  document.getElementById("bigJp").textContent=p[0];document.getElementById("bigRo").textContent=p[1];document.getElementById("bigZh").textContent=p[2];big.hidden=false;document.getElementById("bigClose").focus()});
 function closeBig(){big.hidden=true;lastFocus&&lastFocus.focus()}
 document.getElementById("bigClose").onclick=closeBig;
 big.addEventListener("click",e=>{if(e.target===big)closeBig()});
@@ -805,7 +829,7 @@ go(["plan","spots","guide","check","tips"].includes(startTab)?startTab:store.get
 const msgsEl=document.getElementById("msgs"), qEl=document.getElementById("q"), sendBtn=document.getElementById("sendBtn");
 const dot=document.getElementById("dot"), stxt=document.getElementById("stxt");
 let sample=null, busy=false, history=[];
-const QUICK=["下雨天富士山區可以去哪？","河口湖有什麼必吃美食？","12月要怎麼穿才不會冷？","推薦東京的伴手禮","富士回遊要怎麼訂票？","12/8 晚上住成田附近有什麼推薦？"];
+const QUICK=["今天的行程？","下一站是哪？","12/7 吃什麼？","今晚住哪裡？","下雨怎麼辦？","怎麼去成田機場？","退稅新制怎麼弄？","緊急電話"];
 document.getElementById("quick").innerHTML=QUICK.map(q=>`<button type="button">${q}</button>`).join("");
 document.getElementById("quick").addEventListener("click",e=>{const b=e.target.closest("button");if(b)ask(b.textContent)});
 
@@ -821,17 +845,66 @@ function add(role,text){const d=document.createElement("div");d.className="msg "
 add("bot","こんにちは～我是小富！🗻 你的富士山＆東京專屬導遊。\n行程、美食、穿搭、交通，想到什麼都可以問我喔！");
 
 function setStatus(on,txt){dot.classList.toggle("off",!on);stxt.textContent=txt}
-const FALLBACK={"雨":"下雨的話推薦：音樂森林美術館、鳴澤冰穴／富岳風穴、富士急樂園室內設施，或乾脆泡一下午溫泉。忍野八海小雨也很有氣氛！",
- "吃":"河口湖必吃：餺飥（ほうとう）、吉田烏龍麵、藍莓霜淇淋、信玄餅、忍野八海炸草餅。","穿":"洋蔥式穿搭：發熱衣＋毛衣＋羽絨外套，加毛帽手套圍巾。河口湖早晚會到零下，鞋子要防滑。",
- "伴手禮":"東京站一番街和機場都很好買：東京香蕉、薯條三兄弟、Press Butter Sand；富士山區買信玄餅、富士山造型餅乾。","回遊":"富士回遊可在 JR 東日本官網（えきねっと）預約指定席，旺季建議一個月前就訂。"};
-function fallback(q){for(const k in FALLBACK){if(q.includes(k))return FALLBACK[k]}return "小富現在連不上大腦，先看看「行程」和「撇步」頁的資料喔！在 Claude 裡打開這個頁面就能直接問我。"}
+/* ---------- offline 小富：不需金鑰，直接讀行程資料回答 ---------- */
+const STAYS=[["12/4–12/6（2 晚）","河口湖森林樂天住宿別墅 Rakuten STAY VILLA Lake Kawaguchiko Forest"],["12/6–12/7（1 晚）","富士河口湖溫泉飯店 Asafuji（有溫泉）"],["12/7–12/9（2 晚）","OTHER SPACE Asakusa（淺草）"]];
+const clean=t=>t.replace(/^⚠\s*/,"");
+function dayRef(q){
+  let m=q.match(/12\s*[\/月]\s*(\d{1,2})/); if(m){const i=+m[1]-4; if(i>=0&&i<DAYS.length)return i}
+  m=q.match(/第\s*([1-6一二三四五六])\s*天|day\s*([1-6])/i); if(m){const v=m[1]||m[2];const i="一二三四五六".indexOf(v);return (i>=0?i:+v-1)}
+  if(/明天|明日/.test(q))return Math.max(0,Math.min(DAYS.length-1,(dayIdx<0?0:dayIdx+1)));
+  if(/今天|今日|今晚/.test(q))return dayIdx>=0&&dayIdx<DAYS.length?dayIdx:-2;
+  return -1;
+}
+function planText(i){const x=DAYS[i];
+  return `Day ${i+1}｜${x.d}（${x.w}）${x.title}\n`+x.items.map(it=>`• ${it[0]} ${it[2]}${it[3].startsWith("⚠")?"（⚠ 注意）":""}`).join("\n")+`\n\n今晚住：${x.stay==="回家"?"回家囉！":x.stay}\n小富提醒：${x.tip}`}
+function smartAnswer(q){
+  q=q||""; let di=dayRef(q);
+  const pre=di===-2?"還沒出發喔！先給你第一天：\n\n":""; if(di===-2)di=0;
+  const has=re=>re.test(q);
+  if(has(/救命|警察|救護|醫院|生病|不舒服|受傷|緊急|遺失|掉了|不見|報警/))
+    return "緊急時請打：\n• 110：警察\n• 119：救護車・消防\n• 日本觀光局旅客熱線（24 小時、有中文）：050-3816-2787\n\n「撇步」頁的日語小卡有「請叫救護車」「我的錢包掉了」等句子，可以放大給旁邊的人看。";
+  if(has(/退稅|免稅/))
+    return "2026/11/1 起日本免稅改成新制：\n• 結帳先付含稅價，同一家店同一天未稅滿 ¥5,000 才能辦。\n• 出境時在機場（托運行李前）讓海關確認商品，之後由店家或退稅公司退款。\n• 成田機場可以用 Visit Japan Web 線上確認，但仍可能被要求出示商品。\n• 吃的、化妝品在日本拆開用掉，那張收據可能就退不了。\n• 退款方式、手續費依店家不同，買之前先問清楚。\n\n12/9 到成田記得預留時間辦，晚了來不及報到不會有補償喔！";
+  if(has(/航班|班機|飛機|起飛|降落|報到|JX|劃位|選位/))
+    return "你的航班（星宇航空）：\n• 去程 JX800：12/4 08:25 台北桃園 → 12:35 東京成田\n• 回程 JX801：12/9 13:45 東京成田 → 16:50 台北桃園\n\n12/9 建議 10:15 前從淺草出發，搭京成 Access 特急約 1 小時，11:45 前完成報到。航廈請以星宇 App 為準。";
+  if(has(/住|飯店|旅館|民宿|別墅|入住|退房|check/i)){
+    if(di>=0){const x=DAYS[di];return pre+`${x.d} 晚上住：${x.stay==="回家"?"這天搭機回家囉！":x.stay}\n\n全部住宿：\n`+STAYS.map(s=>"• "+s[0]+"："+s[1]).join("\n")}
+    return "這趟的住宿：\n"+STAYS.map(s=>"• "+s[0]+"："+s[1]).join("\n")+"\n\n地圖連結在「撇步」頁的住宿一覽。";}
+  if(has(/下一站|現在|接下來|等一下去/)){
+    if(dayIdx<0||dayIdx>=DAYS.length)return "旅行期間打開我，就會告訴你下一站喔！現在可以先問「12/5 的行程」。";
+    const nm=now.getHours()*60+now.getMinutes(); const it=DAYS[dayIdx].items.find(t=>{const m=toMin(t[0]);return m!=null&&m>=nm});
+    return it?`下一站：${it[0]} ${it[2]}\n${clean(it[3])}`.trim():"今天的行程都走完了，好好休息～";}
+  if(has(/雨|下雪|天氣不好/))
+    return "下雨或下雪的備案：\n• 富士山區：富士大石 Hanaterasu（有屋簷可逛）、河口湖音樂森林美術館、鳴澤冰穴、富士急樂園，或回飯店泡溫泉。\n• 東京：麻布台之丘、銀座百貨、teamLab Borderless 都在室內。\n• 忍野八海小雨也很有氣氛，記得帶傘。";
+  if(has(/天氣|冷|穿|溫度|氣溫|保暖|衣服/))
+    return "12 月初平均氣溫：\n• 河口湖 -2° ~ 7°C，清晨可能更冷\n• 東京 4° ~ 12°C\n\n穿法：發熱衣＋毛衣＋羽絨外套，毛帽、手套、圍巾一定要帶。12/5、12/6 一早去湖邊拍逆富士最冷，鞋子要防滑。暖暖包可以在日本藥妝店買。";
+  if(has(/成田|機場/)&&has(/去|到|怎麼|搭/))
+    return "12/9 從淺草去成田機場：\n• 10:00 OTHER SPACE Asakusa 退房\n• 10:15 從淺草站搭都營淺草線，直通京成「Access 特急」往成田機場，約 1 小時、不用轉車\n• 11:45 前完成報到，13:45 JX801 起飛\n\n（12/4 是從成田第二航廈搭直達高速巴士去河口湖，約 2.5 小時。）";
+  if(has(/交通|怎麼去|怎麼到|巴士|公車|電車|地鐵|計程車|周遊|JR|搭車|成田|新宿|機場/))
+    return "這趟的交通：\n• 12/4 成田第二航廈 → 河口湖站：直達高速巴士約 2.5 小時，要預約\n• 河口湖周邊：周遊巴士紅線、綠線、藍線，買 1–2 日券；清晨去山中湖要搭計程車\n• 12/7 河口湖站 → 新宿：高速巴士約 1 小時 45 分\n• 新宿 → 淺草：JR 中央線到神田轉銀座線，約 35 分\n• 12/9 淺草 → 成田機場：都營淺草線直通京成 Access 特急，約 1 小時不用轉車";
+  if(has(/吃|美食|餐廳|午餐|晚餐|早餐|咖啡|甜點|宵夜|喝/)){
+    if(di>=0){const f=DAYS[di].items.filter(it=>it[1]==="food");return pre+`${DAYS[di].d} 會吃：\n`+(f.length?f.map(it=>`• ${it[0]} ${it[2]}${it[3]?"："+clean(it[3]):""}`).join("\n"):"這天行程裡沒有排餐廳，可以在路上找找～")}
+    return "行程裡的美食亮點：\n• 12/5：餺飥不動茶屋（山梨名物）、Lake Bake Cafe、食呑 Hosha\n• 12/6：Yamanaka Terrace 湖畔早餐、和牛燒肉 Yoritomo\n• 12/7：HARBS 水果千層、新潟雪室熟成燒肉 Nikuine\n• 12/8：Shabusen 涮涮鍋、Glitch Coffee、Age.3 炸三明治\n\n在地必吃：餺飥、吉田烏龍麵、藍莓霜淇淋、信玄餅。問「12/6 吃什麼」可以看單日。";}
+  if(has(/伴手禮|紀念品|買什麼|送人/))
+    return "伴手禮推薦：\n• 富士山區：信玄餅、富士山造型餅乾、河口湖自然生活館的藍莓果醬\n• 東京：銀座伊東屋的文具、淺草仲見世的人形燒\n• 機場：東京香蕉、薯條三兄弟\n\n記得 2026/11 起免稅改新制，問我「退稅」看怎麼辦。";
+  if(has(/聖誕|燈飾|點燈|夜景|市集|晚上/))
+    return "這趟碰得到的冬季燈飾（2026 公布日期）：\n• 六本木之丘欅坂燈飾：11/5–12/25，17:00–22:00\n• 六本木之丘聖誕市集：11/21–12/25，11:00–21:00\n• 麻布台之丘聖誕市集：11/21–12/25，11:00–21:00\n• 東京中城 MIDTOWN CHRISTMAS：11/26–12/25，17:00–23:00\n\n12/7 吃完六本木燒肉，剛好散步去看！12/8 晚上可以上淺草文化觀光中心 8 樓免費展望台看晴空塔。";
+  if(has(/日文|日語|怎麼說|翻譯/))
+    return "到「撇步」頁最下面的日語小卡，分成餐廳、購物、交通、住宿、緊急，點一下就會放大，直接拿給店員看就好！";
+  if(di>=0) return pre+planText(di);
+  if(has(/行程|安排|去哪|玩什麼/)) return "要看哪一天呢？例如「12/5 的行程」「明天去哪」。\n\n"+DAYS.map((x,i)=>`• Day ${i+1} ${x.d}：${x.title}`).join("\n");
+  const sp=SPOTS.find(s=>q.includes(s[1])||q.includes(s[2])||(s[1].length>=3&&s[1].split(/[・ ]/).some(w=>w.length>=3&&q.includes(w))));
+  if(sp) return `${sp[1]}（${sp[2]}）\n${sp[4]}\n小提醒：${sp[5]}${sp[6]?"\n適合：「"+sp[6]+"」":""}`;
+  return "小富目前是離線模式，問這些我都答得出來：\n• 「12/5 的行程」「今天去哪」「下一站」\n• 「今晚住哪」「航班幾點」\n• 「12/7 吃什麼」「伴手禮」「聖誕燈飾」\n• 「下雨怎麼辦」「怎麼穿」「怎麼去成田」\n• 「退稅新制」「緊急電話」\n\n想問更自由的問題，可以在 Claude 裡打開這本手冊，或按「API 金鑰」設定。";
+}
+const fallback=smartAnswer;
 
 async function ask(q){
   q=(q||"").trim(); if(!q||busy)return;
   add("user",q); qEl.value="";
   const b=add("bot","小富思考中…"); b.classList.add("thinking");
   if(!sample&&apiKey){return apiAsk(q,b)}
-  if(!sample){b.classList.remove("thinking");b.textContent=fallback(q)+"\n\n（想即時聊天？按右上角「API 金鑰」設定）";return}
+  if(!sample){b.classList.remove("thinking");b.textContent=smartAnswer(q);return}
   busy=true; sendBtn.disabled=true;
   history.push({role:"user",content:q});
   const turns=history.slice(-10).map((m,i)=>i===0&&m.role==="user"?{role:"user",content:BRIEF+"\n\n旅客問題："+m.content}:m);
@@ -844,7 +917,7 @@ async function ask(q){
     b.classList.remove("thinking"); history.pop();
     if(e&&e.code==="not_granted"){sample=null;setStatus(false,"未授權・使用離線小抄");b.textContent="沒關係～沒有授權的話，小富先用離線小抄回答：\n"+fallback(q)}
     else if(e&&e.code==="rate_limited"){b.textContent="小富有點喘不過氣，等一下再問我一次好嗎？"}
-    else{b.textContent=(e&&e.text)?e.text:"糟糕，訊號不太好，請稍後再試一次。"}
+    else{b.textContent=(e&&e.text)?e.text:"訊號不太好，小富先用離線資料回答：\n"+smartAnswer(q)}
   }finally{busy=false;sendBtn.disabled=false}
 }
 document.getElementById("composer").addEventListener("submit",e=>{e.preventDefault();ask(qEl.value)});
@@ -854,9 +927,10 @@ const MODEL="claude-haiku-5-5";
 let apiKey=store.get("ft_key","");
 const keyBtn=document.getElementById("keyBtn"), keyPanel=document.getElementById("keyPanel"), keyIn=document.getElementById("apiKey");
 function refreshStatus(){
+  document.getElementById("liveLink").hidden=!!sample||!!apiKey;
   if(sample){keyBtn.hidden=true;keyPanel.hidden=true;setStatus(true,"線上・隨時可以問");return}
   keyBtn.hidden=false;
-  setStatus(!!apiKey, apiKey?"線上・使用你的 API 金鑰":"離線小抄模式");
+  setStatus(true, apiKey?"即時聊天・使用你的 API 金鑰":"離線小富・不需金鑰");
 }
 keyBtn.onclick=()=>{keyPanel.hidden=!keyPanel.hidden;keyBtn.setAttribute("aria-expanded",!keyPanel.hidden);if(!keyPanel.hidden){keyIn.value=apiKey;keyIn.focus()}};
 keyPanel.addEventListener("submit",e=>{e.preventDefault();const v=keyIn.value.trim();
