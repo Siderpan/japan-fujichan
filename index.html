@@ -1184,6 +1184,11 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .fab-hint{position:fixed;z-index:27;right:calc(max(14px,env(safe-area-inset-right,0px)) + 72px);bottom:calc(104px + env(safe-area-inset-bottom,0px));background:var(--paper);border:2px solid var(--edge);border-radius:14px 14px 4px 14px;padding:5px 10px;font-size:12.5px;font-weight:900;box-shadow:2px 2px 0 var(--edge);white-space:nowrap}
 .chatdock{position:fixed;z-index:26;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(158px + env(safe-area-inset-bottom,0px));width:min(400px,calc(100vw - 28px));height:min(580px,calc(100vh - 200px - env(safe-area-inset-top,0px)));height:min(580px,calc(100dvh - 200px - env(safe-area-inset-top,0px)));display:flex}
 .chatdock .chat{flex:1;display:flex;flex-direction:column;min-height:0;box-shadow:var(--shadow-lg)}
+.chatdock .chat > *{flex:0 0 auto}
+.chatdock .chat > .msgs{flex:1 1 auto;min-height:80px}
+.chatdock .quick{padding-top:2px;padding-bottom:8px}
+.chatdock .livelink{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chatdock .quick button{white-space:nowrap;line-height:1.3}
 .chatdock .keypanel{max-height:45%;overflow-y:auto}
 .dock-x{width:32px;height:32px;flex:0 0 32px;border-radius:50%;border:2px solid var(--edge);background:var(--paper);font-size:18px;line-height:1;cursor:pointer;padding:0}
 .dock-note{margin:0;padding:0 12px 8px;font-size:11px;color:var(--muted)}
@@ -1394,7 +1399,7 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
         <p>金鑰只存在這台裝置的瀏覽器裡，不會上傳到 GitHub。到 <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a> 建立金鑰並儲值，按實際用量計費。借別人手機用完記得按「清除金鑰」。</p>
       </form>
       <div class="msgs" id="msgs" aria-live="polite"></div>
-      <a class="livelink" id="liveLink" href="https://claude.ai/artifact/NbrFsoRRQKddqgFwsH1v7q" target="_blank" rel="noopener" hidden><b>想自由聊天？</b>在 Claude 裡開啟這本手冊，小富就能用你的 Claude 帳號即時回答，不用金鑰 ↗</a>
+      <a class="livelink" id="liveLink" href="https://claude.ai/artifact/NbrFsoRRQKddqgFwsH1v7q" target="_blank" rel="noopener" hidden><b>想自由聊天？</b>用 Claude 開啟手冊，免金鑰即時回答 ↗</a>
       <div class="quick" id="quick"></div>
       <form class="composer" id="composer">
         <input id="q" type="text" placeholder="問我任何旅遊問題，例如：下雨天去哪？" autocomplete="off" aria-label="輸入問題">
