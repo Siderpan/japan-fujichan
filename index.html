@@ -207,7 +207,7 @@ li.is-next .stopcard{outline:2.5px solid var(--mint);outline-offset:1px}
 .chat-top small{color:var(--muted);font-size:12px}
 .status{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--mint);margin-right:4px;vertical-align:middle;border:1.5px solid var(--edge)}
 .status.off{background:var(--hair)}
-.livelink{display:block;margin:0 12px 10px;padding:8px 12px;border:2px dashed var(--edge);border-radius:14px;font-size:12.5px;text-decoration:none;background:var(--sun-soft)}
+.livelink{display:block;margin:0 10px 8px;padding:5px 10px;border:2px dashed var(--edge);border-radius:12px;font-size:11.5px;line-height:1.45;text-decoration:none;background:var(--sun-soft)}
 .livelink b{color:var(--tang)}
 .keybtn{border:2px solid var(--edge);background:var(--paper);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
 .keypanel{padding:12px;border-bottom:2.5px solid var(--edge);background:var(--bg);display:grid;gap:8px;font-size:13.5px}
@@ -218,7 +218,7 @@ li.is-next .stopcard{outline:2.5px solid var(--mint);outline-offset:1px}
 .keyrow button{border:2px solid var(--edge);border-radius:999px;padding:6px 16px;cursor:pointer;font-weight:700}
 .keyrow .save{background:var(--tang);color:var(--on)}
 .keyrow .clear{background:var(--paper)}
-.msgs{padding:14px;display:flex;flex-direction:column;gap:10px;min-height:260px;max-height:52vh;overflow-y:auto}
+.msgs{padding:14px;display:flex;flex-direction:column;gap:10px;flex:1 1 auto;min-height:120px;overflow-y:auto;overscroll-behavior:contain}
 .msg{max-width:86%;padding:9px 13px;border-radius:18px;font-size:14px;white-space:pre-wrap;word-break:break-word;border:2px solid var(--edge)}
 .msg.bot{background:var(--bg);border-bottom-left-radius:4px;align-self:flex-start}
 .msg.me{background:var(--sky);color:var(--on);border-bottom-right-radius:4px;align-self:flex-end}
@@ -302,7 +302,7 @@ li.is-next .stopcard{outline:2.5px solid var(--mint);outline-offset:1px}
 /* ---------- tab bar ---------- */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--paper);border-top:2.5px solid var(--edge);
   padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
-nav.tabs .in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+nav.tabs .in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
 .tab{border:2px solid transparent;background:transparent;border-radius:14px;padding:4px 0 3px;white-space:nowrap;min-width:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11.5px;font-weight:700;color:var(--muted);transition:transform .15s}
 .tab .ic{font-size:23px}
 .tab[aria-selected="true"]{color:var(--on);background:var(--sun);border-color:var(--edge);transform:translateY(-4px);box-shadow:2px 2px 0 var(--edge)}
@@ -1173,6 +1173,31 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .ritem.done h3{text-decoration:line-through;text-decoration-color:var(--tang);text-decoration-thickness:2px}
 @media (prefers-reduced-motion:no-preference){.stamp-btn[aria-pressed="true"]{animation:stampin .3s ease}@keyframes stampin{from{transform:scale(1.5) rotate(10deg);opacity:0}}}
 @media (max-width:420px){.ritem{grid-template-columns:38px minmax(0,1fr) 54px;gap:8px;padding:10px}.medal.m0{width:30px;height:30px}.medal.m1,.medal.m2,.medal.m3{width:36px;height:36px;font-size:15px}.stamp-btn{width:52px;height:52px}.vbtn{font-size:12.5px}}
+
+/* ---------- 懸浮小富 ---------- */
+.fab{position:fixed;z-index:27;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(86px + env(safe-area-inset-bottom,0px));width:62px;height:62px;border-radius:50%;border:2.5px solid var(--edge);background:var(--sun);box-shadow:var(--shadow-lg);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .15s}
+.fab svg{width:44px;height:41px;margin-top:2px}
+.fab .x{display:none;font-family:var(--f-pop);font-size:26px;line-height:1;color:var(--on)}
+.fab.open{background:var(--paper)}
+.fab.open .face{display:none} .fab.open .x{display:block;color:var(--ink)}
+.fab:hover{transform:translateY(-2px) rotate(-4deg)}
+.fab-hint{position:fixed;z-index:27;right:calc(max(14px,env(safe-area-inset-right,0px)) + 72px);bottom:calc(104px + env(safe-area-inset-bottom,0px));background:var(--paper);border:2px solid var(--edge);border-radius:14px 14px 4px 14px;padding:5px 10px;font-size:12.5px;font-weight:900;box-shadow:2px 2px 0 var(--edge);white-space:nowrap}
+.chatdock{position:fixed;z-index:26;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(158px + env(safe-area-inset-bottom,0px));width:min(400px,calc(100vw - 28px));height:min(580px,calc(100vh - 200px - env(safe-area-inset-top,0px)));height:min(580px,calc(100dvh - 200px - env(safe-area-inset-top,0px)));display:flex}
+.chatdock .chat{flex:1;display:flex;flex-direction:column;min-height:0;box-shadow:var(--shadow-lg)}
+.chatdock .keypanel{max-height:45%;overflow-y:auto}
+.dock-x{width:32px;height:32px;flex:0 0 32px;border-radius:50%;border:2px solid var(--edge);background:var(--paper);font-size:18px;line-height:1;cursor:pointer;padding:0}
+.dock-note{margin:0;padding:0 12px 8px;font-size:11px;color:var(--muted)}
+.chatdock .composer{padding:8px 10px}
+@media (max-width:520px){
+  .chatdock{left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));width:auto;bottom:calc(152px + env(safe-area-inset-bottom,0px))}
+  .fab{width:56px;height:56px} .fab svg{width:40px;height:37px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .fab:not(.open) svg{animation:fabbob 3.4s ease-in-out infinite}
+  @keyframes fabbob{50%{transform:translateY(-3px) rotate(-4deg)}}
+  .chatdock:not([hidden]) .chat{animation:dockup .22s ease}
+  @keyframes dockup{from{transform:translateY(16px) scale(.97);opacity:.4}}
+}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40;width:100%;height:100%}
 
 @media (max-width:520px){
@@ -1353,14 +1378,14 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
     <div id="flex"></div>
   </section>
 
-  <!-- ===== 導遊 ===== -->
-  <section class="view" id="v-guide" aria-labelledby="h-guide" hidden>
-    <div class="sec-head"><h2 id="h-guide">問問小富</h2><small>你的富士山＆東京在地導遊</small></div>
+  <!-- ===== 小富懸浮對話 ===== -->
+  <div class="chatdock" id="chatDock" role="dialog" aria-labelledby="h-guide" hidden>
     <div class="chat card">
       <div class="chat-top">
         <svg viewBox="0 0 120 112" aria-hidden="true"><use href="#fuji"/></svg>
-        <div><b>小富 ふじちゃん</b><small><span class="status off" id="dot"></span><span id="stxt">連線中…</span></small></div>
-        <button class="keybtn" id="keyBtn" type="button" aria-expanded="false" aria-controls="keyPanel" hidden>API 金鑰（選用）</button>
+        <div><b id="h-guide">小富 ふじちゃん</b><small><span class="status off" id="dot"></span><span id="stxt">連線中…</span></small></div>
+        <button class="keybtn" id="keyBtn" type="button" aria-expanded="false" aria-controls="keyPanel" hidden>金鑰</button>
+        <button class="dock-x" id="dockClose" type="button" aria-label="關閉對話">×</button>
       </div>
       <form class="keypanel" id="keyPanel" hidden>
         <label for="apiKey"><b>貼上你的 Claude API 金鑰，就能和小富即時聊天</b></label>
@@ -1375,9 +1400,14 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
         <input id="q" type="text" placeholder="問我任何旅遊問題，例如：下雨天去哪？" autocomplete="off" aria-label="輸入問題">
         <button class="send" id="sendBtn" type="submit">送出</button>
       </form>
+      <p class="dock-note">時刻表、票價與活動日期請以官方網站為準。</p>
     </div>
-    <p class="note">在 Claude 裡開啟時，小富用你的 Claude 額度回答；在 GitHub 網頁上，設定 API 金鑰後即可即時聊天，沒設定則使用離線小抄。時刻表、票價與活動日期請以官方網站為準。</p>
-  </section>
+  </div>
+  <div class="fab-hint" id="fabHint" hidden>有問題就問我！</div>
+  <button class="fab" id="fab" type="button" aria-label="打開小富對話" aria-expanded="false" aria-controls="chatDock">
+    <svg class="face" viewBox="0 0 120 112" aria-hidden="true"><use href="#fuji"/></svg>
+    <span class="x" aria-hidden="true">×</span>
+  </button>
 
   <!-- ===== 常用連結 ===== -->
   <section class="view" id="v-links" aria-labelledby="h-links" hidden>
@@ -1476,7 +1506,6 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 <nav class="tabs" aria-label="主選單"><div class="in" role="tablist">
   <button class="tab" role="tab" data-v="plan" aria-selected="true"><svg class="ic"><use href="#i-cal"/></svg>行程</button>
   <button class="tab" role="tab" data-v="spots" aria-selected="false"><svg class="ic"><use href="#i-pin"/></svg>景點</button>
-  <button class="tab" role="tab" data-v="guide" aria-selected="false"><svg class="av" viewBox="0 0 120 112"><use href="#fuji"/></svg>問小富</button>
   <button class="tab" role="tab" data-v="flex" aria-selected="false"><svg class="ic"><use href="#i-bolt"/></svg>臨時排</button>
   <button class="tab" role="tab" data-v="check" aria-selected="false"><svg class="ic"><use href="#i-check"/></svg>清單</button>
   <button class="tab" role="tab" data-v="links" aria-selected="false"><svg class="ic"><use href="#i-link"/></svg>連結</button>
@@ -2232,11 +2261,24 @@ renderFlex(); loadWx();
 
 /* ---------- tabs ---------- */
 const tabs=[...document.querySelectorAll(".tab")];
-function go(v){tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.v===v));
+/* ---------- 懸浮小富 ---------- */
+const dock=document.getElementById("chatDock"), fab=document.getElementById("fab"), fabHint=document.getElementById("fabHint");
+function openChat(){dock.hidden=false;fab.classList.add("open");fab.setAttribute("aria-expanded","true");fab.setAttribute("aria-label","關閉小富對話");fabHint.hidden=true;store.set("ft_fabseen",1);
+  const m=document.getElementById("msgs");m.scrollTop=m.scrollHeight;
+  if(window.matchMedia&&matchMedia("(pointer:fine)").matches)document.getElementById("q").focus();else document.getElementById("dockClose").focus()}
+function closeChat(){dock.hidden=true;fab.classList.remove("open");fab.setAttribute("aria-expanded","false");fab.setAttribute("aria-label","打開小富對話");fab.focus()}
+fab.addEventListener("click",()=>dock.hidden?openChat():closeChat());
+document.getElementById("dockClose").addEventListener("click",closeChat);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!dock.hidden&&dock.contains(document.activeElement))closeChat()});
+if(!store.get("ft_fabseen",0)){fabHint.hidden=false;setTimeout(()=>{fabHint.hidden=true},7000)}
+function go(v){if(v==="guide"){openChat();return}
+  tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.v===v));
   document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);store.set("ft_tab",v);window.scrollTo({top:0});if(v==="spots")onSpotsShown()}
 tabs.forEach(t=>t.onclick=()=>go(t.dataset.v));
 const startTab=(location.hash||"").replace("#","");
-go(["plan","spots","flex","guide","check","links","tips"].includes(startTab)?startTab:store.get("ft_tab","plan"));
+const VIEWS=["plan","spots","flex","check","links","tips"], savedTab=store.get("ft_tab","plan");
+go(VIEWS.includes(startTab)?startTab:(VIEWS.includes(savedTab)?savedTab:"plan"));
+if(startTab==="guide")openChat();
 
 /* ---------- AI guide ---------- */
 const msgsEl=document.getElementById("msgs"), qEl=document.getElementById("q"), sendBtn=document.getElementById("sendBtn");
