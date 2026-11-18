@@ -1129,6 +1129,38 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .mi-a{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .mi-a a{text-decoration:none;display:inline-flex;align-items:center}
 .mi-a .addbtn{height:32px}
+
+/* ---------- 必玩必吃必買榜 ---------- */
+.viewseg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--paper);border:2.5px solid var(--edge);border-radius:999px;padding:4px;margin-bottom:16px;box-shadow:var(--shadow)}
+.vbtn{display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:transparent;border-radius:999px;height:36px;font-weight:900;font-size:13.5px;cursor:pointer;color:var(--muted);white-space:nowrap}
+.vbtn .ic{font-size:16px}
+.vbtn[aria-pressed="true"]{background:var(--sun);color:var(--on);box-shadow:inset 0 0 0 2px var(--edge)}
+.rtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rtab{display:flex;flex-direction:column;align-items:center;gap:2px;border:2.5px solid var(--edge);border-radius:16px;background:var(--paper);padding:8px 4px;cursor:pointer;font-weight:900;font-size:13.5px;line-height:1.2}
+.rtab .ic{font-size:20px}
+.rtab em{font-style:normal;font-family:var(--f-pop);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rtab[aria-pressed="true"]{transform:translateY(-2px);box-shadow:var(--shadow);color:var(--on)}
+.rtab.r-play[aria-pressed="true"]{background:var(--mint)} .rtab.r-eat[aria-pressed="true"]{background:var(--tang)} .rtab.r-buy[aria-pressed="true"]{background:var(--lilac)}
+.rtab[aria-pressed="true"] em{color:var(--on)}
+.rnote{font-size:12.5px;color:var(--muted);margin:10px 2px 12px}
+.rlist{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.ritem{display:grid;grid-template-columns:44px minmax(0,1fr) 64px;gap:10px;align-items:center;padding:12px}
+.medal{width:40px;height:40px;border-radius:50%;border:2.5px solid var(--edge);display:grid;place-items:center;font-family:var(--f-pop);font-size:16px;color:var(--on);background:var(--bg);font-variant-numeric:tabular-nums}
+.medal.m1{background:#FFD65A;box-shadow:0 0 0 3px #FFF1B8;transform:rotate(-6deg)} .medal.m2{background:#D9E2F0;box-shadow:0 0 0 3px #EEF2F8} .medal.m3{background:#F2B98A;box-shadow:0 0 0 3px #FBE3CF}
+.rbody{min-width:0;display:grid;gap:4px}
+.rbody h3{font-size:17px}
+.rbody p{margin:0;font-size:13px;color:var(--muted)}
+.rwhen{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;background:var(--sky-soft);border-radius:999px;padding:2px 9px;justify-self:start}
+.racts{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.racts .maplink{margin:0}
+.stamp-btn{width:60px;height:60px;border-radius:50%;border:2.5px dashed var(--hair);background:transparent;cursor:pointer;display:grid;place-items:center;padding:0}
+.stamp-btn span{font-family:var(--f-pop);font-size:13px;color:var(--hair);transform:rotate(-14deg)}
+.stamp-btn[aria-pressed="true"]{border:3px double #E8573A;background:color-mix(in srgb,#E8573A 10%,transparent)}
+.stamp-btn[aria-pressed="true"] span{color:#E8573A;font-size:15px}
+.ritem.done{background:color-mix(in srgb,var(--paper) 88%,var(--mint))}
+.ritem.done h3{text-decoration:line-through;text-decoration-color:var(--tang);text-decoration-thickness:2px}
+@media (prefers-reduced-motion:no-preference){.stamp-btn[aria-pressed="true"]{animation:stampin .3s ease}@keyframes stampin{from{transform:scale(1.5) rotate(10deg);opacity:0}}}
+@media (max-width:420px){.ritem{grid-template-columns:38px minmax(0,1fr) 54px;gap:8px;padding:10px}.medal{width:34px;height:34px;font-size:14px}.stamp-btn{width:52px;height:52px}.vbtn{font-size:12.5px}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40;width:100%;height:100%}
 
 @media (max-width:520px){
@@ -1285,6 +1317,12 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
   <!-- ===== 景點 ===== -->
   <section class="view" id="v-spots" aria-labelledby="h-spots" hidden>
     <div class="sec-head"><h2 id="h-spots">景點圖鑑</h2><small>黃標＝在行程中・綠標＝順路推薦・地圖跟著篩選變動</small></div>
+    <div class="viewseg" id="spotView" role="group" aria-label="切換顯示">
+      <button type="button" class="vbtn" data-sv="guide" aria-pressed="true"><svg class="ic"><use href="#i-pin"/></svg>圖鑑＋地圖</button>
+      <button type="button" class="vbtn" data-sv="rank" aria-pressed="false"><svg class="ic"><use href="#i-all"/></svg>必玩・必吃・必買榜</button>
+    </div>
+    <div id="rankWrap" hidden></div>
+    <div id="guideWrap">
     <div class="filters" id="filters"></div>
     <div class="cats" id="cats"></div>
     <div class="subs" id="subs" hidden></div>
@@ -1294,6 +1332,7 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
       <div id="mapinfo" aria-live="polite"></div>
     </div>
     <div class="spots" id="spots"></div>
+    </div>
   </section>
 
   <!-- ===== 臨時排 ===== -->
@@ -1662,7 +1701,7 @@ function setTiles(){
 function initMap(){
   if(lmap)return true;
   if(!window.L||!mapBox){mapWrap.classList.add("nolib");return false}
-  lmap=L.map(mapBox,{zoomControl:true,scrollWheelZoom:false,attributionControl:true,center:REG[mapRegion].c,zoom:REG[mapRegion].z});
+  lmap=L.map(mapBox,{zoomControl:true,scrollWheelZoom:true,wheelPxPerZoomLevel:90,zoomSnap:0.5,zoomDelta:0.5,touchZoom:true,bounceAtZoomLimits:false,attributionControl:true,center:REG[mapRegion].c,zoom:REG[mapRegion].z});
   lmap.attributionControl.setPrefix(false);
   L.control.scale({imperial:false,maxWidth:90}).addTo(lmap);
   pinLayer=L.layerGroup().addTo(lmap); lineLayer=L.layerGroup().addTo(lmap);
@@ -1680,7 +1719,7 @@ function originFor(region){
 }
 function regionList(){return spotList().filter(s=>s[0]===mapRegion&&s[7].lat)}
 function updateMap(){
-  if(!mapWrap||document.getElementById("v-spots").hidden)return;
+  if(!mapWrap||document.getElementById("v-spots").hidden||document.getElementById("guideWrap").hidden)return;
   mapHead.innerHTML=`<div class="seg" role="group" aria-label="地圖區域">${["fuji","tokyo"].map(r=>`<button type="button" class="chip-b" aria-pressed="${mapRegion===r}" data-reg="${r}">${icon(r==="fuji"?"i-mtn":"i-tower")}${REG[r].n}</button>`).join("")}</div>
     <button type="button" class="chip-b geo" data-mloc="1">${icon("i-locate")}我的位置</button>`;
   if(!initMap()){mapInfo.innerHTML=`<p class="mapnote">地圖元件載入不到（可能沒有網路），清單和「Google ↗」連結還是可以用。</p>`;return}
@@ -1708,7 +1747,7 @@ function updateMap(){
 function drawInfo(s){
   lineLayer.clearLayers();
   if(!s){mapInfo.innerHTML=`<div class="legend"><span><i class="lg p-see"></i>景點</span><span><i class="lg p-food"></i>美食</span><span><i class="lg p-night"></i>夜景</span><span><i class="lg p-shop"></i>購物</span><span><i class="lg p-hotel"></i>住宿</span><span><i class="lg plan"></i>在行程中</span>${myPos?'<span><i class="lg me"></i>你在這</span>':""}</div>
-    <p class="mapnote">點地圖上的圖釘，看距離、要走多久和交通方式。目前顯示 ${regionList().length} 個${REG[mapRegion].n}的點。</p>`;return}
+    <p class="mapnote">電腦用滑鼠滾輪、手機用兩指就能縮放。點圖釘看距離、要走多久和交通方式。目前顯示 ${regionList().length} 個${REG[mapRegion].n}的點。</p>`;return}
   const o=originFor(mapRegion), p={lat:s[7].lat,lng:s[7].lng}, d=km(o,p);
   const walk=Math.round(d*1.3/4.5*60), car=Math.max(3,Math.round(d*1.35/(mapRegion==="tokyo"?18:32)*60)+2);
   const ride=mapRegion==="tokyo"?(d<1.2?"走路就到，不用搭車":`地鐵／電車約 ${Math.round(d*1.3/20*60)+10} 分（含轉乘步行，實際以路線為準）`):(d<1.2?"走路就到":"周遊巴士班次約 15–30 分一班，趕時間就搭計程車");
@@ -1757,6 +1796,76 @@ function refit(){lastFit="";updateMap()}
 function onSpotsShown(){setTimeout(()=>{updateMap();if(lmap){lmap.invalidateSize();refit()}},60)}
 if(window.ResizeObserver&&mapBox){let lastW=0;new ResizeObserver(en=>{const w=Math.round(en[0].contentRect.width);if(lmap&&w&&Math.abs(w-lastW)>40){lastW=w;lmap.invalidateSize();refit()}}).observe(mapBox)}
 renderSpots();
+
+/* ---------- 必玩・必吃・必買 榜單 ---------- */
+/* [名稱, 為什麼, 哪天・在哪, 圖鑑名稱(可在地圖看), Google 查詢] */
+const RANK={
+ play:{t:"必玩",ic:"i-see",items:[
+  ["新倉山淺間公園・忠靈塔","五重塔、富士山同框，日本最經典的明信片畫面。爬 398 階，旁邊也有坡道。","12/5・富士吉田","新倉山淺間公園・忠靈塔","新倉山浅間公園"],
+  ["山中湖平野之濱看逆富士日出","冬天清晨無風時，湖面倒映整座富士山，還有天鵝。","12/6 06:00・山中湖","山中湖 平野之濱","平野の浜"],
+  ["大石公園湖畔散步","湖北岸最開闊的富士山視角，順便吃藍莓霜淇淋。","12/5・河口湖北岸","大石公園","大石公園"],
+  ["富士吉田懷舊商店街","昭和街道盡頭就是富士山，旁邊還有日川時計店。","12/5・富士吉田","富士吉田懷舊商店街","本町通り 富士吉田"],
+  ["泡溫泉看富士山","Asafuji 的溫泉是住客最愛，爬山騎車一整天後最療癒。","12/6 晚上・Hotel Asafuji","","Hotel Asafuji"],
+  ["teamLab Borderless","沉浸式數位藝術，光影在房間之間流動，要先上網買票。","12/7・麻布台之丘","teamLab Borderless","teamLab Borderless Azabudai"],
+  ["東京鐵塔＋增上寺黃昏","古寺大殿後方就是亮燈的東京鐵塔，新舊同框。","12/7 16:40・芝公園","增上寺","増上寺"],
+  ["六本木欅坂燈飾＋聖誕市集","藍白燈海襯著東京鐵塔，旁邊德式市集喝熱紅酒。","12/7 晚餐後・六本木","六本木之丘 欅坂燈飾","六本木ヒルズ けやき坂"],
+  ["夜訪淺草寺＋免費展望台","晚上點燈人少更有氣氛，文化觀光中心 8 樓免費看晴空塔。","12/8 晚上・淺草","淺草寺・仲見世通","浅草寺"],
+  ["北口本宮富士淺間神社","千年杉木參道和大鳥居，富士山信仰的起點，非常安靜。","12/6・富士吉田","北口本宮富士淺間神社","北口本宮冨士浅間神社"]]},
+ eat:{t:"必吃",ic:"i-food",items:[
+  ["餺飥（ほうとう）","山梨鄉土料理，南瓜味噌燉寬麵，冬天吃最暖。","12/5・餺飥不動／小作","餺飥不動 河口湖站前店","ほうとう不動 河口湖駅前店"],
+  ["吉田烏龍麵","全日本最有嚼勁的烏龍麵之一，推薦麵許皆傳（週日公休）。","12/5 午餐・富士吉田","麵許皆傳","麺許皆伝 富士吉田"],
+  ["和牛燒肉 Yoritomo","河口湖站附近的和牛燒肉人氣店，已在行程中。","12/6・河口湖","和牛燒肉 Yoritomo","和牛焼肉よりとも"],
+  ["雪室熟成燒肉 Nikuine","新潟雪室熟成的和牛，六本木的高人氣晚餐。","12/7 晚餐・六本木","新潟雪室熟成燒肉 Nikuine","肉いね 六本木"],
+  ["一龍 和牛味噌拉麵","飯店走路 6 分鐘，營業到半夜，宵夜也能吃。","住淺草時・淺草","一龍 Ichiryu 拉麵","一龍 浅草"],
+  ["藍莓霜淇淋","河口湖自然生活館的招牌，配著富士山吃。","12/5・大石公園","河口湖自然生活館 咖啡","河口湖自然生活館"],
+  ["HARBS 水果千層蛋糕","一塊就很有份量的水果千層，可以外帶到芝公園吃。","12/7・麻布台之丘","HARBS 麻布台之丘店","HARBS 麻布台ヒルズ"],
+  ["Shabusen 一人一鍋涮涮鍋","老字號涮涮鍋，不接受預約，開店就去。","12/8 午餐・銀座","Shabusen 銀座店","しゃぶせん 銀座"],
+  ["仲見世通 人形燒・炸肉餅","淺草邊走邊吃的經典，店家大約傍晚 5 點收。","12/8・淺草","淺草寺・仲見世通","仲見世通り"],
+  ["銀座精品咖啡","Glitch 淺焙和 X coffee 拿鐵，咖啡迷二選一。","12/8・銀座","Glitch Coffee & Roasters GINZA","GLITCH COFFEE GINZA"]]},
+ buy:{t:"必買",ic:"i-flag",items:[
+  ["信玄餅","山梨代表點心，黃豆粉麻糬淋黑糖蜜，河口湖站就買得到。","12/4–12/7・河口湖站","","信玄餅 河口湖駅"],
+  ["富士山造型點心","富士山形狀的餅乾和蛋糕，送人最有記憶點。","河口湖站・伴手禮店","","富士山 クッキー 河口湖"],
+  ["藍莓果醬","河口湖自然生活館自製，吃過霜淇淋就會想帶一罐。","12/5・大石公園","河口湖自然生活館 咖啡","河口湖自然生活館"],
+  ["山梨葡萄酒（甲州）","山梨是日本葡萄酒的故鄉，白酒「甲州」最有名。","河口湖・超市或酒舖","","山梨 ワイン 河口湖"],
+  ["富士吉田織物小物","富士吉田是千年織物之鄉，商店街附近找得到布包、領帶、小毛巾。","12/5–12/6・富士吉田","富士吉田懷舊商店街","富士吉田 織物 ハタオリマチ"],
+  ["銀座伊東屋 文具","整棟都是筆記本、卡片和文具，好挑又好帶。","12/8・銀座","銀座伊東屋","銀座 伊東屋 G.Itoya"],
+  ["淺草 雷おこし・人形燒","淺草老字號點心，雷門一帶就有。","12/8・淺草","淺草寺・仲見世通","雷おこし 浅草"],
+  ["合羽橋 廚具・食物模型","日本刀具、陶碗和超逼真食物模型。多數店傍晚 5 點關、週末公休。","12/8 白天・合羽橋","合羽橋道具街","かっぱ橋道具街"],
+  ["東京香蕉","經典東京伴手禮，成田機場也買得到。","12/9・成田機場","","東京ばな奈 成田空港"],
+  ["藥妝・零食（免稅）","2026/11 起免稅改新制：先付含稅價，出境時退。買之前先問退稅方式。","12/7–12/8・東京","","ドラッグストア 浅草"]]}
+};
+let rcat=store.get("ft_rcat","play"); if(!RANK[rcat])rcat="play";
+let got=store.get("ft_got",{});
+let sview=store.get("ft_sview","guide");
+const rankWrap=document.getElementById("rankWrap"), guideWrap=document.getElementById("guideWrap"), svEl=document.getElementById("spotView");
+function renderRank(){
+  const R=RANK[rcat];
+  const cnt=k=>RANK[k].items.filter(it=>got[k+":"+it[0]]).length;
+  rankWrap.innerHTML=`<div class="rtabs" role="group" aria-label="榜單分類">${Object.keys(RANK).map(k=>`<button type="button" class="rtab r-${k}" aria-pressed="${k===rcat}" data-rc="${k}">${icon(RANK[k].ic)}${RANK[k].t} TOP 10<em>${cnt(k)}/10</em></button>`).join("")}</div>
+  <p class="rnote">依你的行程挑選、照推薦程度排序。完成一項就蓋個「GET!」章吧！</p>
+  <ol class="rlist">${R.items.map(([n,why,when,spot,q],i)=>{const k=rcat+":"+n,g=!!got[k];
+    return `<li class="ritem card${g?" done":""}"><span class="medal m${i<3?i+1:0}">${i+1}</span>
+      <div class="rbody"><h3>${esc(n)}</h3><p>${esc(why)}</p><span class="rwhen">${icon("i-cal")}${esc(when)}</span>
+        <div class="racts">${spot?`<button type="button" class="maplink" data-rmap="${esc(spot)}">${icon("i-pin")}在地圖看</button>`:""}<a class="maplink" href="${map(q)}" target="_blank" rel="noopener">Google ↗</a></div></div>
+      <button type="button" class="stamp-btn" aria-pressed="${g}" data-got="${esc(k)}" aria-label="${g?"取消完成":"標記完成"}：${esc(n)}"><span>GET!</span></button></li>`}).join("")}</ol>`;
+}
+function setSview(v){sview=v;store.set("ft_sview",v);
+  svEl.querySelectorAll("[data-sv]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.sv===v));
+  rankWrap.hidden=v!=="rank"; guideWrap.hidden=v!=="guide";
+  if(v==="rank")renderRank(); else onSpotsShown();
+}
+svEl.addEventListener("click",e=>{const b=e.target.closest("[data-sv]");if(b){setSview(b.dataset.sv);b.focus()}});
+rankWrap.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.rc){rcat=t.dataset.rc;store.set("ft_rcat",rcat);renderRank();const nb=rankWrap.querySelector(`[data-rc="${rcat}"]`);nb&&nb.focus()}
+  else if(t.dataset.got){const k=t.dataset.got;got[k]=!got[k];if(!got[k])delete got[k];store.set("ft_got",got);renderRank();
+    const nb=rankWrap.querySelector(`[data-got="${CSS.escape(k)}"]`);nb&&nb.focus();
+    if(got[k]&&RANK[rcat].items.every(it=>got[rcat+":"+it[0]]))confetti()}
+  else if(t.dataset.rmap){const n=t.dataset.rmap;setSview("guide");setTimeout(()=>selectSpot(n,true),180)}
+});
+rankWrap.hidden=sview!=="rank"; guideWrap.hidden=sview!=="guide";
+svEl.querySelectorAll("[data-sv]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.sv===sview));
+if(sview==="rank")renderRank();
 
 /* ---------- confetti ---------- */
 const cv=document.getElementById("confetti"), cx=cv.getContext&&cv.getContext("2d");
@@ -2121,6 +2230,8 @@ function smartAnswer(q){
   q=q||""; let di=dayRef(q);
   const pre=di===-2?"還沒出發喔！先給你第一天：\n\n":""; if(di===-2)di=0;
   const has=re=>re.test(q);
+  if(has(/必玩|必吃|必買|榜單|排行/)){const k=has(/必吃/)?"eat":has(/必買/)?"buy":"play";
+    return `${RANK[k].t} TOP 10：\n`+RANK[k].items.map((it,i)=>`${i+1}. ${it[0]}（${it[2]}）`).join("\n")+"\n\n完整榜單在「景點」頁上方的「必玩・必吃・必買榜」，完成可以蓋 GET! 章喔！";}
   if(has(/臨時|空檔|多出|改行程|取消|有空/))
     return "臨時有空檔？到下方的「臨時排」分頁，選好現在時間、在哪、空檔多久和想做什麼，小富會馬上算出順路又來得及接回原行程的建議，還能一鍵加到當天行程！";
   if(has(/救命|警察|救護|醫院|生病|不舒服|受傷|緊急|遺失|掉了|不見|報警/))
