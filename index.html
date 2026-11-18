@@ -316,6 +316,8 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-width:0}
 .chip-b{display:inline-flex;align-items:center;gap:4px;height:32px;line-height:1;border:2px solid var(--edge);background:var(--paper);border-radius:999px;padding:0 11px;font-size:13px;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums}
 .chip-b .ic{font-size:14px}
+.chip-b.hotsub{border-color:var(--tang)}
+.chip-b.hotsub[aria-pressed="true"]{border-color:var(--edge)}
 .chip-b[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .chip-b.fuji[aria-pressed="true"]{background:var(--sky);color:var(--on)} .chip-b.tokyo[aria-pressed="true"]{background:var(--pink);color:var(--on)}
 #ftime{box-sizing:border-box;height:32px;line-height:1;border:2px solid var(--edge);border-radius:999px;padding:0 10px;margin:0;font:inherit;font-size:16px;font-weight:700;background:var(--paper);color:var(--ink);font-variant-numeric:tabular-nums}
@@ -1980,10 +1982,31 @@ const POI=[
  ["隅田公園","隅田公園","asakusa",["see","rest"],30,0,1440,0,"河邊散步看晴空塔"]
 ];
 const DAY_AREAS=[["kawa","fujiy"],["kawa","fujiy","oshino","saiko"],["yama","fujiy","oshino","kawa"],["shinjuku","azabu","ginza","asakusa"],["ginza","asakusa","azabu"],["asakusa"]];
+
+/* 把景點圖鑑（含 63 家餐廳與精確座標）也併進臨時排 */
+const DOWC="日一二三四五六";
+function parseHours(t){const rs=[];const re=/(\d{1,2}):(\d{2})\s*[–-]\s*(翌\s*)?(\d{1,2}):(\d{2})/g;let m;while((m=re.exec(t))){let a=+m[1]*60+ +m[2],b=+m[4]*60+ +m[5];if(m[3]||b<=a)b+=1440;rs.push([a,b])}return rs}
+function parseClosed(t){const m=t.match(/週([日一二三四五六]+)公休/);return m?[...m[1]].map(c=>DOWC.indexOf(c)):null}
+function nearestArea(lat,lng){let best=null,bd=1e9;for(const k in AREA){const d=distKm(lat,lng,AREA[k].lat,AREA[k].lon);if(d<bd){bd=d;best=k}}return best}
+(function(){
+  for(const sp of SPOTS){const x=sp[7]; if(!x||!x.lat)continue;
+    const dup=POI.find(p=>p[0]===sp[1]||p[1]===sp[2]); if(dup){dup[10]=Object.assign(dup[10]||{},{lat:x.lat,lng:x.lng});continue}
+    const tag=sp[3], subs=x.sub||[];
+    const kinds=tag==="美食"?(subs.some(v=>v==="咖啡廳"||v==="甜點・麵包")?["food","rest"]:["food"]):tag==="夜景"?["night","see"]:tag==="購物"?["shop"]:["see"];
+    let ranges=parseHours(sp[5]); const known=ranges.length>0;
+    if(!known)ranges=tag==="美食"?[[660,1260]]:tag==="購物"?[[600,1200]]:[[0,1440]];
+    const dur=tag==="美食"?(kinds.includes("rest")?40:50):tag==="購物"?50:tag==="夜景"?30:40;
+    const indoor=(tag==="美食"||tag==="購物"||/塔|展望|teamLab|美術館/.test(sp[1]))?1:0;
+    POI.push([sp[1],sp[2],nearestArea(x.lat,x.lng),kinds,dur,Math.min(...ranges.map(r=>r[0])),Math.max(...ranges.map(r=>r[1])),indoor,sp[4],parseClosed(sp[5]),{lat:x.lat,lng:x.lng,ranges,known,tier:x.tier,sub:subs,spot:1}]);
+  }
+})();
+const FOODSUBS=["不限","咖啡廳","蔬食","燒肉・和牛","拉麵・麵","鄉土料理","壽司・海鮮","鍋物・壽喜燒","和食・居酒屋","甜點・麵包"];
+function fromPt(){if(myPos&&P.locArea===P.area)return {lat:myPos.lat,lng:myPos.lng,me:1};const a=AREA[P.area];return {lat:a.lat,lng:a.lon}}
+function legMin(a,b,region){const d=distKm(a.lat,a.lng,b.lat,b.lng);if(d<0.9)return Math.max(3,Math.round(d*1.3/4.5*60));return region==="tokyo"?Math.round(d*1.3/20*60)+10:Math.round(d*1.3/30*60)+8}
 const WANTS=[["food","想吃東西","i-food"],["see","拍照看景","i-see"],["shop","逛街購物","i-flag"],["rest","累了想休息","i-bed"],["night","看夜景","i-night"]];
 const FREE=[[30,"30 分"],[60,"1 小時"],[120,"2 小時"],[240,"半天"]];
 const pad=n=>String(n).padStart(2,"0"), fmt=m=>pad(Math.floor(m/60)%24)+":"+pad(m%60);
-const P={day:(dayIdx>=0&&dayIdx<6)?dayIdx:0, time:(dayIdx>=0&&dayIdx<6)?now.getHours()*60+Math.round(now.getMinutes()/5)*5:14*60, area:null, free:60, wants:[], rain:false};
+const P={day:(dayIdx>=0&&dayIdx<6)?dayIdx:0, time:(dayIdx>=0&&dayIdx<6)?now.getHours()*60+Math.round(now.getMinutes()/5)*5:14*60, area:null, free:60, wants:[], rain:false, foodSub:"不限"};
 P.area=DAY_AREAS[P.day][0];
 let wx=null;
 const fl=document.getElementById("flex");
@@ -1995,18 +2018,25 @@ function suggest(){
   const planNames=DAYS[P.day].items.map(i=>i[2]+i[4]).join("|");
   const res=[];
   for(const p of POI){
-    const [n,q,ar,kinds,dur,o,c,indoor,desc,closed]=p;
+    const [n,q,ar,kinds,dur,o,c,indoor,desc,closed,ex]=p;
     if(AREA[ar].r!==AREA[P.area].r)continue;
-    const tv=travel(P.area,ar); if(tv>=999)continue;
+    const fp=fromPt();
+    const tv=ex&&ex.lat?legMin(fp,ex,AREA[P.area].r):travel(P.area,ar); if(tv>=999)continue;
     const arrive=P.time+tv, end=arrive+dur, back=end+(nx?tv:0);
     if(closed&&closed.includes(dow))continue;
-    if(arrive<o||arrive+Math.min(dur,30)>c)continue;
-    if(tv+dur>P.free+10)continue;
+    if(ex&&ex.ranges){if(!ex.ranges.some(([a,b])=>arrive>=a&&arrive+Math.min(dur,30)<=b))continue}
+    else if(arrive<o||arrive+Math.min(dur,30)>c)continue;
+    if(P.wants.includes("food")&&P.foodSub!=="不限"&&kinds.includes("food")&&!((ex&&ex.sub)||[]).includes(P.foodSub))continue;
+    if(tv+dur>P.free+15)continue;
     let sc=10, why=[];
-    if(ar===P.area){sc+=3;why.push("就在附近")}else why.push(`移動約 ${tv} 分`);
-    const hit=kinds.filter(k=>P.wants.includes(k));
+    if(tv<=12){sc+=3;why.push(fp.me?`離你約 ${tv} 分`:"就在附近")}else why.push(`移動約 ${tv} 分`);
+    if(ex&&ex.tier){const b={"名店級":3,"高人氣":2,"在地推薦":1}[ex.tier]||0;sc+=b;why.push(ex.tier)}
+    if(P.foodSub!=="不限"&&kinds.includes("food")&&P.wants.includes("food")){sc+=4;why.push("符合："+P.foodSub)}
+    if(ex&&ex.spot&&!ex.known&&kinds.includes("food"))why.push("營業時間未確認");
+    const subHit=P.foodSub!=="不限"&&kinds.includes("food");
+    const hit=kinds.filter(k=>P.wants.includes(k)&&!(k==="food"&&subHit));
     if(hit.length){sc+=4*hit.length;why.push("符合："+hit.map(k=>WANTS.find(w=>w[0]===k)[1]).join("、"))}
-    else if(P.wants.length)sc-=5;
+    else if(P.wants.length&&!(subHit&&P.wants.includes("food")))sc-=5;
     if(P.rain){if(indoor){sc+=4;why.push("室內不怕雨")}else sc-=6}
     if(!P.rain&&wx&&wx.t<=2&&indoor){sc+=1}
     if(P.time>=1020&&kinds.includes("night")){sc+=3;why.push("現在正好看夜景")}
@@ -2016,7 +2046,7 @@ function suggest(){
     sc-=Math.max(0,(tv+dur)-P.free)/5;
     const late=nx?Math.max(0,back-nx.t):0;
     if(late>0)sc-=late/6;
-    res.push({p,n,q,ar,kinds,dur,tv,arrive,end,late,indoor,desc,sc,why});
+    res.push({p,n,q,ar,kinds,dur,tv,arrive,end,late,indoor,desc,sc,why,ex});
   }
   res.sort((a,b)=>b.sc-a.sc);
   return {res,nx,budget};
@@ -2027,8 +2057,10 @@ function comboPlan(list){
   for(const r of list.slice(1)){
     if(out.length>=3)break;
     if(out.some(o=>o.ar===r.ar&&o.kinds.join()===r.kinds.join()&&o.kinds[0]==="food"))continue;
-    const tv=travel(at,r.ar); const st=t+tv; const p=r.p;
-    if(st<p[5]||st+30>p[6])continue;
+    const prev=out[out.length-1];
+    const tv=(prev.ex&&prev.ex.lat&&r.ex&&r.ex.lat)?legMin(prev.ex,r.ex,AREA[P.area].r):travel(at,r.ar); const st=t+tv; const p=r.p;
+    if(r.ex&&r.ex.ranges){if(!r.ex.ranges.some(([a,b])=>st>=a&&st+30<=b))continue}else if(st<p[5]||st+30>p[6])continue;
+    if(out.some(o=>o.kinds.includes("food"))&&r.kinds.includes("food")&&!r.kinds.includes("rest"))continue;
     if(st+r.dur-P.time>P.free)continue;
     out.push({...r,arrive:st,end:st+r.dur,tv}); t=st+r.dur; at=r.ar;
   }
@@ -2049,6 +2081,7 @@ function renderFlex(){
     <div class="row"><span class="lab">${icon("i-pin")}我在哪</span><div class="chips"><button type="button" class="chip-b geo" data-geo="1" ${P.locating?"disabled":""}>${icon("i-locate")}${P.locating?"定位中…":"用我的位置"}</button><button type="button" class="ghelp" data-gh="1" aria-label="定位設定教學">?</button>${areas.map(a=>`<button type="button" class="chip-b" aria-pressed="${a===P.area}" data-fa="${a}">${AREA[a].n}${a===P.locArea?'<span class="here">你在這</span>':""}</button>`).join("")}${P.locMsg?`<span class="locmsg ${P.locOk?"ok2":""}" role="status">${esc(P.locMsg)}</span>`:""}</div></div>
     <div class="row"><span class="lab">${icon("i-flag")}空檔多久</span><div class="chips">${FREE.map(([m,l])=>`<button type="button" class="chip-b" aria-pressed="${m===P.free}" data-ff="${m}">${l}</button>`).join("")}</div></div>
     <div class="row"><span class="lab">${icon("i-sparkle")}想做什麼</span><div class="chips">${WANTS.map(([k,l,ic])=>`<button type="button" class="chip-b" aria-pressed="${P.wants.includes(k)}" data-fw="${k}">${icon(ic)}${l}</button>`).join("")}</div></div>
+    ${P.wants.includes("food")?`<div class="row"><span class="lab">${icon("i-food")}想吃什麼</span><div class="chips">${FOODSUBS.map(f=>`<button type="button" class="chip-b${f==="咖啡廳"||f==="蔬食"?" hotsub":""}" aria-pressed="${P.foodSub===f}" data-fsub="${f}">${f}</button>`).join("")}</div></div>`:""}
     <div class="row"><span class="lab">${icon("i-temp")}天氣</span><div class="chips"><button type="button" class="chip-b" aria-pressed="${!P.rain}" data-fr="0">晴・陰</button><button type="button" class="chip-b" aria-pressed="${P.rain}" data-fr="1">下雨・下雪</button>${wxTxt?`<span class="wxlive">${icon("i-sparkle")}${esc(wxTxt)}</span>`:""}</div></div>
   </div>
   <div class="flex-sum">
@@ -2057,7 +2090,7 @@ function renderFlex(){
   </div>
   ${top.length?`<div class="sugs">${top.map((r,i)=>`<div class="sug card">
     ${i===0?'<span class="best">最推薦</span>':""}
-    <div class="sug-h"><span class="kicon k-${r.kinds[0]==="food"?"food":r.kinds[0]==="night"?"night":"see"}">${icon("i-"+(r.kinds[0]==="shop"?"flag":r.kinds[0]==="rest"?"bed":r.kinds[0]))}</span><div><h3>${esc(r.n)}</h3><div class="sub">${AREA[r.ar].n}・停留約 ${r.dur} 分</div></div></div>
+    <div class="sug-h"><span class="kicon k-${r.kinds[0]==="food"?"food":r.kinds[0]==="night"?"night":"see"}">${icon("i-"+(r.kinds[0]==="shop"?"flag":r.kinds[0]==="rest"?"bed":r.kinds[0]))}</span><div><h3>${esc(r.n)}</h3><div class="sub">${AREA[r.ar].n}・停留約 ${r.dur} 分</div>${r.ex&&(r.ex.tier||(r.ex.sub&&r.ex.sub.length))?`<div class="foodline">${r.ex.tier?`<span class="tier ${TIERCLS[r.ex.tier]}">${r.ex.tier}</span>`:""}${(r.ex.sub||[]).map(v=>`<span class="subchip">${esc(v)}</span>`).join("")}</div>`:""}</div></div>
     <p>${esc(r.desc)}</p>
     <div class="why">${r.why.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
     <div class="when">${fmt(P.time)} 出發 → ${fmt(r.arrive)} 抵達 → ${fmt(r.end)} 離開</div>
@@ -2076,7 +2109,8 @@ fl&&fl.addEventListener("click",e=>{
   else if(t.dataset.gh){showGuide("help");return}
   else if(t.dataset.fa){P.area=t.dataset.fa}
   else if(t.dataset.ff){P.free=+t.dataset.ff}
-  else if(t.dataset.fw){const k=t.dataset.fw;P.wants=P.wants.includes(k)?P.wants.filter(w=>w!==k):[...P.wants,k]}
+  else if(t.dataset.fw){const k=t.dataset.fw;P.wants=P.wants.includes(k)?P.wants.filter(w=>w!==k):[...P.wants,k];if(!P.wants.includes("food"))P.foodSub="不限"}
+  else if(t.dataset.fsub){P.foodSub=t.dataset.fsub}
   else if(t.dataset.fr){P.rain=t.dataset.fr==="1";P.touchedRain=true}
   else if(t.dataset.add){const p=POI[+t.dataset.add];const at=+t.dataset.at;
     const kind=p[3][0]==="food"?"food":p[3][0]==="night"?"night":"see";
@@ -2089,7 +2123,7 @@ fl&&fl.addEventListener("click",e=>{
     ask(`幫我臨時排行程：現在是 Day ${P.day+1}（${DAYS[P.day].d}）${fmt(P.time)}，我在${AREA[P.area].n}，有${FREE.find(f=>f[0]===P.free)[1]}空檔，${P.wants.length?"想"+P.wants.map(k=>WANTS.find(w=>w[0]===k)[1]).join("、")+"，":""}天氣${P.rain?"下雨或下雪":"晴或陰"}。${nx?`下一個原行程是 ${fmt(nx.t)} ${nx.n}。`:""}手冊算出的候選：${res.slice(0,5).map(r=>r.n).join("、")}。請幫我排一個具體的時間表，並說明理由。`);
     return}
   else return;
-  const id=t.dataset.fd!=null?`[data-fd="${t.dataset.fd}"]`:t.dataset.fa?`[data-fa="${t.dataset.fa}"]`:t.dataset.ff?`[data-ff="${t.dataset.ff}"]`:t.dataset.fw?`[data-fw="${t.dataset.fw}"]`:t.dataset.fr!=null?`[data-fr="${t.dataset.fr}"]`:"[data-now]";
+  const id=t.dataset.fd!=null?`[data-fd="${t.dataset.fd}"]`:t.dataset.fa?`[data-fa="${t.dataset.fa}"]`:t.dataset.ff?`[data-ff="${t.dataset.ff}"]`:t.dataset.fw?`[data-fw="${t.dataset.fw}"]`:t.dataset.fsub?`[data-fsub="${t.dataset.fsub}"]`:t.dataset.fr!=null?`[data-fr="${t.dataset.fr}"]`:"[data-now]";
   renderFlex(); const nb=fl.querySelector(id); nb&&nb.focus();
   if(t.dataset.fa||t.dataset.fd)loadWx();
 });
