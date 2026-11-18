@@ -314,6 +314,17 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
     <div class="sec-head"><h2 id="h-tips">旅行小撇步</h2><small>天氣・交通・日語</small></div>
     <div class="tipgrid">
       <div class="box">
+        <h3>住宿一覽</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>日期</th><th>住宿</th><th>地圖</th></tr></thead>
+          <tbody>
+            <tr><td class="num">12/4–12/6<br><small>2 晚</small></td><td>河口湖森林樂天住宿別墅<br><small>Rakuten STAY VILLA Lake Kawaguchiko Forest</small></td><td><a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Rakuten%20STAY%20VILLA%20%E5%AF%8C%E5%A3%AB%E6%B2%B3%E5%8F%A3%E6%B9%96%E3%81%AE%E6%A3%AE" target="_blank" rel="noopener">開地圖 ↗</a></td></tr>
+            <tr><td class="num">12/6–12/7<br><small>1 晚</small></td><td>富士河口湖溫泉飯店 Asafuji<br><small>Hotel Asafuji</small></td><td><a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Hotel%20Asafuji" target="_blank" rel="noopener">開地圖 ↗</a></td></tr>
+            <tr><td class="num">12/7–12/9<br><small>2 晚</small></td><td>OTHER SPACE Asakusa<br><small>東京・淺草</small></td><td><a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=OTHER%20SPACE%20Asakusa" target="_blank" rel="noopener">開地圖 ↗</a></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="box">
         <h3>12 月初氣溫（平均）</h3>
         <div class="temps">
           <div class="temp f"><span>河口湖</span><b>-2° / 7°C</b><span>早晚會結冰，洋蔥式穿搭</span></div>
@@ -382,19 +393,19 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 
 /* ---------- itinerary ---------- */
 const DAYS=[
- {d:"12/4",w:"五",area:"fuji",title:"抵達成田・直奔河口湖",sub:"成田機場 → 高速巴士 → 河口湖之森別墅",wx:["河口湖 -2~7°C","日落 16:30"],
+ {d:"12/4",stay:"STAY VILLA 河口湖",w:"五",area:"fuji",title:"抵達成田・直奔河口湖",sub:"成田機場 → 高速巴士 → 河口湖之森別墅",wx:["河口湖 -2~7°C","日落 16:30"],
   items:[
    ["06:25","move","桃園機場報到","JX800 08:25 起飛，至少提前 2 小時到機場報到、托運行李。","桃園國際機場"],
    ["08:25","move","JX800 台北 → 東京成田","星宇航空，飛行約 3 小時 10 分（日本比台灣快 1 小時）。",""],
    ["12:35","move","抵達成田國際機場","入境、領行李約需 1 小時，再前往第二航廈的巴士乘車處。","成田国際空港"],
    ["14:30","move","成田第二航廈 → 河口湖站","搭直達高速巴士，車程約 2.5 小時。班次少，建議先上網預約座位。","成田空港 第2ターミナル"],
    ["16:55","move","抵達河口湖駅","",""],
-   ["17:03","see","入住 Rakuten STAY VILLA 富士河口湖の森","連住 12/4、12/5 兩晚的森林別墅。","Rakuten STAY VILLA 富士河口湖の森"],
+   ["17:03","see","入住 Rakuten STAY VILLA 河口湖森林別墅","連住 12/4、12/5 兩晚的森林別墅。","Rakuten STAY VILLA 富士河口湖の森"],
    ["18:08","food","ENGAWA1441","河口湖人氣刨冰店，去趣上可以預約座位。冬天晚上請先確認營業時間。","ENGAWA1441"],
    ["19:16","see","富士山景觀纜車","⚠ 冬季約下午 4 點多就停駛，晚上上不去。","河口湖～富士山パノラマロープウェイ"],
    ["20:45","see","河口湖天上山公園","⚠ 和景觀纜車是同一個地方（纜車的山頂站），一樣要白天去。","河口湖天上山公園"]],
   tip:"景觀纜車和天上山公園其實是同一站，冬天傍晚前就收班。建議挪到 12/7 早上離開河口湖前，或 12/5 大石公園之後的空檔，晚上改成回別墅休息。"},
- {d:"12/5",w:"六",area:"fuji",title:"河口湖晨光・咖啡・昭和街道",sub:"湖畔一路往富士吉田，吃好吃滿",wx:["日出約 6:40","週六人多"],
+ {d:"12/5",stay:"STAY VILLA 河口湖",w:"六",area:"fuji",title:"河口湖晨光・咖啡・昭和街道",sub:"湖畔一路往富士吉田，吃好吃滿",wx:["日出約 6:40","週六人多"],
   items:[
    ["06:30","see","產屋崎神社","湖邊的小鳥居，日出前後湖面最平靜，有機會拍到逆富士。早上很冷，帽子手套帶好。","産屋ヶ崎神社"],
    ["08:00","see","八木崎公園","湖南岸的公園，視野開闊，人比大石公園少。","八木崎公園"],
@@ -408,9 +419,9 @@ const DAYS=[
    ["16:53","see","富士吉田懷舊商店街","街道盡頭就是富士山的昭和街景。拍照請站在人行道上。","本町通り 富士吉田"],
    ["17:59","food","Setouchi","","Setouchi 富士吉田"],
    ["19:05","food","食呑 Hosha","","食呑 Hosha 富士吉田"],
-   ["20:19","move","回 Rakuten STAY VILLA","",""]],
+   ["20:19","move","回 Rakuten STAY VILLA 河口湖森林別墅","",""]],
   tip:"這天有 7 個吃喝站，Lake Bake Cafe 和餺飥只隔 1 小時，兩人合點一份剛好。忠靈塔下午拍會逆光，想要藍天紅塔的照片，可以和早上的行程對調。"},
- {d:"12/6",w:"日",area:"fuji",title:"山中湖逆富士・單車・富士吉田",sub:"一早到山中湖，晚上換住 Hotel Asafuji",wx:["清晨可能 -5°C","退房換飯店"],
+ {d:"12/6",stay:"Hotel Asafuji",w:"日",area:"fuji",title:"山中湖逆富士・單車・富士吉田",sub:"一早到山中湖，晚上換住 Hotel Asafuji",wx:["清晨可能 -5°C","退房換飯店"],
   items:[
    ["06:00","see","山中湖 平野之濱","山中湖東岸看逆富士和晨光的名所，無風的早晨湖面像鏡子。","平野の浜"],
    ["08:00","food","Yamanaka Terrace","湖畔早餐，邊吃邊看富士山。","Yamanaka Terrace"],
@@ -420,45 +431,46 @@ const DAYS=[
    ["12:34","see","（株）井出商店","","井出商店 富士吉田"],
    ["13:37","see","富士吉田懷舊商店街","",""],
    ["14:51","food","和牛燒肉 Yoritomo","去趣上可以預約座位。","和牛焼肉よりとも"],
-   ["15:57","see","入住 Hotel Asafuji","今晚換住這裡。","Hotel Asafuji"]],
+   ["15:57","see","入住 富士河口湖溫泉飯店 Asafuji","今晚換住這裡，泡溫泉消除爬山騎車的疲勞。","Hotel Asafuji"]],
   tip:"早上 6 點到山中湖，周遊巴士還沒發車，要先確認交通（計程車或租車）。12/5 退房的行李記得一起帶走。富士吉田商店街昨天去過了，這段可以換成忍野八海。"},
- {d:"12/7",w:"一",area:"tokyo",title:"回東京：麻布台之丘與東京鐵塔",sub:"高速巴士 → 新宿 → 五反田 OMO5",wx:["東京 4~12°C","燈飾 17:00 起"],
+ {d:"12/7",stay:"OTHER SPACE 淺草",w:"一",area:"tokyo",title:"回東京：麻布台之丘與東京鐵塔",sub:"高速巴士 → 新宿 → 淺草 OTHER SPACE",wx:["東京 4~12°C","燈飾 17:00 起"],
   items:[
    ["08:00","move","Hotel Asafuji 退房","",""],
    ["09:00","move","河口湖站 → 新宿｜高速巴士","建議預留 1 小時 45 分鐘，週一早上進東京可能塞車。座位要先預約。","河口湖駅"],
-   ["11:25","move","抵達新宿","轉 JR 山手線到五反田，約 20 分鐘。","バスタ新宿"],
-   ["12:02","see","OMO5 東京五反田 寄放行李","連住 12/7 一晚。","OMO5東京五反田 by 星野リゾート"],
+   ["11:25","move","抵達新宿","到淺草約 30–40 分鐘（JR 中央線到神田，轉銀座線）。","バスタ新宿"],
+   ["12:02","see","OTHER SPACE Asakusa 寄放行李","連住 12/7、12/8 兩晚。","OTHER SPACE Asakusa"],
    ["13:15","food","Balcony by 6th","麻布台之丘裡的全天候餐廳。","Balcony by 6th 麻布台ヒルズ"],
    ["14:19","see","麻布台之丘","東京最新地標，有 teamLab 美術館和許多設計小店。往年 12 月有聖誕市集。","麻布台ヒルズ"],
    ["15:23","food","HARBS 麻布台之丘店","招牌水果千層蛋糕，一塊就很有份量。","HARBS 麻布台ヒルズ"],
    ["16:44","night","芝公園","黃昏看東京鐵塔亮燈，是近距離拍鐵塔的好位置。","芝公園"],
    ["18:08","food","新潟雪室熟成燒肉 Nikuine 六本木","吃完散步到六本木之丘，往年欅坂燈飾會點到 12/25。","肉いね 六本木"],
-   ["20:21","move","回 OMO5 東京五反田","",""]],
-  tip:"Balcony 和 HARBS 只隔一小時，蛋糕可以外帶到芝公園吃。晚餐在六本木，飯後順路看欅坂燈飾和聖誕市集，再回五反田。"},
- {d:"12/8",w:"二",area:"tokyo",title:"銀座逛街・前往成田",sub:"退房 → 銀座 → 成田機場",wx:["行李一起帶走","15:30 前出發去成田"],
+   ["20:21","move","回 OTHER SPACE Asakusa","",""]],
+  tip:"Balcony 和 HARBS 只隔一小時，蛋糕可以外帶到芝公園吃。晚餐在六本木，飯後順路看欅坂燈飾和聖誕市集，再回淺草。去趣的移動時間是照五反田算的，從淺草到麻布台約多 15–20 分鐘，下午可以稍微放慢。"},
+ {d:"12/8",stay:"OTHER SPACE 淺草",w:"二",area:"tokyo",title:"銀座逛街日",sub:"淺草出發 → 銀座 → 回淺草",wx:["不用退房","輕鬆逛一天"],
   items:[
-   ["10:00","move","OMO5 退房","",""],
-   ["10:09","see","東五反田 2-9-11","你在去趣標記的地點。","東五反田2-9-11"],
+   ["10:30","move","OTHER SPACE Asakusa 出發","淺草站搭都營淺草線到東銀座，約 15 分鐘。","浅草駅"],
    ["11:00","see","DOVER STREET MARKET 銀座","川久保玲打造的潮流選物百貨，7 層樓逛起來很過癮。","ドーバー ストリート マーケット ギンザ"],
    ["12:04","food","Shabusen 銀座店","老字號涮涮鍋。","しゃぶせん 銀座店"],
    ["13:13","food","Glitch Coffee & Roasters GINZA","淺焙精品咖啡名店。","GLITCH COFFEE&ROASTERS GINZA"],
    ["14:22","food","X coffee GINZA","","X coffee GINZA"],
    ["15:27","food","油炸三明治專賣店 Age.3","外帶炸三明治，上車吃剛好。","Age.3 GINZA"],
-   ["16:47","move","成田國際機場","去趣排在 15:37 從銀座出發，約 70 分鐘。","成田国際空港"]],
-  tip:"10 點退房後要帶著行李逛銀座，可以用銀座站的置物櫃。去趣上 12/8 最後一站是成田機場，但班機在 12/9 中午，12/8 晚上的住宿還沒排進行程，記得確認（住成田機場附近最方便）。"},
- {d:"12/9",w:"三",area:"tokyo",title:"搭 JX801 回家",sub:"13:45 成田起飛，16:50 抵達桃園",wx:["11:45 前到機場","去趣尚未排這天"],
+   ["傍晚","move","回 OTHER SPACE Asakusa","去趣上這天最後一站還是成田機場，因為住宿改到淺草、班機在 12/9，這裡先改成回飯店。","OTHER SPACE Asakusa"]],
+  tip:"今天不用帶行李，可以放心買。傍晚回淺草後，晚上還有空檔，可以去淺草寺看夜間點燈或逛雷門周邊。"},
+ {d:"12/9",stay:"回家",w:"三",area:"tokyo",title:"搭 JX801 回家",sub:"13:45 成田起飛，16:50 抵達桃園",wx:["10:15 前出發","11:45 前到機場"],
   items:[
+   ["10:00","move","OTHER SPACE Asakusa 退房","",""],
+   ["10:15","move","淺草 → 成田機場","淺草站搭都營淺草線直通的京成「Access 特急」，約 1 小時、不用轉車。","浅草駅"],
    ["11:45","move","成田國際機場報到","起飛前 2 小時完成報到、托運和退稅。出發前在星宇 App 確認航廈。","成田国際空港"],
    ["13:45","move","JX801 東京成田 → 台北","星宇航空，飛行約 4 小時（台灣比日本慢 1 小時）。",""],
    ["16:50","move","抵達桃園機場","回家囉！",""]],
-  tip:"這天去趣上還沒有安排行程，目前只放了班機。早上要做什麼，排好後再同步給我。"}
+  tip:"淺草直達成田很方便，起得早的話，出發前可以先去淺草寺走走，8 點前人很少。"}
 ];
 const daysEl=document.getElementById("days"), card=document.getElementById("daycard");
 let curDay=Math.min(store.get("ft_day",0),DAYS.length-1);
 function renderDays(){
   daysEl.innerHTML=DAYS.map((x,i)=>`<button class="daybtn ${x.area}" role="tab" aria-selected="${i===curDay}" data-i="${i}"><span class="d">${x.d}</span><span class="w">${x.area==="fuji"?"富士":"東京"}・週${x.w}</span></button>`).join("");
   const x=DAYS[curDay];
-  card.innerHTML=`<div class="top"><div><h3>Day ${curDay+1}｜${esc(x.title)}</h3><div class="sub">${esc(x.sub)}</div></div><div class="wx">${x.wx.map((w,j)=>`<span class="chip ${j?"warm":""}">${esc(w)}</span>`).join("")}</div></div>
+  card.innerHTML=`<div class="top"><div><h3>Day ${curDay+1}｜${esc(x.title)}</h3><div class="sub">${esc(x.sub)}</div></div><div class="wx">${x.wx.map((w,j)=>`<span class="chip ${j?"warm":""}">${esc(w)}</span>`).join("")}<span class="chip pink">${x.stay==="回家"?"今晚回家":"住："+esc(x.stay)}</span></div></div>
   <ol class="timeline">${x.items.map(([t,k,n,p,q])=>`<li class="kind-${k}"><span class="t">${t}</span><div class="body"><b>${esc(n)}</b>${p?`<p>${esc(p)}</p>`:""}${q?`<a class="maplink" href="${map(q)}" target="_blank" rel="noopener">開地圖 ↗</a>`:""}</div></li>`).join("")}</ol>
   <div class="guide-note"><svg viewBox="0 0 120 112" aria-hidden="true"><path d="M8 104 L48 22 Q60 6 72 22 L112 104 Z" fill="var(--sky)"/><path d="M38 44 L48 22 Q60 6 72 22 L82 44 Q76 38 70 46 Q64 36 58 46 Q52 38 46 46 Q42 40 38 44Z" fill="#FFFFFF"/><circle cx="48" cy="70" r="6" fill="#24304A"/><circle cx="72" cy="70" r="6" fill="#24304A"/><ellipse cx="40" cy="82" rx="7" ry="4" fill="#FF8FB1"/><ellipse cx="80" cy="82" rx="7" ry="4" fill="#FF8FB1"/></svg><div><b>小富提醒：</b>${esc(x.tip)}</div></div>
   <button class="askday" type="button" data-ask="幫我看看 Day ${curDay+1}（${x.d}）的行程，有什麼可以調整或加碼的？">問小富：這天怎麼玩更好？</button>`;
@@ -556,7 +568,7 @@ document.getElementById("quick").addEventListener("click",e=>{const b=e.target.c
 
 const TRIP=DAYS.map((x,i)=>`Day${i+1} ${x.d}(週${x.w}) ${x.title}：`+x.items.map(it=>it[0]+" "+it[2]).join("、")).join("\n");
 const BRIEF=`你是「小富（ふじちゃん）」，一位活潑、可愛又專業的日本在地導遊（富士五湖與東京）。旅客來自台灣，請一律用繁體中文（台灣用語）回答。
-旅程：2026/12/4–12/9，共6天（行程名稱「Fuji 以修妮 go」，由旅客在去趣 App 規劃）。12/4–12/6 住河口湖、玩富士山周邊（12/4、12/5 住 Rakuten STAY VILLA 富士河口湖の森，12/6 住 Hotel Asafuji），12/7–12/8 在東京（住 OMO5 東京五反田），航班：去程 12/4 星宇航空 JX800 台北 08:25 → 東京成田 12:35；回程 12/9 JX801 東京成田 13:45 → 台北 16:50。12/8 逛完銀座傍晚前往成田機場，12/8 晚上的住宿與 12/9 上午行程尚未在去趣排定。
+旅程：2026/12/4–12/9，共6天（行程名稱「Fuji 以修妮 go」，由旅客在去趣 App 規劃）。12/4–12/6 住河口湖、玩富士山周邊（12/4、12/5 住 Rakuten STAY VILLA Lake Kawaguchiko Forest 河口湖森林樂天住宿別墅，12/6 住 富士河口湖溫泉飯店 Asafuji），12/7–12/9 在東京（12/7、12/8 住 OTHER SPACE Asakusa 淺草，12/9 退房去成田），航班：去程 12/4 星宇航空 JX800 台北 08:25 → 東京成田 12:35；回程 12/9 JX801 東京成田 13:45 → 台北 16:50。12/8 逛完銀座回淺草，12/9 早上從淺草搭京成 Access 特急直達成田。
 目前行程：
 ${TRIP}
 已知資訊：河口湖12月初平均氣溫約-2~7°C、東京約4~12°C，日落約16:30；新宿↔河口湖高速巴士約1h45、特急富士回遊約2小時約¥4,130；河口湖冬季花火在1–2月，不在本次日期；神宮外苑銀杏高峰在11月下旬，12月初是尾聲。2026年多數活動日期尚未公布。
