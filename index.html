@@ -31,11 +31,8 @@
   --f-pop:"Mochiy Pop One","Huninn","Noto Sans TC",sans-serif;
   --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#181A33;--dots:rgba(255,255,255,.05);--paper:#23264A;--ink:#F1F2FF;--muted:#A8ACD6;--hair:#363A68;
-  --edge:#444982;--shadow:3px 3px 0 #0B0C1F;--shadow-lg:5px 5px 0 #0B0C1F;
-  --sky-soft:#213A60;--pink-soft:#4A2743;--sun-soft:#463E1F;--mint-soft:#1D4236;--tang-soft:#4B2D1F;--lilac-soft:#342E5E;color-scheme:dark}}
-:root[data-theme="dark"]{
+/* 預設明亮，不跟系統；由右上角的太陽／月亮按鈕切換 data-mode */
+:root[data-mode="dark"]{
   --bg:#181A33;--dots:rgba(255,255,255,.05);--paper:#23264A;--ink:#F1F2FF;--muted:#A8ACD6;--hair:#363A68;
   --edge:#444982;--shadow:3px 3px 0 #0B0C1F;--shadow-lg:5px 5px 0 #0B0C1F;
   --sky-soft:#213A60;--pink-soft:#4A2743;--sun-soft:#463E1F;--mint-soft:#1D4236;--tang-soft:#4B2D1F;--lilac-soft:#342E5E;color-scheme:dark}
@@ -370,6 +367,17 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 .lk2 .t em{font-style:normal;font-size:10.5px;background:var(--sun);color:var(--on);border:1.5px solid var(--edge);border-radius:999px;padding:0 7px}
 .lk2 .d{grid-column:1;font-size:12px;color:var(--muted);line-height:1.4}
 .lk2 .go{grid-row:1/3;grid-column:2;align-self:center;font-weight:900;color:var(--tang)}
+
+/* ---------- 明暗切換 ---------- */
+.modebtn{position:absolute;top:12px;right:12px;z-index:2;width:46px;height:46px;border-radius:50%;border:2.5px solid var(--edge);background:var(--paper);box-shadow:2px 2px 0 var(--edge);cursor:pointer;padding:0;display:grid;place-items:center;transition:transform .2s}
+.modebtn svg{width:36px;height:36px;grid-area:1/1;transition:transform .45s cubic-bezier(.5,1.6,.5,1),opacity .25s}
+.modebtn .moon{opacity:0;transform:rotate(-90deg) scale(.4)}
+:root[data-mode="dark"] .modebtn .sun{opacity:0;transform:rotate(90deg) scale(.4)}
+:root[data-mode="dark"] .modebtn .moon{opacity:1;transform:none}
+.modebtn:hover{transform:rotate(-8deg) scale(1.05)}
+.modebtn:active{transform:scale(.92)}
+.hero .tagline{padding-right:52px}
+@media (prefers-reduced-motion:reduce){.modebtn svg{transition:none}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40;width:100%;height:100%}
 
 @media (max-width:520px){
@@ -455,6 +463,22 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 <div class="wrap">
   <header class="hero" aria-label="旅程封面">
     <div class="snow" id="snow" aria-hidden="true"></div>
+    <button class="modebtn" id="modeBtn" type="button" aria-pressed="false" aria-label="切換深色模式" title="切換明亮／深色">
+      <svg class="sun" viewBox="0 0 48 48" aria-hidden="true">
+        <g stroke="#2B2F55" stroke-width="2.6" stroke-linecap="round"><path d="M24 3v5M24 40v5M3 24h5M40 24h5M9.2 9.2l3.5 3.5M35.3 35.3l3.5 3.5M9.2 38.8l3.5-3.5M35.3 12.7l3.5-3.5"/></g>
+        <circle cx="24" cy="24" r="12" fill="#FFD65A" stroke="#2B2F55" stroke-width="2.6"/>
+        <circle cx="20" cy="23" r="1.8" fill="#2B2F55"/><circle cx="28" cy="23" r="1.8" fill="#2B2F55"/>
+        <ellipse cx="17" cy="27" rx="2.3" ry="1.4" fill="#FF8FB8"/><ellipse cx="31" cy="27" rx="2.3" ry="1.4" fill="#FF8FB8"/>
+        <path d="M21.5 27.5q2.5 2.6 5 0" stroke="#2B2F55" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+      <svg class="moon" viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M33 8a16 16 0 1 0 8.5 22A13 13 0 0 1 33 8z" fill="#FFE9A8" stroke="#2B2F55" stroke-width="2.6" stroke-linejoin="round"/>
+        <path d="M17 26q2 1.8 4 0M25 26q2 1.8 4 0" stroke="#2B2F55" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="16.5" cy="30" rx="2.2" ry="1.3" fill="#FF8FB8"/><ellipse cx="29.5" cy="30" rx="2.2" ry="1.3" fill="#FF8FB8"/>
+        <path d="M38 6l1 2 2 1-2 1-1 2-1-2-2-1 2-1z" fill="#FFFFFF" stroke="#2B2F55" stroke-width="1.2" stroke-linejoin="round"/>
+        <text x="36" y="22" font-family="Mochiy Pop One, sans-serif" font-size="7" fill="#B6A3FF" stroke="#2B2F55" stroke-width=".6">z</text>
+      </svg>
+    </button>
     <div style="min-width:0;position:relative">
       <div class="tagline"><span class="sticker">Fuji 以修妮 go</span><span class="kana">ふじさん × とうきょう</span></div>
       <div class="brand">
@@ -653,6 +677,17 @@ const map=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURICompone
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const icon=(id,cls="ic")=>`<svg class="${cls}" aria-hidden="true"><use href="#${id}"/></svg>`;
 const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+
+/* ---------- 明暗切換（預設明亮，不跟系統） ---------- */
+(function(){
+  const root=document.documentElement, btn=document.getElementById("modeBtn");
+  function apply(m){root.setAttribute("data-mode",m);btn.setAttribute("aria-pressed",m==="dark");
+    btn.setAttribute("aria-label",m==="dark"?"切換成明亮模式":"切換成深色模式");
+    const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",m==="dark"?"#181A33":"#E8F3FF")}
+  apply(store.get("ft_mode","light")==="dark"?"dark":"light");
+  btn.addEventListener("click",()=>{const m=root.getAttribute("data-mode")==="dark"?"light":"dark";apply(m);store.set("ft_mode",m)});
+})();
 
 /* ---------- dates ---------- */
 const START=new Date(2026,11,4);
