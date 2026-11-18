@@ -1089,6 +1089,8 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .notiles .nomap-note{display:block}
 .nolib .mapbox{display:none}
 .leaflet-container{font-family:var(--f-body);background:var(--sky-soft)}
+.cute-tiles{filter:saturate(.72) hue-rotate(-6deg) brightness(1.05) contrast(.95)}
+:root[data-mode="dark"] .cute-tiles{filter:invert(.9) hue-rotate(185deg) saturate(.6) brightness(.95) contrast(.9)}
 .leaflet-bar{border:2px solid var(--edge)!important;border-radius:12px!important;box-shadow:2px 2px 0 var(--edge);overflow:hidden}
 .leaflet-bar a{background:var(--paper)!important;color:var(--ink)!important;font-family:var(--f-pop);font-weight:400;border-bottom-color:var(--hair)!important}
 .leaflet-control-attribution{font-size:10px;background:color-mix(in srgb,var(--paper) 85%,transparent)!important;color:var(--muted);border-top-left-radius:8px}
@@ -1648,15 +1650,15 @@ let lmap=null, pinLayer=null, lineLayer=null, tiles=null, tileOK=false, tileErr=
 const mapWrap=document.getElementById("mapwrap"), mapBox=document.getElementById("spotmap"), mapInfo=document.getElementById("mapinfo"), mapHead=document.getElementById("maphead");
 const PIN={絕景:["see","i-see"],文化:["see","i-see"],冒險:["see","i-see"],夜景:["night","i-night"],購物:["shop","i-flag"],美食:["food","i-food"]};
 const km=(a,b)=>{const R=6371,r=Math.PI/180,x=(b.lat-a.lat)*r,y=(b.lng-a.lng)*r,h=Math.sin(x/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
-function tileUrl(){return document.documentElement.getAttribute("data-mode")==="dark"?"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png":"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"}
+function tileUrl(){return "https://tile.openstreetmap.org/{z}/{x}/{y}.png"}
 function setTiles(){
   if(!lmap)return; if(tiles)lmap.removeLayer(tiles); tileOK=false; tileErr=0;
-  tiles=L.tileLayer(tileUrl(),{maxZoom:19,subdomains:"abcd",attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>・地點參考 Google 地圖'});
+  tiles=L.tileLayer(tileUrl(),{maxZoom:19,className:"cute-tiles",attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 貢獻者・地點參考 Google 地圖'});
   tiles.on("tileload",()=>{if(!tileOK){tileOK=true;mapWrap.classList.remove("notiles")}});
   tiles.on("tileerror",()=>{if(!tileOK&&++tileErr>=3)mapWrap.classList.add("notiles")});
   tiles.addTo(lmap);
 }
-document.addEventListener("ft-mode",()=>setTiles());
+
 function initMap(){
   if(lmap)return true;
   if(!window.L||!mapBox){mapWrap.classList.add("nolib");return false}
@@ -1696,7 +1698,7 @@ function updateMap(){
   if(meMarker){lmap.removeLayer(meMarker);meMarker=null}
   if(myPos){meMarker=L.marker([myPos.lat,myPos.lng],{icon:meIcon(),zIndexOffset:2000,interactive:false}).addTo(lmap)}
   const key=mapRegion+"|"+filt+"|"+cat+"|"+sub+"|"+list.length;
-  if(key!==lastFit){lastFit=key;
+  if(key!==lastFit&&mapBox.clientHeight>50){lastFit=key;lmap.invalidateSize();
     const pts=list.map(s=>[s[7].lat,s[7].lng]).concat(HOTELS.filter(h=>h.r===mapRegion).map(h=>[h.lat,h.lng]));
     if(pts.length>1)lmap.fitBounds(pts,{padding:[28,28],maxZoom:15});else lmap.setView(REG[mapRegion].c,REG[mapRegion].z);
   }
@@ -1751,7 +1753,9 @@ function mapLocate(btn){
     else mapInfo.insertAdjacentHTML("afterbegin",`<p class="mapnote warn">定位成功，不過你目前不在富士山區或東京附近，距離先從住宿算。</p>`);
   },err=>{updateMap();showGuide(err&&err.code===1?"denied":err&&err.code===2?"off":"timeout")},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
 }
-function onSpotsShown(){setTimeout(()=>{updateMap();lmap&&lmap.invalidateSize()},30)}
+function refit(){lastFit="";updateMap()}
+function onSpotsShown(){setTimeout(()=>{updateMap();if(lmap){lmap.invalidateSize();refit()}},60)}
+if(window.ResizeObserver&&mapBox){let lastW=0;new ResizeObserver(en=>{const w=Math.round(en[0].contentRect.width);if(lmap&&w&&Math.abs(w-lastW)>40){lastW=w;lmap.invalidateSize();refit()}}).observe(mapBox)}
 renderSpots();
 
 /* ---------- confetti ---------- */
