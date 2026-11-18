@@ -321,6 +321,11 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 #ftime{box-sizing:border-box;height:32px;line-height:1;border:2px solid var(--edge);border-radius:999px;padding:0 10px;margin:0;font:inherit;font-size:16px;font-weight:700;background:var(--paper);color:var(--ink);font-variant-numeric:tabular-nums}
 #ftime::-webkit-datetime-edit,#ftime::-webkit-datetime-edit-fields-wrapper{padding:0;line-height:1}
 #ftime::-webkit-calendar-picker-indicator{margin:0 0 0 4px;padding:0}
+.chip-b.geo{border-style:dashed;background:var(--mint-soft)}
+.chip-b.geo:disabled{opacity:.7;cursor:progress}
+.chip-b .here{font-size:10px;font-weight:900;background:var(--sun);color:var(--on);border:1.5px solid var(--edge);border-radius:999px;padding:1px 6px;margin-left:4px}
+.locmsg{flex-basis:100%;font-size:12.5px;font-weight:700;color:var(--muted);background:var(--sun-soft);border-radius:10px;padding:5px 10px}
+.locmsg.ok2{background:var(--mint-soft);color:var(--ink)}
 .wxlive{display:inline-flex;align-items:center;gap:4px;height:32px;font-size:12.5px;font-weight:700;background:var(--mint-soft);border-radius:999px;padding:3px 10px}
 .flex-sum{margin:14px 2px 12px;display:grid;gap:3px;font-size:13.5px}
 .flex-sum b{font-size:15px}
@@ -455,6 +460,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
     <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></symbol>
     <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5 4.5 13.5H11l-1 8 8.5-11H12z"/></symbol>
     <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></symbol>
   </defs>
@@ -1068,7 +1074,7 @@ function comboPlan(list){
 }
 function renderFlex(){
   if(!fl)return;
-  const areas=DAY_AREAS[P.day];
+  const areas=P.locArea&&!DAY_AREAS[P.day].includes(P.locArea)?[P.locArea,...DAY_AREAS[P.day]]:DAY_AREAS[P.day];
   if(!areas.includes(P.area))P.area=areas[0];
   const {res,nx,budget}=suggest();
   const top=res.slice(0,4), combo=comboPlan(res);
@@ -1078,7 +1084,7 @@ function renderFlex(){
   <div class="flex-ctl card">
     <div class="row"><span class="lab">${icon("i-cal")}哪一天</span><div class="chips">${DAYS.map((d,i)=>`<button type="button" class="chip-b ${d.area}" aria-pressed="${i===P.day}" data-fd="${i}">${d.d}${i===dayIdx?" 今天":""}</button>`).join("")}</div></div>
     <div class="row"><label class="lab" for="ftime">${icon("i-clock")}現在幾點</label><div class="chips"><input type="time" id="ftime" value="${fmt(P.time)}" step="300"><button type="button" class="chip-b" data-now="1">用現在時間</button></div></div>
-    <div class="row"><span class="lab">${icon("i-pin")}我在哪</span><div class="chips">${areas.map(a=>`<button type="button" class="chip-b" aria-pressed="${a===P.area}" data-fa="${a}">${AREA[a].n}</button>`).join("")}</div></div>
+    <div class="row"><span class="lab">${icon("i-pin")}我在哪</span><div class="chips"><button type="button" class="chip-b geo" data-geo="1" ${P.locating?"disabled":""}>${icon("i-locate")}${P.locating?"定位中…":"用我的位置"}</button>${areas.map(a=>`<button type="button" class="chip-b" aria-pressed="${a===P.area}" data-fa="${a}">${AREA[a].n}${a===P.locArea?'<span class="here">你在這</span>':""}</button>`).join("")}${P.locMsg?`<span class="locmsg ${P.locOk?"ok2":""}" role="status">${esc(P.locMsg)}</span>`:""}</div></div>
     <div class="row"><span class="lab">${icon("i-flag")}空檔多久</span><div class="chips">${FREE.map(([m,l])=>`<button type="button" class="chip-b" aria-pressed="${m===P.free}" data-ff="${m}">${l}</button>`).join("")}</div></div>
     <div class="row"><span class="lab">${icon("i-sparkle")}想做什麼</span><div class="chips">${WANTS.map(([k,l,ic])=>`<button type="button" class="chip-b" aria-pressed="${P.wants.includes(k)}" data-fw="${k}">${icon(ic)}${l}</button>`).join("")}</div></div>
     <div class="row"><span class="lab">${icon("i-temp")}天氣</span><div class="chips"><button type="button" class="chip-b" aria-pressed="${!P.rain}" data-fr="0">晴・陰</button><button type="button" class="chip-b" aria-pressed="${P.rain}" data-fr="1">下雨・下雪</button>${wxTxt?`<span class="wxlive">${icon("i-sparkle")}${esc(wxTxt)}</span>`:""}</div></div>
@@ -1104,6 +1110,7 @@ fl&&fl.addEventListener("click",e=>{
   const t=e.target.closest("button"); if(!t)return;
   if(t.dataset.fd){P.day=+t.dataset.fd;P.area=DAY_AREAS[P.day][0]}
   else if(t.dataset.now){P.time=now.getHours()*60+Math.round(now.getMinutes()/5)*5;if(dayIdx>=0&&dayIdx<6)P.day=dayIdx}
+  else if(t.dataset.geo){locate();return}
   else if(t.dataset.fa){P.area=t.dataset.fa}
   else if(t.dataset.ff){P.free=+t.dataset.ff}
   else if(t.dataset.fw){const k=t.dataset.fw;P.wants=P.wants.includes(k)?P.wants.filter(w=>w!==k):[...P.wants,k]}
@@ -1124,6 +1131,29 @@ fl&&fl.addEventListener("click",e=>{
   if(t.dataset.fa||t.dataset.fd)loadWx();
 });
 fl&&fl.addEventListener("change",e=>{if(e.target.id==="ftime"&&e.target.value){const [h,m]=e.target.value.split(":").map(Number);P.time=h*60+m;renderFlex();const el=document.getElementById("ftime");el&&el.focus()}});
+function distKm(a,b,c,d){const R=6371,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r,h=Math.sin(x/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function locate(){
+  const done=(msg,ok)=>{P.locating=false;P.locMsg=msg;P.locOk=!!ok;renderFlex();const g=fl.querySelector("[data-geo]");g&&g.focus()};
+  if(!navigator.geolocation){done("這個瀏覽器不支援定位，請手動選擇區域。");return}
+  P.locating=true;P.locMsg="";renderFlex();
+  let finished=false;
+  const guard=setTimeout(()=>{if(!finished){finished=true;done("讀不到位置。如果是在 Claude 裡開啟，請改用 GitHub 網站版，或手動選擇區域。")}},12000);
+  try{
+    navigator.geolocation.getCurrentPosition(pos=>{
+      if(finished)return; finished=true; clearTimeout(guard);
+      const {latitude:la,longitude:lo,accuracy}=pos.coords;
+      let best=null,bd=1e9; for(const k in AREA){const d=distKm(la,lo,AREA[k].lat,AREA[k].lon);if(d<bd){bd=d;best=k}}
+      if(bd>40){P.locArea=null;done(`你目前不在行程區域附近（最近的是${AREA[best].n}，約 ${Math.round(bd)} 公里），先手動選擇吧！`);return}
+      P.locArea=best;P.area=best;
+      if(dayIdx>=0&&dayIdx<6)P.day=dayIdx;
+      done(`定位成功：你在${AREA[best].n}附近（約 ${bd<1?"1 公里內":bd.toFixed(1)+" 公里"}）`,true);
+      loadWx();
+    },err=>{
+      if(finished)return; finished=true; clearTimeout(guard);
+      done(err&&err.code===1?"沒有拿到定位權限。可以到瀏覽器設定允許這個網站使用位置，或手動選擇區域。":"暫時讀不到位置，請稍後再試，或手動選擇區域。");
+    },{enableHighAccuracy:false,timeout:10000,maximumAge:120000});
+  }catch(e){finished=true;clearTimeout(guard);done("這個頁面無法讀取位置，請改用 GitHub 網站版，或手動選擇區域。")}
+}
 const wxCache={};
 async function loadWx(){
   const r=AREA[P.area].r; const key=r;
