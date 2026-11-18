@@ -78,6 +78,11 @@ a{color:var(--persimmon)}
 .route span{font-size:12.5px;padding:3px 10px;border-radius:999px;background:var(--paper);border:1.5px solid var(--line)}
 .route span.f{border-color:var(--sky);}
 .route span.t{border-color:var(--sakura);}
+.flights{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
+.flight{display:flex;align-items:center;gap:10px;background:var(--paper);border:2px dashed var(--line);border-radius:16px;padding:8px 12px;min-width:0}
+.flight .no{font-family:var(--f-pop);font-size:14px;background:var(--ink);color:var(--bg);border-radius:8px;padding:2px 8px;white-space:nowrap}
+.flight .leg{font-size:13px;line-height:1.35;font-variant-numeric:tabular-nums;min-width:0}
+.flight .leg small{display:block;color:var(--muted);font-size:11.5px}
 
 /* ---------- sections ---------- */
 section.view{padding-top:22px}
@@ -251,7 +256,11 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
       </g>
     </svg>
     <div class="route" style="grid-column:1/-1">
-      <span class="f">12/4 成田→河口湖</span><span class="f">12/5 河口湖・富士吉田</span><span class="f">12/6 山中湖・淺間神社</span><span class="t">12/7 麻布台・東京鐵塔</span><span class="t">12/8 銀座・回家</span>
+      <span class="f">12/4 成田→河口湖</span><span class="f">12/5 河口湖・富士吉田</span><span class="f">12/6 山中湖・淺間神社</span><span class="t">12/7 麻布台・東京鐵塔</span><span class="t">12/8 成田・回家</span>
+    </div>
+    <div class="flights" aria-label="航班">
+      <div class="flight"><span class="no">JX800</span><div class="leg">12/4（五）08:25 台北 → 12:35 東京成田<small>去程・星宇航空</small></div></div>
+      <div class="flight"><span class="no">JX801</span><div class="leg">12/8（二）13:45 東京成田 → 16:50 台北<small>回程・星宇航空</small></div></div>
     </div>
   </header>
 
@@ -375,7 +384,9 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const DAYS=[
  {d:"12/4",w:"五",area:"fuji",title:"抵達成田・直奔河口湖",sub:"成田機場 → 高速巴士 → 河口湖之森別墅",wx:["河口湖 -2~7°C","日落 16:30"],
   items:[
-   ["12:30","move","抵達成田國際機場","入境、領行李後前往第二航廈的巴士乘車處。","成田国際空港"],
+   ["06:25","move","桃園機場報到","JX800 08:25 起飛，至少提前 2 小時到機場報到、托運行李。","桃園國際機場"],
+   ["08:25","move","JX800 台北 → 東京成田","星宇航空，飛行約 3 小時 10 分（日本比台灣快 1 小時）。",""],
+   ["12:35","move","抵達成田國際機場","入境、領行李約需 1 小時，再前往第二航廈的巴士乘車處。","成田国際空港"],
    ["14:30","move","成田第二航廈 → 河口湖站","搭直達高速巴士，車程約 2.5 小時。班次少，建議先上網預約座位。","成田空港 第2ターミナル"],
    ["16:55","move","抵達河口湖駅","",""],
    ["17:03","see","入住 Rakuten STAY VILLA 富士河口湖の森","連住 12/4、12/5 兩晚的森林別墅。","Rakuten STAY VILLA 富士河口湖の森"],
@@ -424,17 +435,15 @@ const DAYS=[
    ["18:08","food","新潟雪室熟成燒肉 Nikuine 六本木","吃完散步到六本木之丘，往年欅坂燈飾會點到 12/25。","肉いね 六本木"],
    ["20:21","move","回 OMO5 東京五反田","",""]],
   tip:"Balcony 和 HARBS 只隔一小時，蛋糕可以外帶到芝公園吃。晚餐在六本木，飯後順路看欅坂燈飾和聖誕市集，再回五反田。"},
- {d:"12/8",w:"二",area:"tokyo",title:"銀座逛街・成田回家",sub:"退房 → 銀座 → 成田機場",wx:["行李一起帶走","15:30 前出發去機場"],
+ {d:"12/8",w:"二",area:"tokyo",title:"五反田 → 成田・搭 JX801 回家",sub:"13:45 起飛，早上就要出發去機場",wx:["09:00 前出發","11:45 前到機場"],
   items:[
-   ["10:00","move","OMO5 退房","",""],
-   ["10:09","see","東五反田 2-9-11","你在去趣標記的地點。","東五反田2-9-11"],
-   ["11:00","see","DOVER STREET MARKET 銀座","川久保玲打造的潮流選物百貨，7 層樓逛起來很過癮。","ドーバー ストリート マーケット ギンザ"],
-   ["12:04","food","Shabusen 銀座店","老字號涮涮鍋。","しゃぶせん 銀座店"],
-   ["13:13","food","Glitch Coffee & Roasters GINZA","淺焙精品咖啡名店。","GLITCH COFFEE&ROASTERS GINZA"],
-   ["14:22","food","X coffee GINZA","","X coffee GINZA"],
-   ["15:27","food","油炸三明治專賣店 Age.3","外帶炸三明治，上車吃剛好。","Age.3 GINZA"],
-   ["16:47","move","成田國際機場","去趣排在 15:37 從銀座出發，約 70 分鐘。到機場後還有 3 小時可以逛免稅店。","成田国際空港"]],
-  tip:"10 點退房後要帶著行李逛銀座，可以用銀座站的置物櫃。兩家咖啡只隔 1 小時，二選一會更從容。"}
+   ["08:00","move","OMO5 退房","行李全部帶走。",""],
+   ["08:15","see","東五反田 2-9-11","你在去趣標記的地點，有要去的話控制在 30 分鐘內。","東五反田2-9-11"],
+   ["09:00","move","五反田 → 成田機場","五反田站搭都營淺草線，直通京成「Access 特急」到成田機場，約 1.5 小時、免轉車。也可以品川轉 N'EX。","五反田駅"],
+   ["10:30","move","抵達成田國際機場","報到、托運行李、辦退稅。出發前在星宇 App 確認航廈。","成田国際空港"],
+   ["11:45","food","機場午餐・免稅店最後補貨","最晚 13:00 前通過安檢到登機門。",""],
+   ["13:45","move","JX801 東京成田 → 台北","星宇航空，16:50 抵達桃園機場，回家囉！",""]],
+  tip:"回程是中午的飛機，原本 11:00 之後的銀座行程（DOVER STREET MARKET、Shabusen、Glitch Coffee、X coffee、Age.3）和班機衝突，已先移出。想把它們排到 12/7，或在去趣上調整後再同步給我都可以。"}
 ];
 const daysEl=document.getElementById("days"), card=document.getElementById("daycard");
 let curDay=Math.min(store.get("ft_day",0),DAYS.length-1);
@@ -456,7 +465,7 @@ const SPOTS=[
  ["fuji","山中湖 平野之濱","平野の浜","絕景","山中湖東岸的逆富士名所，冬天清晨空氣最清澈。","12/6 行程・很冷要穿暖"],
  ["fuji","北口本宮富士淺間神社","北口本宮冨士浅間神社","文化","千年杉木參道與朱紅大鳥居，富士山信仰的起點。","12/6 行程"],
  ["tokyo","麻布台之丘","麻布台ヒルズ","購物","東京新地標，有 teamLab 美術館、設計小店和美食。","12/7 行程・往年有聖誕市集"],
- ["tokyo","DOVER STREET MARKET 銀座","ドーバー ストリート マーケット ギンザ","購物","川久保玲的潮流選物百貨，每層都像展覽。","12/8 行程"],
+ ["tokyo","DOVER STREET MARKET 銀座","ドーバー ストリート マーケット ギンザ","購物","川久保玲的潮流選物百貨，每層都像展覽。","原 12/8 行程・因班機待重排"],
  ["fuji","大石公園","大石公園","絕景","湖北岸最開闊的富士山視角，無風清晨有逆富士。","7–9 點光線最好"],
  ["fuji","新倉山淺間公園・忠靈塔","新倉山浅間公園","絕景","五重塔與富士山同框的經典畫面，要爬 398 階。","週末請 8 點前到"],
  ["fuji","忍野八海","忍野八海","文化","八座富士山伏流水湧泉池，清澈到能看見池底。","炸草餅必吃"],
@@ -495,7 +504,7 @@ renderSpots();
 
 /* ---------- checklist ---------- */
 const LISTS=[
- ["出發前要預約",["機票、住宿確認","12/7 河口湖→新宿 高速巴士","12/4 成田→河口湖 高速巴士","12/6 清晨到山中湖的交通","和牛燒肉 Yoritomo 座位預約","Visit Japan Web 入境資料","旅遊平安險"]],
+ ["出發前要預約",["JX800／JX801 線上報到、選位","住宿確認","12/7 河口湖→新宿 高速巴士","12/4 成田→河口湖 高速巴士","12/6 清晨到山中湖的交通","和牛燒肉 Yoritomo 座位預約","Visit Japan Web 入境資料","旅遊平安險"]],
  ["行李：保暖裝備",["發熱衣 ×3","羽絨外套","毛帽・手套・圍巾","暖暖包（可到日本藥妝店補）","防滑好走的鞋","護唇膏・乳液（很乾燥）"]],
  ["行李：隨身必備",["護照","日圓現金（鄉下小店常只收現金）","Suica 西瓜卡（手機版也可）","網卡 / eSIM","行動電源・充電線","常備藥品"]]
 ];
@@ -533,13 +542,13 @@ go(["plan","spots","guide","check","tips"].includes(startTab)?startTab:store.get
 const msgsEl=document.getElementById("msgs"), qEl=document.getElementById("q"), sendBtn=document.getElementById("sendBtn");
 const dot=document.getElementById("dot"), stxt=document.getElementById("stxt");
 let sample=null, busy=false, history=[];
-const QUICK=["下雨天富士山區可以去哪？","河口湖有什麼必吃美食？","12月要怎麼穿才不會冷？","推薦東京的伴手禮","富士回遊要怎麼訂票？","12/8 從銀座去成田要怎麼走？"];
+const QUICK=["下雨天富士山區可以去哪？","河口湖有什麼必吃美食？","12月要怎麼穿才不會冷？","推薦東京的伴手禮","富士回遊要怎麼訂票？","銀座行程可以塞進 12/7 嗎？"];
 document.getElementById("quick").innerHTML=QUICK.map(q=>`<button type="button">${q}</button>`).join("");
 document.getElementById("quick").addEventListener("click",e=>{const b=e.target.closest("button");if(b)ask(b.textContent)});
 
 const TRIP=DAYS.map((x,i)=>`Day${i+1} ${x.d}(週${x.w}) ${x.title}：`+x.items.map(it=>it[0]+" "+it[2]).join("、")).join("\n");
 const BRIEF=`你是「小富（ふじちゃん）」，一位活潑、可愛又專業的日本在地導遊（富士五湖與東京）。旅客來自台灣，請一律用繁體中文（台灣用語）回答。
-旅程：2026/12/4–12/8，共5天（行程名稱「Fuji 以修妮 go」，由旅客在去趣 App 規劃）。12/4–12/6 住河口湖、玩富士山周邊（12/4、12/5 住 Rakuten STAY VILLA 富士河口湖の森，12/6 住 Hotel Asafuji），12/7–12/8 在東京（住 OMO5 東京五反田），12/8 傍晚從成田機場回台灣。
+旅程：2026/12/4–12/8，共5天（行程名稱「Fuji 以修妮 go」，由旅客在去趣 App 規劃）。12/4–12/6 住河口湖、玩富士山周邊（12/4、12/5 住 Rakuten STAY VILLA 富士河口湖の森，12/6 住 Hotel Asafuji），12/7–12/8 在東京（住 OMO5 東京五反田），航班：去程 12/4 星宇航空 JX800 台北 08:25 → 東京成田 12:35；回程 12/8 JX801 東京成田 13:45 → 台北 16:50，所以 12/8 早上 9 點就要從五反田出發去成田，原本排在 12/8 的銀座行程因時間衝突已移出、尚未重排。
 目前行程：
 ${TRIP}
 已知資訊：河口湖12月初平均氣溫約-2~7°C、東京約4~12°C，日落約16:30；新宿↔河口湖高速巴士約1h45、特急富士回遊約2小時約¥4,130；河口湖冬季花火在1–2月，不在本次日期；神宮外苑銀杏高峰在11月下旬，12月初是尾聲。2026年多數活動日期尚未公布。
