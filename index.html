@@ -305,8 +305,8 @@ li.is-next .stopcard{outline:2.5px solid var(--mint);outline-offset:1px}
 /* ---------- tab bar ---------- */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--paper);border-top:2.5px solid var(--edge);
   padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
-nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
-.tab{border:2px solid transparent;background:transparent;border-radius:14px;padding:4px 2px 3px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11.5px;font-weight:700;color:var(--muted);transition:transform .15s}
+nav.tabs .in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.tab{border:2px solid transparent;background:transparent;border-radius:14px;padding:4px 0 3px;white-space:nowrap;min-width:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11.5px;font-weight:700;color:var(--muted);transition:transform .15s}
 .tab .ic{font-size:23px}
 .tab[aria-selected="true"]{color:var(--on);background:var(--sun);border-color:var(--edge);transform:translateY(-4px);box-shadow:2px 2px 0 var(--edge)}
 .tab svg.av{width:26px;height:24px}
@@ -356,8 +356,8 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 #flexAI{margin-top:16px}
 .flag.tmp{background:var(--lilac)}
 .rmbtn{margin-left:6px;border:1.5px dashed var(--edge);background:transparent;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted)}
-@media (max-width:420px){.flex-ctl .row{grid-template-columns:1fr}.flex-ctl .lab{padding-top:0}.tab{font-size:10.5px}.tab .ic{font-size:21px}}
-.links{padding:14px 16px;margin-bottom:16px;display:grid;gap:12px}
+@media (max-width:420px){.flex-ctl .row{grid-template-columns:1fr}.flex-ctl .lab{padding-top:0}.tab{font-size:10px}.tab .ic{font-size:20px}.tab svg.av{width:23px;height:21px}}
+.links{padding:14px 16px;display:grid;gap:14px}
 .links h3{font-size:19px;display:flex;align-items:center;gap:8px}
 .links h3 .ic{color:var(--tang);font-size:20px}
 .lgrp h4{margin:0 0 6px;font-size:13px;color:var(--muted)}
@@ -373,7 +373,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 @media (max-width:520px){
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mascot{width:92px}
-  .bubble{max-width:128px;font-size:11.5px}
+  .bubble{max-width:128px;min-width:96px;font-size:11.5px}
 }
 @media (prefers-reduced-motion:no-preference){
   .logo{animation:wobble 6s ease-in-out infinite}
@@ -443,6 +443,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
     <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H4z"/><path d="M10 20v-5h4v5"/></symbol>
     <symbol id="i-bus" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="13" rx="3.5"/><path d="M4 10.5h16M7.5 20l1.5-3.5M16.5 20 15 16.5"/></symbol>
     <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/></symbol>
     <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5 4.5 13.5H11l-1 8 8.5-11H12z"/></symbol>
     <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></symbol>
   </defs>
@@ -540,11 +541,10 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
     <p class="note">在 Claude 裡開啟時，小富用你的 Claude 額度回答；在 GitHub 網頁上，設定 API 金鑰後即可即時聊天，沒設定則使用離線小抄。時刻表、票價與活動日期請以官方網站為準。</p>
   </section>
 
-  <!-- ===== 清單 ===== -->
-  <section class="view" id="v-check" aria-labelledby="h-check" hidden>
-    <div class="sec-head"><h2 id="h-check">出發清單</h2><small>常用連結＋準備清單，勾選會記在這台裝置上</small></div>
+  <!-- ===== 常用連結 ===== -->
+  <section class="view" id="v-links" aria-labelledby="h-links" hidden>
+    <div class="sec-head"><h2 id="h-links">常用連結</h2><small>出發前要辦的、旅途中會用的，都在這裡</small></div>
     <div class="links card">
-      <h3><svg class="ic"><use href="#i-sparkle"/></svg>常用連結</h3>
       <div class="lgrp"><h4>出發前必辦</h4><div class="lgrid">
         <a class="lk2" href="https://www.vjw.digital.go.jp/" target="_blank" rel="noopener"><span class="t">Visit Japan Web<em>必辦</em></span><span class="d">入境審查、海關申報 QR Code，出境時也用來辦免稅確認</span><span class="go">↗</span></a>
         <a class="lk2" href="https://www.boca.gov.tw/sp-abre-main-1.html" target="_blank" rel="noopener"><span class="t">外交部 出國登錄</span><span class="d">登錄行程，遇到天災或急難時能收到通知</span><span class="go">↗</span></a>
@@ -568,6 +568,11 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
         <a class="lk2" href="https://www.roc-taiwan.org/jp/" target="_blank" rel="noopener"><span class="t">台北駐日經濟文化代表處</span><span class="d">護照遺失、急難救助</span><span class="go">↗</span></a>
       </div></div>
     </div>
+  </section>
+
+  <!-- ===== 清單 ===== -->
+  <section class="view" id="v-check" aria-labelledby="h-check" hidden>
+    <div class="sec-head"><h2 id="h-check">出發清單</h2><small>勾選會記在這台裝置上</small></div>
     <div class="ready card" id="ready"></div>
     <div class="lists" id="lists"></div>
   </section>
@@ -633,6 +638,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
   <button class="tab" role="tab" data-v="guide" aria-selected="false"><svg class="av" viewBox="0 0 120 112"><use href="#fuji"/></svg>問小富</button>
   <button class="tab" role="tab" data-v="flex" aria-selected="false"><svg class="ic"><use href="#i-bolt"/></svg>臨時排</button>
   <button class="tab" role="tab" data-v="check" aria-selected="false"><svg class="ic"><use href="#i-check"/></svg>清單</button>
+  <button class="tab" role="tab" data-v="links" aria-selected="false"><svg class="ic"><use href="#i-link"/></svg>連結</button>
   <button class="tab" role="tab" data-v="tips" aria-selected="false"><svg class="ic"><use href="#i-bulb"/></svg>撇步</button>
 </div></nav>
 
@@ -1104,7 +1110,7 @@ function go(v){tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.v===v));
   document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);store.set("ft_tab",v);window.scrollTo({top:0})}
 tabs.forEach(t=>t.onclick=()=>go(t.dataset.v));
 const startTab=(location.hash||"").replace("#","");
-go(["plan","spots","flex","guide","check","tips"].includes(startTab)?startTab:store.get("ft_tab","plan"));
+go(["plan","spots","flex","guide","check","links","tips"].includes(startTab)?startTab:store.get("ft_tab","plan"));
 
 /* ---------- AI guide ---------- */
 const msgsEl=document.getElementById("msgs"), qEl=document.getElementById("q"), sendBtn=document.getElementById("sendBtn");
