@@ -383,6 +383,23 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 .modebtn:active{transform:scale(.92)}
 .hero .tagline{padding-right:52px}
 @media (prefers-reduced-motion:reduce){.modebtn svg{transition:none}}
+.ghelp{width:32px;height:32px;border-radius:50%;border:2px dashed var(--edge);background:var(--paper);font-family:var(--f-pop);font-size:14px;cursor:pointer;color:var(--muted);padding:0}
+.gg{position:fixed;inset:0;z-index:35;background:rgba(24,26,51,.45);display:flex;align-items:flex-end;justify-content:center;
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.gg-card{position:relative;width:100%;max-width:520px;max-height:100%;overflow-y:auto;padding:16px 18px 16px;box-shadow:var(--shadow-lg)}
+.gg-fuji{display:block;width:54px;height:50px;margin-bottom:-6px}
+.gg-body h3{font-size:20px;margin:6px 0 4px}
+.gg-lead{margin:0 0 10px;font-size:14px;color:var(--muted)}
+.gg-steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:8px}
+.gg-steps li{counter-increment:s;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;font-size:14px;font-weight:500;background:var(--bg);border-radius:12px;padding:8px 10px}
+.gg-steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--sun);color:var(--on);border:2px solid var(--edge);display:grid;place-items:center;font-family:var(--f-pop);font-size:12px}
+.gg-tip{font-size:13px;background:var(--sun-soft);border-radius:10px;padding:6px 10px;margin:10px 0 0}
+.gg-url{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.gg-url code{flex-basis:100%;font-size:12.5px;background:var(--bg);border:1.5px dashed var(--edge);border-radius:10px;padding:6px 10px;overflow-wrap:anywhere;user-select:all}
+.gg-url a.chip-b{text-decoration:none}
+.gg-acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
+.gg-acts .addbtn{height:36px;padding:0 16px}
+@media (prefers-reduced-motion:no-preference){.gg:not([hidden]) .gg-card{animation:up .28s ease}@keyframes up{from{transform:translateY(24px);opacity:.5}}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40;width:100%;height:100%}
 
 @media (max-width:520px){
@@ -662,6 +679,9 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 
 <div class="big" id="big" hidden role="dialog" aria-modal="true" aria-label="放大日語">
   <div><div class="jp" id="bigJp"></div><div class="ro" id="bigRo"></div><div class="zh" id="bigZh"></div><button id="bigClose" type="button">關閉</button></div>
+</div>
+<div class="gg" id="geoGuide" hidden role="dialog" aria-modal="true" aria-labelledby="ggTitle">
+  <div class="gg-card card"><svg class="gg-fuji" viewBox="0 0 120 112" aria-hidden="true"><use href="#fuji"/></svg><div class="gg-body"></div></div>
 </div>
 <canvas id="confetti" aria-hidden="true"></canvas>
 
@@ -1084,7 +1104,7 @@ function renderFlex(){
   <div class="flex-ctl card">
     <div class="row"><span class="lab">${icon("i-cal")}哪一天</span><div class="chips">${DAYS.map((d,i)=>`<button type="button" class="chip-b ${d.area}" aria-pressed="${i===P.day}" data-fd="${i}">${d.d}${i===dayIdx?" 今天":""}</button>`).join("")}</div></div>
     <div class="row"><label class="lab" for="ftime">${icon("i-clock")}現在幾點</label><div class="chips"><input type="time" id="ftime" value="${fmt(P.time)}" step="300"><button type="button" class="chip-b" data-now="1">用現在時間</button></div></div>
-    <div class="row"><span class="lab">${icon("i-pin")}我在哪</span><div class="chips"><button type="button" class="chip-b geo" data-geo="1" ${P.locating?"disabled":""}>${icon("i-locate")}${P.locating?"定位中…":"用我的位置"}</button>${areas.map(a=>`<button type="button" class="chip-b" aria-pressed="${a===P.area}" data-fa="${a}">${AREA[a].n}${a===P.locArea?'<span class="here">你在這</span>':""}</button>`).join("")}${P.locMsg?`<span class="locmsg ${P.locOk?"ok2":""}" role="status">${esc(P.locMsg)}</span>`:""}</div></div>
+    <div class="row"><span class="lab">${icon("i-pin")}我在哪</span><div class="chips"><button type="button" class="chip-b geo" data-geo="1" ${P.locating?"disabled":""}>${icon("i-locate")}${P.locating?"定位中…":"用我的位置"}</button><button type="button" class="ghelp" data-gh="1" aria-label="定位設定教學">?</button>${areas.map(a=>`<button type="button" class="chip-b" aria-pressed="${a===P.area}" data-fa="${a}">${AREA[a].n}${a===P.locArea?'<span class="here">你在這</span>':""}</button>`).join("")}${P.locMsg?`<span class="locmsg ${P.locOk?"ok2":""}" role="status">${esc(P.locMsg)}</span>`:""}</div></div>
     <div class="row"><span class="lab">${icon("i-flag")}空檔多久</span><div class="chips">${FREE.map(([m,l])=>`<button type="button" class="chip-b" aria-pressed="${m===P.free}" data-ff="${m}">${l}</button>`).join("")}</div></div>
     <div class="row"><span class="lab">${icon("i-sparkle")}想做什麼</span><div class="chips">${WANTS.map(([k,l,ic])=>`<button type="button" class="chip-b" aria-pressed="${P.wants.includes(k)}" data-fw="${k}">${icon(ic)}${l}</button>`).join("")}</div></div>
     <div class="row"><span class="lab">${icon("i-temp")}天氣</span><div class="chips"><button type="button" class="chip-b" aria-pressed="${!P.rain}" data-fr="0">晴・陰</button><button type="button" class="chip-b" aria-pressed="${P.rain}" data-fr="1">下雨・下雪</button>${wxTxt?`<span class="wxlive">${icon("i-sparkle")}${esc(wxTxt)}</span>`:""}</div></div>
@@ -1111,6 +1131,7 @@ fl&&fl.addEventListener("click",e=>{
   if(t.dataset.fd){P.day=+t.dataset.fd;P.area=DAY_AREAS[P.day][0]}
   else if(t.dataset.now){P.time=now.getHours()*60+Math.round(now.getMinutes()/5)*5;if(dayIdx>=0&&dayIdx<6)P.day=dayIdx}
   else if(t.dataset.geo){locate();return}
+  else if(t.dataset.gh){showGuide("help");return}
   else if(t.dataset.fa){P.area=t.dataset.fa}
   else if(t.dataset.ff){P.free=+t.dataset.ff}
   else if(t.dataset.fw){const k=t.dataset.fw;P.wants=P.wants.includes(k)?P.wants.filter(w=>w!==k):[...P.wants,k]}
@@ -1132,27 +1153,77 @@ fl&&fl.addEventListener("click",e=>{
 });
 fl&&fl.addEventListener("change",e=>{if(e.target.id==="ftime"&&e.target.value){const [h,m]=e.target.value.split(":").map(Number);P.time=h*60+m;renderFlex();const el=document.getElementById("ftime");el&&el.focus()}});
 function distKm(a,b,c,d){const R=6371,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r,h=Math.sin(x/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
-function locate(){
+const SITE="https://siderpan.github.io/japan-fujichan/";
+function envInfo(){
+  const ua=navigator.userAgent||"";
+  const ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+  const android=/Android/.test(ua);
+  const inapp=/Line\//i.test(ua)?"LINE":/FBAN|FBAV/.test(ua)?"Facebook":/Instagram/.test(ua)?"Instagram":/MicroMessenger/.test(ua)?"微信":"";
+  let framed=false; try{framed=window.self!==window.top}catch(e){framed=true}
+  const claude=framed&&!!window.claude;
+  const browser=ios?(/CriOS/.test(ua)?"chrome":/FxiOS/.test(ua)?"firefox":"safari"):android?(/SamsungBrowser/.test(ua)?"samsung":"chrome"):"desktop";
+  return {ios,android,inapp,claude,browser};
+}
+const GUIDE_TITLE={denied:"定位權限還沒打開",off:"手機的定位好像沒開",timeout:"定位逾時了",claude:"這裡讀不到位置",inapp:"請換個瀏覽器開啟",help:"定位設定教學"};
+function guideSteps(env,why){
+  if(why==="claude")return {lead:"Claude 裡的手冊不能讀取手機位置。用 GitHub 網站版打開，就能一鍵定位。",steps:["按下面的「複製網址」","打開手機的 Safari 或 Chrome，貼上網址前往","到「臨時排」頁按「用我的位置」，跳出詢問時按「允許」"],open:true};
+  if(env.inapp)return {lead:`你現在是在 ${env.inapp} 的內建瀏覽器裡，它通常不能定位。`,steps:[`點右上角的「⋯」或分享圖示`,env.ios?"選「用 Safari 開啟」或「以預設瀏覽器開啟」":"選「用 Chrome 開啟」或「以其他瀏覽器開啟」","在新開的頁面按「用我的位置」，再按「允許」"],open:true};
+  if(env.ios&&env.browser==="chrome")return {lead:"照著做一次，以後就不用再設定：",steps:["打開「設定」→「隱私權與安全性」→「定位服務」，確認是開啟的","在同一頁往下找「Chrome」→ 選「使用 App 期間」，打開「精確位置」","回到這裡按「我設定好了，再試一次」，跳出詢問時按「允許」"]};
+  if(env.ios)return {lead:"照著做一次，以後就不用再設定：",steps:["打開「設定」→「隱私權與安全性」→「定位服務」，確認是開啟的","在同一頁往下找「Safari 網站」→ 選「使用 App 期間」，打開「精確位置」","回到 Safari，點網址列左邊的「大小」圖示 →「網站設定」→「位置」→ 選「允許」","回到這裡按「我設定好了，再試一次」"]};
+  if(env.android)return {lead:"照著做一次，以後就不用再設定：",steps:["從螢幕上方往下滑，打開「定位」（位置資訊）","「設定」→「位置資訊」→「應用程式位置權限」→「"+(env.browser==="samsung"?"Samsung Internet":"Chrome")+"」→ 選「僅在使用時允許」，打開「使用精確位置」","回到瀏覽器，點網址列左邊的圖示 →「權限」→「位置」→ 打開","回到這裡按「我設定好了，再試一次」"]};
+  return {lead:"電腦上通常定位不準，建議在手機上用：",steps:["用手機打開下面的網址","在「臨時排」頁按「用我的位置」，再按「允許」"],open:true};
+}
+let guideReturn=null;
+function showGuide(why){
+  const env=envInfo(); const g=guideSteps(env,env.claude&&why!=="help"?"claude":why);
+  const box=document.getElementById("geoGuide");
+  const extra=why==="timeout"?"<p class=\"gg-tip\">在室內或地下街比較難定位，走到窗邊或戶外再試一次會快很多。</p>":"";
+  box.querySelector(".gg-body").innerHTML=`<h3 id="ggTitle">${GUIDE_TITLE[env.claude&&why!=="help"?"claude":env.inapp&&why!=="help"?"inapp":why]||GUIDE_TITLE.help}</h3><p class="gg-lead">${esc(g.lead)}</p>
+    <ol class="gg-steps">${g.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>${extra}
+    ${g.open||env.claude?`<div class="gg-url"><code>${SITE}</code><button type="button" class="chip-b" data-gg="copy">複製網址</button><a class="chip-b" href="${SITE}" target="_blank" rel="noopener">打開網站版 ↗</a></div>`:""}
+    <div class="gg-acts">${env.claude?"":'<button type="button" class="addbtn" data-gg="retry">我設定好了，再試一次</button>'}<button type="button" class="chip-b" data-gg="close">先手動選區域</button></div>`;
+  guideReturn=document.activeElement; box.hidden=false;
+  (box.querySelector('[data-gg="retry"]')||box.querySelector('[data-gg="close"]')).focus();
+}
+function closeGuide(){const box=document.getElementById("geoGuide");box.hidden=true;const g=fl.querySelector("[data-geo]");(g||guideReturn)&&(g||guideReturn).focus()}
+document.getElementById("geoGuide").addEventListener("click",e=>{
+  if(e.target.id==="geoGuide"){closeGuide();return}
+  const b=e.target.closest("[data-gg]");if(!b)return;
+  if(b.dataset.gg==="close")closeGuide();
+  else if(b.dataset.gg==="retry"){closeGuide();locate(true)}
+  else if(b.dataset.gg==="copy"){const code=document.querySelector("#geoGuide code");
+    const ok=()=>{b.textContent="已複製 ✓"};
+    try{navigator.clipboard.writeText(SITE).then(ok,()=>{selectText(code)})}catch(err){selectText(code)}}
+});
+function selectText(el){try{const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("geoGuide").hidden)closeGuide()});
+async function locate(retry){
   const done=(msg,ok)=>{P.locating=false;P.locMsg=msg;P.locOk=!!ok;renderFlex();const g=fl.querySelector("[data-geo]");g&&g.focus()};
-  if(!navigator.geolocation){done("這個瀏覽器不支援定位，請手動選擇區域。");return}
+  const env=envInfo();
+  if(env.claude||!navigator.geolocation){done("這裡讀不到位置，請改用網站版。");showGuide("claude");return}
+  if(env.inapp){done(`${env.inapp} 內建瀏覽器無法定位。`);showGuide("inapp");return}
+  try{ if(navigator.permissions&&navigator.permissions.query){const st=await navigator.permissions.query({name:"geolocation"});
+    if(st.state==="denied"){done("定位權限被關閉了，照著教學打開就好。");showGuide("denied");return}} }catch(e){}
   P.locating=true;P.locMsg="";renderFlex();
   let finished=false;
-  const guard=setTimeout(()=>{if(!finished){finished=true;done("讀不到位置。如果是在 Claude 裡開啟，請改用 GitHub 網站版，或手動選擇區域。")}},12000);
+  const guard=setTimeout(()=>{if(!finished){finished=true;done("定位逾時了。");showGuide("timeout")}},15000);
   try{
     navigator.geolocation.getCurrentPosition(pos=>{
       if(finished)return; finished=true; clearTimeout(guard);
-      const {latitude:la,longitude:lo,accuracy}=pos.coords;
+      const {latitude:la,longitude:lo}=pos.coords;
       let best=null,bd=1e9; for(const k in AREA){const d=distKm(la,lo,AREA[k].lat,AREA[k].lon);if(d<bd){bd=d;best=k}}
-      if(bd>40){P.locArea=null;done(`你目前不在行程區域附近（最近的是${AREA[best].n}，約 ${Math.round(bd)} 公里），先手動選擇吧！`);return}
+      if(bd>40){P.locArea=null;done(`定位成功，不過你目前不在行程區域附近（最近的是${AREA[best].n}，約 ${Math.round(bd)} 公里），先手動選擇吧！`,true);return}
       P.locArea=best;P.area=best;
       if(dayIdx>=0&&dayIdx<6)P.day=dayIdx;
       done(`定位成功：你在${AREA[best].n}附近（約 ${bd<1?"1 公里內":bd.toFixed(1)+" 公里"}）`,true);
       loadWx();
     },err=>{
       if(finished)return; finished=true; clearTimeout(guard);
-      done(err&&err.code===1?"沒有拿到定位權限。可以到瀏覽器設定允許這個網站使用位置，或手動選擇區域。":"暫時讀不到位置，請稍後再試，或手動選擇區域。");
-    },{enableHighAccuracy:false,timeout:10000,maximumAge:120000});
-  }catch(e){finished=true;clearTimeout(guard);done("這個頁面無法讀取位置，請改用 GitHub 網站版，或手動選擇區域。")}
+      const why=err&&err.code===1?"denied":err&&err.code===2?"off":"timeout";
+      done(why==="denied"?"定位權限還沒打開。":why==="off"?"手機的定位好像沒開。":"定位逾時了。");
+      showGuide(why);
+    },{enableHighAccuracy:false,timeout:12000,maximumAge:120000});
+  }catch(e){finished=true;clearTimeout(guard);done("這裡讀不到位置。");showGuide("claude")}
 }
 const wxCache={};
 async function loadWx(){
