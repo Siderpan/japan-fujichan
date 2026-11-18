@@ -185,6 +185,9 @@ li.is-next .stopcard{outline:2.5px solid var(--mint);outline-offset:1px}
 .spot .tag{position:absolute;top:-11px;left:12px;font-family:var(--f-pop);font-size:11px;padding:3px 9px 2px;border-radius:999px;border:2px solid var(--edge);transform:rotate(-4deg);color:var(--on)}
 .spot.fuji .tag{background:var(--sky)} .spot.tokyo .tag{background:var(--pink)}
 .spot.inplan::after{content:"在行程中";position:absolute;top:-10px;left:auto;right:52px;font-size:10.5px;font-weight:900;padding:2px 7px;border-radius:999px;background:var(--sun);color:var(--on);border:1.5px solid var(--edge);transform:rotate(3deg)}
+.spot .recb{position:absolute;top:-10px;right:52px;font-size:10.5px;font-weight:900;padding:2px 8px;border-radius:999px;background:var(--mint);color:var(--on);border:1.5px solid var(--edge);transform:rotate(3deg);white-space:nowrap}
+.fbtn[data-f="rec"]{border-color:var(--mint);background:var(--mint-soft)}
+.fbtn[data-f="rec"][aria-pressed="true"]{background:var(--ink);border-color:var(--ink)}
 .spot h3{font-size:18px;margin-top:6px;padding-right:38px}
 .spot .jp{font-size:12px;color:var(--muted);margin-top:-4px}
 .spot p{margin:0;font-size:13.5px}
@@ -434,7 +437,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 
   <!-- ===== 景點 ===== -->
   <section class="view" id="v-spots" aria-labelledby="h-spots" hidden>
-    <div class="sec-head"><h2 id="h-spots">景點圖鑑</h2><small>按愛心收藏想去的地方</small></div>
+    <div class="sec-head"><h2 id="h-spots">景點圖鑑</h2><small>黃標＝在行程中・綠標＝順路推薦・按愛心收藏</small></div>
     <div class="filters" id="filters"></div>
     <div class="cats" id="cats"></div>
     <div class="spots" id="spots"></div>
@@ -682,43 +685,59 @@ renderDays(false);
 (function(){const sel=daysEl.querySelector('[aria-selected="true"]');if(sel)daysEl.scrollLeft=Math.max(0,sel.offsetLeft-daysEl.clientWidth/2+sel.clientWidth/2)})();
 
 const SPOTS=[
+ /* 已在行程中 */
  ["fuji","產屋崎神社","産屋ヶ崎神社","絕景","河口湖畔的小鳥居，清晨無風時能拍到鳥居和逆富士同框。","12/5 行程・6:30"],
  ["fuji","山中湖 平野之濱","平野の浜","絕景","山中湖東岸的逆富士名所，冬天清晨空氣最清澈。","12/6 行程・很冷要穿暖"],
  ["fuji","北口本宮富士淺間神社","北口本宮冨士浅間神社","文化","千年杉木參道與朱紅大鳥居，富士山信仰的起點。","12/6 行程"],
- ["tokyo","麻布台之丘","麻布台ヒルズ","購物","東京新地標，有 teamLab 美術館、設計小店和美食。","12/7 行程・往年有聖誕市集"],
- ["tokyo","DOVER STREET MARKET 銀座","ドーバー ストリート マーケット ギンザ","購物","川久保玲的潮流選物百貨，每層都像展覽。","12/8 行程"],
- ["fuji","大石公園","大石公園","絕景","湖北岸最開闊的富士山視角，無風清晨有逆富士。","7–9 點光線最好"],
- ["fuji","新倉山淺間公園・忠靈塔","新倉山浅間公園","絕景","五重塔與富士山同框的經典畫面，要爬 398 階。","週末請 8 點前到"],
- ["fuji","忍野八海","忍野八海","文化","八座富士山伏流水湧泉池，清澈到能看見池底。","炸草餅必吃"],
- ["fuji","河口湖天上山公園纜車","河口湖天上山公園","絕景","3 分鐘上山的展望台，正面看富士山與河口湖。","山頂有狸貓糰子"],
- ["fuji","河口湖音樂森林美術館","河口湖音楽と森の美術館","文化","歐風庭園與古董自動演奏樂器，像童話小鎮。","冬季有點燈活動（日期待公布）"],
- ["fuji","西湖療癒之里根場","西湖いやしの里根場","文化","茅草屋聚落以富士山為背景，可體驗和服。","週一人最少"],
- ["fuji","鳴澤冰穴","鳴沢氷穴","冒險","熔岩洞內全年結冰，冬天冰柱最壯觀。","洞內低矮，注意頭"],
+ ["fuji","大石公園","大石公園","絕景","湖北岸最開闊的富士山視角，無風清晨有逆富士。","12/5 行程・7–9 點光線最好"],
+ ["fuji","新倉山淺間公園・忠靈塔","新倉山浅間公園","絕景","五重塔與富士山同框的經典畫面，要爬 398 階。","早上順光最好拍","12/5 行程"],
  ["fuji","富士吉田本町通","本町通り 富士吉田","絕景","富士山矗立在昭和街道盡頭的人氣打卡點。","請站人行道拍照"],
- ["fuji","山中湖 Illumination Fantasium","山中湖 イルミネーション ファンタジウム","夜景","湖畔冬季燈飾，往年 12 月初開始。","2026 日期待確認"],
+ ["tokyo","麻布台之丘","麻布台ヒルズ","購物","東京新地標，有 teamLab 美術館、設計小店和美食。","12/7 行程"],
+ ["tokyo","DOVER STREET MARKET 銀座","ドーバー ストリート マーケット ギンザ","購物","川久保玲的潮流選物百貨，每層都像展覽。","12/8 行程"],
+ /* 順路推薦 */
+ ["fuji","富士大石 Hanaterasu","富士大石ハナテラス","購物","大石公園旁的木造商店街，咖啡、果乾、和紙雜貨，邊逛邊看富士山，下雨也能逛。","大石公園走過去就到，各店營業時間不同","12/5 順路"],
+ ["fuji","河口湖自然生活館","河口湖自然生活館","美食","就在大石公園裡，二樓看富士山，藍莓霜淇淋和果醬是招牌。","大石公園順便吃個霜淇淋","12/5 順路"],
+ ["fuji","日川時計店","日川時計店","絕景","富士吉田的老鐘錶行，招牌和富士山同框，是本町通附近的人氣街拍點。","和懷舊商店街同一區，請站人行道拍","12/5 順路"],
+ ["fuji","吉田烏龍麵","吉田のうどん","美食","超有嚼勁的富士吉田在地麵，便宜大碗，配料常見高麗菜和馬肉。","多數店只開中午，逛商店街時吃","12/6 順路"],
+ ["fuji","金鳥居","金鳥居 富士吉田","絕景","跨在大馬路上的大鳥居，正後方就是富士山，富士吉田的入口地標。","富士山站步行約 5 分，往淺間神社途中","12/6 順路"],
+ ["fuji","忍野八海","忍野八海","文化","八座富士山伏流水湧泉池，清澈到能看見池底，茅草屋村落很好逛。","可替換 12/6 第二次的商店街・炸草餅必吃","12/6 替換"],
+ ["fuji","河口湖天上山公園纜車","河口湖天上山公園","絕景","3 分鐘上山的展望台，正面看富士山與河口湖，山頂有狸貓糰子。","冬季約下午 4 點多收班，請白天搭","12/5 或 12/7 早上"],
+ ["tokyo","teamLab Borderless","森ビル デジタルアート ミュージアム エプソン チームラボボーダレス","文化","麻布台之丘裡的沉浸式數位藝術美術館，光影會在房間之間流動。","要先上網買票，熱門時段容易滿","12/7 順路"],
+ ["tokyo","麻布台之丘 聖誕市集","麻布台ヒルズ クリスマスマーケット","購物","中央廣場上的聖誕小木屋，有熱紅酒、德式香腸和聖誕小物。","2026/11/21–12/25・11:00–21:00","12/7 順路"],
+ ["tokyo","增上寺","増上寺","文化","芝公園裡的古寺，大殿後方就是東京鐵塔，黃昏亮燈時新舊同框。","從芝公園走過去就到","12/7 順路"],
+ ["tokyo","東京鐵塔","東京タワー","夜景","芝公園旁的經典紅塔，主展望台可以看東京夜景。","黃昏在芝公園看完，直接上塔","12/7 順路"],
+ ["tokyo","六本木之丘 欅坂燈飾","六本木ヒルズ けやき坂","夜景","藍白燈海襯著東京鐵塔，大屋根廣場還有德式聖誕市集。","燈飾 11/5–12/25・17:00–22:00；市集到 21:00","12/7 晚餐後"],
+ ["tokyo","東京中城 MIDTOWN CHRISTMAS","東京ミッドタウン","夜景","中城花園的冬季燈海，免費入場，和欅坂燈飾走路就到。","11/26–12/25・17:00–23:00","12/7 晚餐後"],
+ ["tokyo","銀座伊東屋","銀座 伊東屋 G.Itoya","購物","百年文具老舖，整棟都是筆記本、卡片和文具，買伴手禮很好挑。","在銀座中央通上","12/8 順路"],
+ ["tokyo","GINZA SIX 屋頂庭園","GINZA SIX 屋上庭園","絕景","銀座大型百貨頂樓的免費空中花園，逛累了上來休息看街景。","免費","12/8 順路"],
+ ["tokyo","淺草文化觀光中心 展望台","浅草文化観光センター","夜景","8 樓免費展望台，往下看雷門、仲見世，旁邊就是晴空塔。","免費・9:00–22:00","12/8 晚上"],
+ ["tokyo","淺草寺・仲見世通","浅草寺","文化","東京最古老的寺院，晚上會點燈，人潮散去後特別有氣氛。","晚上散步，或 12/9 早上出發前來","12/8 晚上"],
+ ["tokyo","東京晴空塔","東京スカイツリー","夜景","從淺草過隅田川走路約 20 分鐘，展望台看整片東京夜景。","下面的晴空街道可以逛吃","12/8 晚上"],
+ ["tokyo","合羽橋道具街","かっぱ橋道具街","購物","廚具、刀具、食物模型的專賣街，從淺草走過去約 10–15 分鐘。","多數店家傍晚就關門，要早點去","住淺草順路"],
+ /* 其他口袋名單 */
+ ["fuji","河口湖音樂森林美術館","河口湖音楽と森の美術館","文化","歐風庭園與古董自動演奏樂器，像童話小鎮。","冬季有點燈活動（日期待公布）"],
+ ["fuji","西湖療癒之里根場","西湖いやしの里根場","文化","茅草屋聚落以富士山為背景，可體驗和服。","雨天備案"],
+ ["fuji","鳴澤冰穴","鳴沢氷穴","冒險","熔岩洞內全年結冰，冬天冰柱最壯觀。","洞內低矮，注意頭"],
  ["fuji","富士急樂園","富士急ハイランド","冒險","雲霄飛車迷的天堂，背景就是富士山。","雨備方案"],
+ ["fuji","山中湖 Illumination Fantasium","山中湖 イルミネーション ファンタジウム","夜景","湖畔冬季燈飾，往年 12 月初開始。","2026 日期待確認"],
  ["tokyo","明治神宮外苑銀杏並木","神宮外苑 いちょう並木","絕景","146 棵銀杏排成 300 公尺金黃隧道。","12 月初看落葉地毯"],
- ["tokyo","SHIBUYA SKY","SHIBUYA SKY","夜景","澀谷高空露天展望台，晴天看得到富士山。","夕陽場一定要預約"],
- ["tokyo","六本木之丘 欅坂燈飾","六本木ヒルズ けやき坂","夜景","藍白燈海襯著東京鐵塔，旁邊有聖誕市集。","往年燈飾到 12/25"],
  ["tokyo","丸之內燈飾","丸の内仲通り","夜景","東京站前香檳金色行道樹，浪漫指數滿分。","往年 11 月中到隔年 2 月"],
- ["tokyo","淺草寺・仲見世通","浅草寺","文化","東京最古老寺院，商店街邊走邊吃。","早上 9 點前人最少"],
- ["tokyo","原宿竹下通","竹下通り","購物","可麗餅、可愛小物、潮流服飾一次逛。","平日午後較好走"],
- ["tokyo","東京站一番街","東京駅一番街","購物","卡通角色街＋拉麵街，最後補貨伴手禮。","回機場前順路"],
- ["fuji","吉田烏龍麵","吉田のうどん","美食","超有嚼勁的富士吉田在地麵，便宜大碗。","多數店只開中午"]
+ ["tokyo","東京站一番街","東京駅一番街","購物","卡通角色街＋拉麵街，補貨伴手禮。","有空再去"]
 ];
 
 const PLAN_NAMES=DAYS.flatMap(d=>d.items.map(it=>it[2]+" "+it[4])).join("|");
 const inPlan=(n,jp)=>PLAN_NAMES.includes(jp)||PLAN_NAMES.includes(n);
-const AREAS=[["all","全部"],["fav","我的收藏"],["fuji","富士山區"],["tokyo","東京"]];
+const AREAS=[["all","全部"],["rec","順路推薦"],["fav","我的收藏"],["fuji","富士山區"],["tokyo","東京"]];
 const CATS=["全部類型",...[...new Set(SPOTS.map(s=>s[3]))]];
 let fav=store.get("ft_fav",[]), filt="all", cat="全部類型";
 const fEl=document.getElementById("filters"), cEl=document.getElementById("cats"), sEl=document.getElementById("spots");
 function renderSpots(popName){
   fEl.innerHTML=AREAS.map(([k,l])=>`<button class="fbtn" aria-pressed="${filt===k}" data-f="${k}">${l}${k==="fav"?` ${fav.length}`:""}</button>`).join("");
   cEl.innerHTML=CATS.map(c=>`<button class="fbtn" aria-pressed="${cat===c}" data-c="${c}">${c}</button>`).join("");
-  const list=SPOTS.filter(s=>(filt==="all"||(filt==="fav"?fav.includes(s[1]):s[0]===filt))&&(cat==="全部類型"||s[3]===cat))
-    .sort((a,b)=>inPlan(b[1],b[2])-inPlan(a[1],a[2]));
-  sEl.innerHTML=list.length?list.map(([a,n,jp,tag,d,tip])=>`<div class="spot card ${a}${inPlan(n,jp)?" inplan":""}"><span class="tag">${tag}</span>
+  const rank=s=>inPlan(s[1],s[2])?2:(s[6]?1:0);
+  const list=SPOTS.filter(s=>(filt==="all"||(filt==="fav"?fav.includes(s[1]):filt==="rec"?!!s[6]:s[0]===filt))&&(cat==="全部類型"||s[3]===cat))
+    .sort((a,b)=>rank(b)-rank(a));
+  sEl.innerHTML=list.length?list.map(([a,n,jp,tag,d,tip,rec])=>`<div class="spot card ${a}${inPlan(n,jp)?" inplan":""}"><span class="tag">${tag}</span>${rec&&!inPlan(n,jp)?`<span class="recb">${esc(rec)}</span>`:""}
    <button class="heart${popName===n?" pop":""}" aria-pressed="${fav.includes(n)}" aria-label="收藏 ${esc(n)}" data-h="${esc(n)}"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
    <h3>${esc(n)}</h3><div class="jp">${esc(jp)}</div><p>${esc(d)}</p><div class="tip">${esc(tip)}</div>
    <div class="row"><a class="maplink" href="${map(jp)}" target="_blank" rel="noopener">${icon("i-pin")}地圖</a><button class="mini" type="button" data-ask="介紹一下「${esc(n)}」，冬天去要注意什麼？">問小富</button></div></div>`).join("")
