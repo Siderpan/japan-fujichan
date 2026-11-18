@@ -1148,7 +1148,17 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .rlist{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .ritem{display:grid;grid-template-columns:44px minmax(0,1fr) 64px;gap:10px;align-items:center;padding:12px}
 .medal{width:40px;height:40px;border-radius:50%;border:2.5px solid var(--edge);display:grid;place-items:center;font-family:var(--f-pop);font-size:16px;color:var(--on);background:var(--bg);font-variant-numeric:tabular-nums}
-.medal.m1{background:#FFD65A;box-shadow:0 0 0 3px #FFF1B8;transform:rotate(-6deg)} .medal.m2{background:#D9E2F0;box-shadow:0 0 0 3px #EEF2F8} .medal.m3{background:#F2B98A;box-shadow:0 0 0 3px #FBE3CF}
+.medal{position:relative}
+.medal.m0{width:32px;height:32px;margin:0 4px;font-size:13px;background:transparent;border:2px dashed var(--hair);color:var(--muted)}
+.medal.m1,.medal.m2,.medal.m3{width:42px;height:42px;font-size:17px;color:#2B2F55;border:2.5px solid #2B2F55;transform:rotate(-6deg)}
+.medal.m1{background:linear-gradient(135deg,#FFF3B0 0%,#FFD24A 45%,#F5B400 70%,#FFE27A 100%);box-shadow:0 0 0 3px #FFE58A,2px 3px 0 #2B2F55}
+.medal.m2{background:linear-gradient(135deg,#FFFFFF 0%,#C9D3E2 40%,#8E9BB3 68%,#E3E8F1 100%);box-shadow:0 0 0 3px #AEB9CC,2px 3px 0 #2B2F55}
+.medal.m3{background:linear-gradient(135deg,#FFD9B5 0%,#E89A5C 45%,#B8642C 70%,#F1B482 100%);box-shadow:0 0 0 3px #E8A876,2px 3px 0 #2B2F55;color:#FFFFFF;text-shadow:0 1px 0 #2B2F55}
+.medal.m1::after,.medal.m2::after,.medal.m3::after{content:"";position:absolute;top:-7px;right:-7px;width:14px;height:14px;background:#FFFFFF;border:1.5px solid #2B2F55;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.ritem:nth-child(-n+3){border-width:3px}
+.ritem:nth-child(1){background:linear-gradient(90deg,color-mix(in srgb,#FFD24A 16%,var(--paper)),var(--paper) 60%)}
+.ritem:nth-child(2){background:linear-gradient(90deg,color-mix(in srgb,#8E9BB3 16%,var(--paper)),var(--paper) 60%)}
+.ritem:nth-child(3){background:linear-gradient(90deg,color-mix(in srgb,#E89A5C 16%,var(--paper)),var(--paper) 60%)}
 .rbody{min-width:0;display:grid;gap:4px}
 .rbody h3{font-size:17px}
 .rbody p{margin:0;font-size:13px;color:var(--muted)}
@@ -1162,7 +1172,7 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .ritem.done{background:color-mix(in srgb,var(--paper) 88%,var(--mint))}
 .ritem.done h3{text-decoration:line-through;text-decoration-color:var(--tang);text-decoration-thickness:2px}
 @media (prefers-reduced-motion:no-preference){.stamp-btn[aria-pressed="true"]{animation:stampin .3s ease}@keyframes stampin{from{transform:scale(1.5) rotate(10deg);opacity:0}}}
-@media (max-width:420px){.ritem{grid-template-columns:38px minmax(0,1fr) 54px;gap:8px;padding:10px}.medal{width:34px;height:34px;font-size:14px}.stamp-btn{width:52px;height:52px}.vbtn{font-size:12.5px}}
+@media (max-width:420px){.ritem{grid-template-columns:38px minmax(0,1fr) 54px;gap:8px;padding:10px}.medal.m0{width:30px;height:30px}.medal.m1,.medal.m2,.medal.m3{width:36px;height:36px;font-size:15px}.stamp-btn{width:52px;height:52px}.vbtn{font-size:12.5px}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40;width:100%;height:100%}
 
 @media (max-width:520px){
