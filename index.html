@@ -400,6 +400,733 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 .gg-acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
 .gg-acts .addbtn{height:36px;padding:0 16px}
 @media (prefers-reduced-motion:no-preference){.gg:not([hidden]) .gg-card{animation:up .28s ease}@keyframes up{from{transform:translateY(24px);opacity:.5}}}
+
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+
+.leaflet-tile::selection {
+	background: transparent;
+}
+
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+
+
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: none;
+	display: inline-block;
+	position: absolute;
+	}
+
+
+
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; 
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; 
+	pointer-events: auto;
+	}
+
+
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: none;
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: none;
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+
+.leaflet-default-icon-path { 
+	background-image: none;
+	}
+
+
+
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+
+
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+
+
+@media print {
+	
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+/* ---------- 美食細分類 & 地圖 ---------- */
+.subs{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 14px;padding:10px 12px;background:var(--tang-soft);border-radius:16px;border:2px dashed var(--edge)}
+.subs .fbtn{font-size:12.5px;padding:3px 10px}
+.subs .fbtn em{font-style:normal;font-family:var(--f-pop);font-size:10.5px;opacity:.7}
+.subs .fbtn.hot{border-color:var(--tang)}
+.subs .fbtn.hot[aria-pressed="true"]{border-color:var(--ink)}
+.subnote{flex-basis:100%;margin:4px 0 0;font-size:11.5px;color:var(--muted);display:flex;gap:5px;align-items:center}
+.subnote .ic{color:var(--tang)}
+.foodline{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.tier{font-size:11px;font-weight:900;border:1.5px solid var(--edge);border-radius:999px;padding:1px 8px;color:var(--on)}
+.tier.t1{background:var(--sun)} .tier.t2{background:var(--pink)} .tier.t3{background:var(--mint)}
+.subchip{font-size:11px;font-weight:700;background:var(--bg);border-radius:999px;padding:2px 8px;color:var(--muted)}
+.spot .rowl{display:flex;gap:6px;flex-wrap:wrap}
+.spot .maplink{margin:0}
+button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--ink)}
+.spot.flash{animation:flash 1.2s ease}
+@keyframes flash{20%,60%{box-shadow:0 0 0 4px var(--sun),var(--shadow)}}
+.mapcard{padding:10px;margin-bottom:18px;display:grid;gap:10px}
+.maphead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.seg{display:flex;gap:6px}
+.mapbox{position:relative;border:2.5px solid var(--edge);border-radius:16px;overflow:hidden;box-shadow:inset 0 0 0 2px rgba(255,255,255,.4)}
+#spotmap{height:min(340px,52vh);min-height:240px;background:var(--sky-soft);z-index:0}
+.nomap-note{display:none;position:absolute;right:10px;top:10px;z-index:500;font-size:11.5px;font-weight:700;background:var(--paper);border:2px solid var(--edge);border-radius:10px;padding:3px 8px;max-width:calc(100% - 70px)}
+.notiles #spotmap{background-color:var(--sky-soft);background-image:radial-gradient(var(--dots) 2px,transparent 2.5px),linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:18px 18px,72px 72px,72px 72px}
+.notiles .nomap-note{display:block}
+.nolib .mapbox{display:none}
+.leaflet-container{font-family:var(--f-body);background:var(--sky-soft)}
+.leaflet-bar{border:2px solid var(--edge)!important;border-radius:12px!important;box-shadow:2px 2px 0 var(--edge);overflow:hidden}
+.leaflet-bar a{background:var(--paper)!important;color:var(--ink)!important;font-family:var(--f-pop);font-weight:400;border-bottom-color:var(--hair)!important}
+.leaflet-control-attribution{font-size:10px;background:color-mix(in srgb,var(--paper) 85%,transparent)!important;color:var(--muted);border-top-left-radius:8px}
+.leaflet-control-attribution a{color:var(--muted)}
+.leaflet-control-scale-line{border-color:var(--edge);background:color-mix(in srgb,var(--paper) 80%,transparent);color:var(--ink);font-weight:700}
+.leaflet-tooltip.cute{background:var(--paper);color:var(--ink);border:2px solid var(--edge);border-radius:10px;font-weight:700;font-size:12px;box-shadow:2px 2px 0 var(--edge);padding:3px 8px}
+.leaflet-tooltip-top.cute::before{border-top-color:var(--edge)}
+.pinwrap{background:none;border:0}
+.pin{width:30px;height:30px;border-radius:50% 50% 50% 6px;transform:rotate(-45deg);border:2.5px solid #2B2F55;display:grid;place-items:center;box-shadow:2px 2px 0 rgba(43,47,85,.35);background:#6FD9A8;position:relative;transition:transform .15s}
+.pin .ic{transform:rotate(45deg);font-size:15px;color:#2B2F55;stroke-width:2.4}
+.pin.p-see{background:#6FD9A8} .pin.p-food{background:#FF8A4C} .pin.p-night{background:#FF8FB8} .pin.p-shop{background:#B6A3FF} .pin.p-hotel{background:#FFD65A}
+.pin.plan::after{content:"";position:absolute;top:-6px;right:-6px;width:12px;height:12px;border-radius:50%;background:#FFD65A;border:2px solid #2B2F55}
+.pin.sel{transform:rotate(-45deg) scale(1.3);box-shadow:0 0 0 4px rgba(255,214,90,.9),2px 2px 0 rgba(43,47,85,.35)}
+.pin.small{width:26px;height:26px;flex:0 0 26px}
+.me-dot{display:block;width:18px;height:18px;border-radius:50%;background:#3D8BFF;border:3px solid #FFFFFF;box-shadow:0 0 0 2px #2B2F55,0 0 0 8px rgba(61,139,255,.25)}
+.distlbl{display:inline-block;font-size:11.5px;font-weight:900;background:#FFFFFF;color:#2B2F55;border:2px solid #2B2F55;border-radius:999px;padding:1px 8px;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;font-weight:700}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.lg{width:12px;height:12px;border-radius:50% 50% 50% 3px;transform:rotate(-45deg);border:1.5px solid var(--edge);display:inline-block}
+.lg.p-see{background:#6FD9A8} .lg.p-food{background:#FF8A4C} .lg.p-night{background:#FF8FB8} .lg.p-shop{background:#B6A3FF} .lg.p-hotel{background:#FFD65A}
+.lg.plan{border-radius:50%;background:#FFD65A;transform:none}
+.lg.me{border-radius:50%;background:#3D8BFF;transform:none}
+.mapnote{margin:6px 0 0;font-size:12.5px;color:var(--muted)}
+.mapnote.warn{background:var(--sun-soft);color:var(--ink);border-radius:10px;padding:5px 10px;margin:0 0 8px}
+.mi{display:grid;gap:7px}
+.mi-h{display:flex;gap:10px;align-items:center}
+.mi-h > div{flex:1;min-width:0}
+.mi-h b{display:block;font-size:16px;line-height:1.3}
+.mi-h small{color:var(--muted);font-size:12px}
+.mi-x{width:30px;height:30px;border-radius:50%;border:2px solid var(--edge);background:var(--paper);font-size:16px;line-height:1;cursor:pointer;padding:0}
+.mi-d{font-size:13.5px}
+.mi-t{display:flex;flex-wrap:wrap;gap:6px}
+.mi-t span{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;background:var(--sky-soft);border-radius:999px;padding:3px 10px;font-variant-numeric:tabular-nums}
+.mi-r{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:var(--muted)}
+.mi-r .ic{flex:0 0 auto;margin-top:2px}
+.mi-a{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mi-a a{text-decoration:none;display:inline-flex;align-items:center}
+.mi-a .addbtn{height:32px}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:40;width:100%;height:100%}
 
 @media (max-width:520px){
@@ -478,6 +1205,8 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
     <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
     <symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></symbol>
+    <symbol id="i-walk" viewBox="0 0 24 24"><circle cx="13" cy="4.5" r="2"/><path d="M10 21l2-6 3 3v3M8 12l2-4.5 3.5 1 2 3.5 2.5 1M12 15l-1.5-4"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M4 16v-4l2-5h12l2 5v4z"/><path d="M4 12h16"/><circle cx="7.5" cy="16.5" r="1.8"/><circle cx="16.5" cy="16.5" r="1.8"/></symbol>
     <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5 4.5 13.5H11l-1 8 8.5-11H12z"/></symbol>
     <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></symbol>
   </defs>
@@ -553,9 +1282,15 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
 
   <!-- ===== 景點 ===== -->
   <section class="view" id="v-spots" aria-labelledby="h-spots" hidden>
-    <div class="sec-head"><h2 id="h-spots">景點圖鑑</h2><small>黃標＝在行程中・綠標＝順路推薦・按愛心收藏</small></div>
+    <div class="sec-head"><h2 id="h-spots">景點圖鑑</h2><small>黃標＝在行程中・綠標＝順路推薦・地圖跟著篩選變動</small></div>
     <div class="filters" id="filters"></div>
     <div class="cats" id="cats"></div>
+    <div class="subs" id="subs" hidden></div>
+    <div class="mapcard card" id="mapwrap">
+      <div class="maphead" id="maphead"></div>
+      <div class="mapbox"><div id="spotmap" role="region" aria-label="景點地圖"></div><div class="nomap-note">底圖只在網站版顯示，這裡仍可看相對位置與距離</div></div>
+      <div id="mapinfo" aria-live="polite"></div>
+    </div>
     <div class="spots" id="spots"></div>
   </section>
 
@@ -695,6 +1430,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:28px}
   <button class="tab" role="tab" data-v="tips" aria-selected="false"><svg class="ic"><use href="#i-bulb"/></svg>撇步</button>
 </div></nav>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 (function(){
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
@@ -710,7 +1446,7 @@ const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").m
   const root=document.documentElement, btn=document.getElementById("modeBtn");
   function apply(m){root.setAttribute("data-mode",m);btn.setAttribute("aria-pressed",m==="dark");
     btn.setAttribute("aria-label",m==="dark"?"切換成明亮模式":"切換成深色模式");
-    const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",m==="dark"?"#181A33":"#E8F3FF")}
+    const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content",m==="dark"?"#181A33":"#E8F3FF");document.dispatchEvent(new Event("ft-mode"))}
   apply(store.get("ft_mode","light")==="dark"?"dark":"light");
   btn.addEventListener("click",()=>{const m=root.getAttribute("data-mode")==="dark"?"light":"dark";apply(m);store.set("ft_mode",m)});
 })();
@@ -747,7 +1483,7 @@ const DAYS=[
    ["14:30","move","成田第二航廈 → 河口湖站","搭直達高速巴士，車程約 2.5 小時。班次少，建議先上網預約座位。","成田空港 第2ターミナル"],
    ["16:55","move","抵達河口湖駅","",""],
    ["17:03","see","入住 Rakuten STAY VILLA 河口湖森林別墅","連住 12/4、12/5 兩晚的森林別墅。","Rakuten STAY VILLA 富士河口湖の森"],
-   ["18:08","food","ENGAWA1441","河口湖人氣刨冰店，去趣上可以預約座位。冬天晚上請先確認營業時間。","ENGAWA1441"],
+   ["18:08","food","ENGAWA1441","河口湖的牛排餐酒館，也有甜點，去趣上可以預約座位。晚餐 18:00 開始。","ENGAWA1441"],
    ["19:16","see","富士山景觀纜車","⚠ 冬季約下午 4 點多就停駛，晚上上不去。","河口湖～富士山パノラマロープウェイ"],
    ["20:45","see","河口湖天上山公園","⚠ 和景觀纜車是同一個地方（纜車的山頂站），一樣要白天去。","河口湖天上山公園"]],
   tip:"景觀纜車和天上山公園其實是同一站，冬天傍晚前就收班。建議挪到 12/7 早上離開河口湖前，或 12/5 大石公園之後的空檔，晚上改成回別墅休息。"},
@@ -859,70 +1595,163 @@ card.addEventListener("click",e=>{const rm=e.target.closest("[data-rm]");if(rm){
 renderDays(false);
 (function(){const sel=daysEl.querySelector('[aria-selected="true"]');if(sel)daysEl.scrollLeft=Math.max(0,sel.offsetLeft-daysEl.clientWidth/2+sel.clientWidth/2)})();
 
-const SPOTS=[
- /* 已在行程中 */
- ["fuji","產屋崎神社","産屋ヶ崎神社","絕景","河口湖畔的小鳥居，清晨無風時能拍到鳥居和逆富士同框。","12/5 行程・6:30"],
- ["fuji","山中湖 平野之濱","平野の浜","絕景","山中湖東岸的逆富士名所，冬天清晨空氣最清澈。","12/6 行程・很冷要穿暖"],
- ["fuji","北口本宮富士淺間神社","北口本宮冨士浅間神社","文化","千年杉木參道與朱紅大鳥居，富士山信仰的起點。","12/6 行程"],
- ["fuji","大石公園","大石公園","絕景","湖北岸最開闊的富士山視角，無風清晨有逆富士。","12/5 行程・7–9 點光線最好"],
- ["fuji","新倉山淺間公園・忠靈塔","新倉山浅間公園","絕景","五重塔與富士山同框的經典畫面，要爬 398 階。","早上順光最好拍","12/5 行程"],
- ["fuji","富士吉田本町通","本町通り 富士吉田","絕景","富士山矗立在昭和街道盡頭的人氣打卡點。","請站人行道拍照"],
- ["tokyo","麻布台之丘","麻布台ヒルズ","購物","東京新地標，有 teamLab 美術館、設計小店和美食。","12/7 行程"],
- ["tokyo","DOVER STREET MARKET 銀座","ドーバー ストリート マーケット ギンザ","購物","川久保玲的潮流選物百貨，每層都像展覽。","12/8 行程"],
- /* 順路推薦 */
- ["fuji","富士大石 Hanaterasu","富士大石ハナテラス","購物","大石公園旁的木造商店街，咖啡、果乾、和紙雜貨，邊逛邊看富士山，下雨也能逛。","大石公園走過去就到，各店營業時間不同","12/5 順路"],
- ["fuji","河口湖自然生活館","河口湖自然生活館","美食","就在大石公園裡，二樓看富士山，藍莓霜淇淋和果醬是招牌。","大石公園順便吃個霜淇淋","12/5 順路"],
- ["fuji","日川時計店","日川時計店","絕景","富士吉田的老鐘錶行，招牌和富士山同框，是本町通附近的人氣街拍點。","和懷舊商店街同一區，請站人行道拍","12/5 順路"],
- ["fuji","吉田烏龍麵","吉田のうどん","美食","超有嚼勁的富士吉田在地麵，便宜大碗，配料常見高麗菜和馬肉。","多數店只開中午，逛商店街時吃","12/6 順路"],
- ["fuji","金鳥居","金鳥居 富士吉田","絕景","跨在大馬路上的大鳥居，正後方就是富士山，富士吉田的入口地標。","富士山站步行約 5 分，往淺間神社途中","12/6 順路"],
- ["fuji","忍野八海","忍野八海","文化","八座富士山伏流水湧泉池，清澈到能看見池底，茅草屋村落很好逛。","可替換 12/6 第二次的商店街・炸草餅必吃","12/6 替換"],
- ["fuji","河口湖天上山公園纜車","河口湖天上山公園","絕景","3 分鐘上山的展望台，正面看富士山與河口湖，山頂有狸貓糰子。","冬季約下午 4 點多收班，請白天搭","12/5 或 12/7 早上"],
- ["tokyo","teamLab Borderless","森ビル デジタルアート ミュージアム エプソン チームラボボーダレス","文化","麻布台之丘裡的沉浸式數位藝術美術館，光影會在房間之間流動。","要先上網買票，熱門時段容易滿","12/7 順路"],
- ["tokyo","麻布台之丘 聖誕市集","麻布台ヒルズ クリスマスマーケット","購物","中央廣場上的聖誕小木屋，有熱紅酒、德式香腸和聖誕小物。","2026/11/21–12/25・11:00–21:00","12/7 順路"],
- ["tokyo","增上寺","増上寺","文化","芝公園裡的古寺，大殿後方就是東京鐵塔，黃昏亮燈時新舊同框。","從芝公園走過去就到","12/7 順路"],
- ["tokyo","東京鐵塔","東京タワー","夜景","芝公園旁的經典紅塔，主展望台可以看東京夜景。","黃昏在芝公園看完，直接上塔","12/7 順路"],
- ["tokyo","六本木之丘 欅坂燈飾","六本木ヒルズ けやき坂","夜景","藍白燈海襯著東京鐵塔，大屋根廣場還有德式聖誕市集。","燈飾 11/5–12/25・17:00–22:00；市集到 21:00","12/7 晚餐後"],
- ["tokyo","東京中城 MIDTOWN CHRISTMAS","東京ミッドタウン","夜景","中城花園的冬季燈海，免費入場，和欅坂燈飾走路就到。","11/26–12/25・17:00–23:00","12/7 晚餐後"],
- ["tokyo","銀座伊東屋","銀座 伊東屋 G.Itoya","購物","百年文具老舖，整棟都是筆記本、卡片和文具，買伴手禮很好挑。","在銀座中央通上","12/8 順路"],
- ["tokyo","GINZA SIX 屋頂庭園","GINZA SIX 屋上庭園","絕景","銀座大型百貨頂樓的免費空中花園，逛累了上來休息看街景。","免費","12/8 順路"],
- ["tokyo","淺草文化觀光中心 展望台","浅草文化観光センター","夜景","8 樓免費展望台，往下看雷門、仲見世，旁邊就是晴空塔。","免費・9:00–22:00","12/8 晚上"],
- ["tokyo","淺草寺・仲見世通","浅草寺","文化","東京最古老的寺院，晚上會點燈，人潮散去後特別有氣氛。","晚上散步，或 12/9 早上出發前來","12/8 晚上"],
- ["tokyo","東京晴空塔","東京スカイツリー","夜景","從淺草過隅田川走路約 20 分鐘，展望台看整片東京夜景。","下面的晴空街道可以逛吃","12/8 晚上"],
- ["tokyo","合羽橋道具街","かっぱ橋道具街","購物","廚具、刀具、食物模型的專賣街，從淺草走過去約 10–15 分鐘。","多數店家傍晚就關門，要早點去","住淺草順路"],
- /* 其他口袋名單 */
- ["fuji","河口湖音樂森林美術館","河口湖音楽と森の美術館","文化","歐風庭園與古董自動演奏樂器，像童話小鎮。","冬季有點燈活動（日期待公布）"],
- ["fuji","西湖療癒之里根場","西湖いやしの里根場","文化","茅草屋聚落以富士山為背景，可體驗和服。","雨天備案"],
- ["fuji","鳴澤冰穴","鳴沢氷穴","冒險","熔岩洞內全年結冰，冬天冰柱最壯觀。","洞內低矮，注意頭"],
- ["fuji","富士急樂園","富士急ハイランド","冒險","雲霄飛車迷的天堂，背景就是富士山。","雨備方案"],
- ["fuji","山中湖 Illumination Fantasium","山中湖 イルミネーション ファンタジウム","夜景","湖畔冬季燈飾，往年 12 月初開始。","2026 日期待確認"],
- ["tokyo","明治神宮外苑銀杏並木","神宮外苑 いちょう並木","絕景","146 棵銀杏排成 300 公尺金黃隧道。","12 月初看落葉地毯"],
- ["tokyo","丸之內燈飾","丸の内仲通り","夜景","東京站前香檳金色行道樹，浪漫指數滿分。","往年 11 月中到隔年 2 月"],
- ["tokyo","東京站一番街","東京駅一番街","購物","卡通角色街＋拉麵街，補貨伴手禮。","有空再去"]
-];
-
-const PLAN_NAMES=DAYS.flatMap(d=>d.items.map(it=>it[2]+" "+it[4])).join("|");
-const inPlan=(n,jp)=>PLAN_NAMES.includes(jp)||PLAN_NAMES.includes(n);
+const SPOTS=[["fuji", "產屋崎神社", "産屋ヶ崎神社", "絕景", "河口湖畔的小鳥居，清晨無風時能拍到鳥居和逆富士同框。", "12/5 行程・6:30", "12/5 行程", {"lat": 35.51283, "lng": 138.76601, "plan": 1}], ["fuji", "山中湖 平野之濱", "平野の浜", "絕景", "山中湖東岸的逆富士名所，冬天清晨空氣最清澈，還有天鵝。", "12/6 行程・很冷要穿暖", "12/6 行程", {"lat": 35.4247, "lng": 138.90082, "plan": 1}], ["fuji", "北口本宮富士淺間神社", "北口本宮冨士浅間神社", "文化", "千年杉木參道與朱紅大鳥居，富士山信仰的起點。", "12/6 行程", "12/6 行程", {"lat": 35.4707, "lng": 138.79226, "plan": 1}], ["fuji", "大石公園", "大石公園", "絕景", "湖北岸最開闊的富士山視角，無風清晨有逆富士。", "7–9 點光線最好", "12/5 行程", {"lat": 35.5229, "lng": 138.74575, "plan": 1}], ["fuji", "新倉山淺間公園・忠靈塔", "新倉山浅間公園", "絕景", "五重塔與富士山同框的經典畫面，要爬 398 階，旁邊有坡道。", "早上順光最好拍", "12/5 行程", {"lat": 35.50126, "lng": 138.80139, "plan": 1}], ["fuji", "富士吉田懷舊商店街", "本町通り 富士吉田", "絕景", "富士山矗立在昭和街道盡頭的人氣打卡點。", "請站人行道拍照，現場有交通指揮", "12/5 行程", {"lat": 35.49243, "lng": 138.80375, "plan": 1}], ["tokyo", "麻布台之丘", "麻布台ヒルズ", "購物", "東京新地標，有 teamLab 美術館、設計小店和美食。", "12/7 行程", "12/7 行程", {"lat": 35.66154, "lng": 139.74083, "plan": 1}], ["tokyo", "DOVER STREET MARKET 銀座", "ドーバー ストリート マーケット ギンザ", "購物", "川久保玲的潮流選物百貨，每層都像展覽。", "11:00–20:00", "12/8 行程", {"lat": 35.67043, "lng": 139.76314, "plan": 1}], ["fuji", "富士大石 Hanaterasu", "富士大石ハナテラス", "購物", "大石公園旁的木造商店街，咖啡、果乾、和紙雜貨，邊逛邊看富士山。", "9:30–17:30，有屋簷下雨也能逛", "12/5 順路", {"lat": 35.52305, "lng": 138.74474}], ["fuji", "日川時計店", "日川時計店", "絕景", "富士吉田的老鐘錶行，招牌和富士山同框的人氣街拍點。", "和懷舊商店街同一區，請站人行道拍", "12/5 順路", {"lat": 35.49268, "lng": 138.80409}], ["fuji", "金鳥居", "金鳥居 富士吉田", "絕景", "跨在大馬路上的銅色大鳥居，正後方就是富士山。", "富士山站步行約 5 分", "12/6 順路", {"lat": 35.48323, "lng": 138.79799}], ["fuji", "忍野八海", "忍野八海", "文化", "八座富士山伏流水湧泉池，清澈到能看見池底，茅草屋村落很好逛。", "可替換 12/6 第二次的商店街・炸草餅必吃", "12/6 替換", {"lat": 35.46007, "lng": 138.83247}], ["fuji", "河口湖～富士山全景纜車", "河口湖～富士山パノラマロープウェイ", "絕景", "3 分鐘上山的展望台，正面看富士山與河口湖，山頂有狸貓糰子。", "冬季約 17:00 收班，請白天搭", "12/5 或 12/7 早上", {"lat": 35.50403, "lng": 138.77209}], ["tokyo", "teamLab Borderless", "森ビル デジタルアート ミュージアム エプソン チームラボボーダレス", "文化", "麻布台之丘裡的沉浸式數位藝術美術館，光影會在房間之間流動。", "要先上網買票", "12/7 順路", {"lat": 35.66207, "lng": 139.74327}], ["tokyo", "麻布台之丘 聖誕市集", "麻布台ヒルズ クリスマスマーケット", "購物", "中央廣場上的聖誕小木屋，有熱紅酒、德式香腸和聖誕小物。", "2026/11/21–12/25・11:00–21:00", "12/7 順路", {"lat": 35.6619, "lng": 139.7406}], ["tokyo", "增上寺", "増上寺", "文化", "芝公園裡的古寺，大殿後方就是東京鐵塔，黃昏亮燈時新舊同框。", "9:00–17:00，境內傍晚也能散步", "12/7 順路", {"lat": 35.65748, "lng": 139.74829}], ["tokyo", "東京鐵塔", "東京タワー", "夜景", "芝公園旁的經典紅塔，主展望台可以看東京夜景。", "9:00–23:00", "12/7 順路", {"lat": 35.65858, "lng": 139.74543}], ["tokyo", "六本木之丘 欅坂燈飾", "六本木ヒルズ けやき坂", "夜景", "藍白燈海襯著東京鐵塔，大屋根廣場還有德式聖誕市集。", "燈飾 11/5–12/25・17:00–22:00", "12/7 晚餐後", {"lat": 35.65913, "lng": 139.72811}], ["tokyo", "東京中城 MIDTOWN CHRISTMAS", "東京ミッドタウン", "夜景", "中城花園的冬季燈海，免費入場，和欅坂燈飾走路就到。", "11/26–12/25・17:00–23:00", "12/7 晚餐後", {"lat": 35.66598, "lng": 139.73087}], ["tokyo", "銀座伊東屋", "銀座 伊東屋 G.Itoya", "購物", "百年文具老舖，整棟都是筆記本、卡片和文具，買伴手禮很好挑。", "10:00–20:00", "12/8 順路", {"lat": 35.67313, "lng": 139.76721}], ["tokyo", "GINZA SIX 屋頂庭園", "GINZA SIX", "絕景", "銀座大型百貨頂樓的免費空中花園，逛累了上來休息看街景。", "百貨 10:30–20:30", "12/8 順路", {"lat": 35.66977, "lng": 139.76418}], ["tokyo", "淺草文化觀光中心 展望台", "浅草文化観光センター", "夜景", "8 樓免費展望台，往下看雷門、仲見世，旁邊就是晴空塔。", "免費・9:00–20:00", "12/8 晚上", {"lat": 35.71071, "lng": 139.79655}], ["tokyo", "淺草寺・仲見世通", "浅草寺", "文化", "東京最古老的寺院，晚上會點燈，人潮散去後特別有氣氛。", "仲見世商店約 10:00–17:00", "12/8 晚上", {"lat": 35.71477, "lng": 139.79666}], ["tokyo", "東京晴空塔", "東京スカイツリー", "夜景", "從淺草過隅田川走路約 20 分鐘，展望台看整片東京夜景。", "10:00–22:00", "12/8 晚上", {"lat": 35.71006, "lng": 139.8107}], ["tokyo", "合羽橋道具街", "かっぱ橋道具街", "購物", "廚具、刀具、食物模型的專賣街，從淺草走過去約 10–15 分鐘。", "多數店家 10:00–17:00", "住淺草順路", {"lat": 35.71058, "lng": 139.78796}], ["fuji", "河口湖音樂森林美術館", "河口湖音楽と森の美術館", "文化", "歐風庭園與古董自動演奏樂器，像童話小鎮。", "10:00–17:30・雨天備案", "", {"lat": 35.52242, "lng": 138.76872}], ["fuji", "西湖療癒之里根場", "西湖いやしの里根場", "文化", "茅草屋聚落以富士山為背景，可體驗手作。", "9:00–17:00", "", {"lat": 35.505, "lng": 138.66148}], ["fuji", "鳴澤冰穴", "鳴沢氷穴", "冒險", "熔岩洞內全年結冰，冬天冰柱最壯觀。", "9:00–16:30・洞內低矮注意頭", "", {"lat": 35.47493, "lng": 138.66697}], ["fuji", "富士急樂園", "富士急ハイランド", "冒險", "雲霄飛車迷的天堂，背景就是富士山。", "雨天或強風部分設施會停", "", {"lat": 35.48695, "lng": 138.78055}], ["tokyo", "明治神宮外苑銀杏並木", "神宮外苑 いちょう並木", "絕景", "146 棵銀杏排成 300 公尺金黃隧道。", "12 月初看落葉地毯", "", {"lat": 35.67272, "lng": 139.72057}], ["tokyo", "丸之內仲通燈飾", "丸の内仲通り", "夜景", "東京站前香檳金色行道樹，浪漫指數滿分。", "往年 11 月中到隔年 2 月", "", {"lat": 35.68049, "lng": 139.76301}], ["tokyo", "東京站一番街", "東京駅一番街", "購物", "卡通角色街＋拉麵街，補貨伴手禮。", "10:00–20:30", "", {"lat": 35.68229, "lng": 139.76849}], ["fuji", "ENGAWA1441", "ENGAWA1441", "美食", "河口湖的牛排餐酒館，晚餐有肉也有甜點，氣氛輕鬆。", "午 11:30–15:00・晚 18:00–22:00", "12/4 行程", {"lat": 35.49293, "lng": 138.76774, "sub": ["燒肉・和牛", "甜點・麵包"], "tier": "在地推薦", "sc": 4.26, "plan": 1}], ["fuji", "CISCO Coffee", "シスコ カフェ 河口湖", "美食", "湖畔的美式咖啡館，起司胡椒吐司是招牌，後面就是湖邊公園。", "9:00–17:00・週三公休", "12/5 行程", {"lat": 35.51084, "lng": 138.75305, "sub": ["咖啡廳"], "tier": "在地推薦", "sc": 4.42, "plan": 1}], ["fuji", "Lake Bake Cafe", "Lake Bake Cafe", "美食", "大石公園旁的麵包店，現烤麵包配湖景長椅。", "10:00–16:00・週三四公休", "12/5 行程", {"lat": 35.52394, "lng": 138.74746, "sub": ["甜點・麵包", "咖啡廳"], "tier": "在地推薦", "sc": 4.17, "plan": 1}], ["fuji", "餺飥不動 河口湖站前店", "ほうとう不動 河口湖駅前店", "美食", "山梨名物餺飥，南瓜味噌燉寬麵，冬天吃最暖。", "11:00–19:00", "12/5 行程", {"lat": 35.49886, "lng": 138.76865, "sub": ["鄉土料理"], "tier": "在地推薦", "sc": 3.81, "plan": 1}], ["fuji", "noi tea stand", "noi tea stand 富士吉田", "美食", "用富士山森林植物自製的花草茶與冰淇淋小店。", "10:30–17:30・週三四公休", "12/5 行程", {"lat": 35.48997, "lng": 138.80243, "sub": ["甜點・麵包", "咖啡廳"], "tier": "在地推薦", "sc": 4.16, "plan": 1}], ["fuji", "Setouchi", "Setouchi 富士吉田", "美食", "家常和食定食，烤魚和豬肉鍋很受好評，座位不多。", "午 11:30–13:45・晚 17:30–21:00・週日公休", "12/5 行程", {"lat": 35.48686, "lng": 138.78896, "sub": ["和食・居酒屋"], "tier": "在地推薦", "sc": 4.48, "plan": 1}], ["fuji", "食呑 ほしゃ", "食呑 ほしゃ 富士吉田", "美食", "在地人愛去的炭烤居酒屋，雞肝和生蠔是招牌，建議先訂位。", "17:30–23:00・週日一公休", "12/5 行程", {"lat": 35.48791, "lng": 138.80221, "sub": ["和食・居酒屋"], "tier": "在地推薦", "sc": 4.24, "plan": 1}], ["fuji", "Yamanaka Terrace", "Yamanaka Terrace", "美食", "森林裡的木造咖啡館，咖啡和烘焙點心都很用心。", "9:00–17:00", "12/6 行程", {"lat": 35.43558, "lng": 138.91346, "sub": ["咖啡廳"], "tier": "在地推薦", "sc": 4.38, "plan": 1}], ["fuji", "Noah", "Noah 山中湖", "美食", "山中湖畔的家庭咖啡館，起司蛋糕和肉醬麵受歡迎，露台看富士山。", "11:00–16:00", "12/6 行程", {"lat": 35.4269, "lng": 138.87294, "sub": ["咖啡廳"], "tier": "在地推薦", "sc": 4.35, "plan": 1}], ["fuji", "和牛燒肉 Yoritomo", "和牛焼肉よりとも", "美食", "河口湖站附近的和牛燒肉人氣店，去趣上可預約座位。", "10:30–22:00", "12/6 行程", {"lat": 35.49959, "lng": 138.76328, "sub": ["燒肉・和牛"], "tier": "名店級", "sc": 4.74, "plan": 1}], ["tokyo", "Balcony by 6th", "Balcony by 6th 麻布台ヒルズ", "美食", "麻布台之丘 3 樓的義式餐廳，舒芙蕾鬆餅很有名。", "8:00–10:30・11:00–23:00", "12/7 行程", {"lat": 35.66124, "lng": 139.74062, "sub": ["咖啡廳"], "tier": "在地推薦", "sc": 4.09, "plan": 1}], ["tokyo", "HARBS 麻布台之丘店", "HARBS 麻布台ヒルズ", "美食", "招牌水果千層蛋糕，一塊就很有份量。", "11:00–20:00", "12/7 行程", {"lat": 35.66186, "lng": 139.74145, "sub": ["甜點・麵包", "咖啡廳"], "tier": "在地推薦", "sc": 4.0, "plan": 1}], ["tokyo", "新潟雪室熟成燒肉 Nikuine", "肉いね 六本木", "美食", "雪室熟成的和牛燒肉，六本木的高人氣晚餐。", "17:00–23:00", "12/7 行程", {"lat": 35.66206, "lng": 139.73717, "sub": ["燒肉・和牛"], "tier": "名店級", "sc": 4.8, "plan": 1}], ["tokyo", "Shabusen 銀座店", "しゃぶせん 銀座", "美食", "一人一鍋的老字號涮涮鍋，不接受預約，開店就去。", "11:00–15:30・17:00–21:00", "12/8 行程", {"lat": 35.67066, "lng": 139.76404, "sub": ["鍋物・壽喜燒"], "tier": "在地推薦", "sc": 4.44, "plan": 1}], ["tokyo", "Glitch Coffee & Roasters GINZA", "GLITCH COFFEE GINZA", "美食", "淺焙精品咖啡名店，咖啡迷必朝聖。", "9:00–18:00", "12/8 行程", {"lat": 35.66892, "lng": 139.76863, "sub": ["咖啡廳"], "tier": "在地推薦", "sc": 4.18, "plan": 1}], ["tokyo", "X coffee GINZA", "X coffee GINZA", "美食", "銀座小巷裡的人氣咖啡站，拿鐵很受好評。", "8:00–19:00", "12/8 行程", {"lat": 35.67273, "lng": 139.76925, "sub": ["咖啡廳"], "tier": "高人氣", "sc": 4.58, "plan": 1}], ["tokyo", "Age.3 GINZA", "Age.3 GINZA", "美食", "炸三明治專賣小站，焦糖布丁和厚燒肉口味最受歡迎。", "11:00–19:00", "12/8 行程", {"lat": 35.67276, "lng": 139.77129, "sub": ["甜點・麵包"], "tier": "在地推薦", "sc": 4.01, "plan": 1}], ["fuji", "Japanese Dining Suzukiya", "Japanese Dining Suzukiya 河口湖", "美食", "河口湖北岸的人氣和食，評價非常高、晚餐時段很快客滿。", "17:30–21:00・建議先訂位", "12/4 晚餐替選", {"lat": 35.5076, "lng": 138.74901, "sub": ["和食・居酒屋"], "tier": "名店級", "sc": 4.89}], ["fuji", "Patisserie Kimuraya", "Patisserie Kimuraya 河口湖", "美食", "河口湖森林購物中心裡的洋菓子店，蛋糕和烘焙點心都受好評。", "週二公休・離別墅約 2 公里", "住別墅順路", {"lat": 35.49116, "lng": 138.7438, "sub": ["甜點・麵包"], "tier": "名店級", "sc": 4.79}], ["fuji", "Mt. Fuji Amazing View Café", "Tourist Base Kawaguchiko", "美食", "河口湖站旁大樓 3–4 樓，窗外正對富士山，等巴士時的好去處。", "9:00–18:00", "河口湖站旁", {"lat": 35.49857, "lng": 138.76784, "sub": ["咖啡廳"], "tier": "名店級", "sc": 4.78}], ["fuji", "Fuji Cafe CUP'S", "Fuji Cafe CUP'S 河口湖", "美食", "河口湖站附近的人氣咖啡館，飲品和甜點選擇多。", "10:00–18:00", "河口湖站旁", {"lat": 35.49891, "lng": 138.76662, "sub": ["咖啡廳"], "tier": "名店級", "sc": 4.74}], ["fuji", "八代拉麵 Ramen Hachiyo", "Ramen Hachiyo 河口湖", "美食", "河口湖站一帶評價最高的拉麵之一，冬天來碗熱湯剛好。", "11:00–21:00", "河口湖站附近", {"lat": 35.49862, "lng": 138.7715, "sub": ["拉麵・麵"], "tier": "名店級", "sc": 4.73}], ["fuji", "Mt.MEAT", "Mt.MEAT 河口湖", "美食", "河口湖站附近的和牛燒肉，營業到深夜。", "12:00–23:00", "", {"lat": 35.4986, "lng": 138.76626, "sub": ["燒肉・和牛"], "tier": "高人氣", "sc": 4.67}], ["fuji", "PLANT NATION vegan kitchen", "PLANT NATION vegan kitchen 河口湖", "美食", "河口湖站旁的純素餐廳，蔬食咖哩和漢堡都很有份量。", "11:00–20:00", "河口湖站附近", {"lat": 35.49892, "lng": 138.76665, "sub": ["蔬食"], "tier": "高人氣", "sc": 4.64}], ["fuji", "CAFETINO MT.FUJI", "CAFETINO MT.FUJI", "美食", "河口湖北岸的早午餐咖啡館，早上 8:30 就開。", "8:30–15:00", "12/5 早上順路", {"lat": 35.50839, "lng": 138.7587, "sub": ["咖啡廳"], "tier": "高人氣", "sc": 4.64}], ["fuji", "Kodachi Cafe", "Kodachi Cafe 河口湖", "美食", "湖北岸小立地區的安靜咖啡館。", "週二公休", "12/5 順路", {"lat": 35.50591, "lng": 138.75246, "sub": ["咖啡廳"], "tier": "高人氣", "sc": 4.57}], ["fuji", "Shaw's Sushi Bar", "Shaw's Sushi Bar & Dining 河口湖", "美食", "河口湖站附近的壽司餐廳，午晚餐都有。", "午 11:30–13:30・晚 17:30–19:30", "", {"lat": 35.49888, "lng": 138.76803, "sub": ["壽司・海鮮"], "tier": "高人氣", "sc": 4.57}], ["fuji", "Suehiro 拉麵", "すえひろ ラーメン 河口湖", "美食", "醬油系的人氣拉麵店，午晚各開一段時間。", "11:30–14:30・17:30–20:30", "", {"lat": 35.49563, "lng": 138.76681, "sub": ["拉麵・麵"], "tier": "高人氣", "sc": 4.58}], ["fuji", "甲州ほうとう 小作 河口湖店", "甲州ほうとう 小作 河口湖店", "美食", "餺飥老字號連鎖，南瓜餺飥鍋份量十足，評論數超多。", "11:00–19:30", "餺飥替選", {"lat": 35.49575, "lng": 138.75686, "sub": ["鄉土料理"], "tier": "在地推薦", "sc": 4.19}], ["fuji", "Hoshizora Kitchen", "ほし空キッチン 富士吉田", "美食", "富士吉田的早午餐小店，早上 7:30 開，評價滿分等級。", "7:30–15:00", "12/5 富士吉田", {"lat": 35.49226, "lng": 138.80227, "sub": ["咖啡廳"], "tier": "高人氣", "sc": 4.62}], ["fuji", "Fuji Ramen Restaurant", "Fuji Ramen 富士吉田", "美食", "忠靈塔附近的拉麵店，早上 8 點就開，爬完樓梯來一碗。", "8:00–18:00", "12/5 忠靈塔附近", {"lat": 35.49802, "lng": 138.80075, "sub": ["拉麵・麵"], "tier": "高人氣", "sc": 4.62}], ["fuji", "魚しげ Uoshige", "魚しげ 富士吉田", "美食", "富士吉田的海鮮料理店，評價很高。", "營業時間出發前請確認", "", {"lat": 35.49404, "lng": 138.80263, "sub": ["壽司・海鮮"], "tier": "高人氣", "sc": 4.58}], ["fuji", "麵許皆傳", "麺許皆伝 富士吉田", "美食", "在地人推薦的吉田烏龍麵名店，麵條粗又有嚼勁，只收現金。", "11:00–14:00・週日公休（12/5 去）", "12/5 午餐", {"lat": 35.4791, "lng": 138.80067, "sub": ["鄉土料理", "拉麵・麵"], "tier": "在地推薦", "sc": 4.26}], ["fuji", "和牛壽喜燒 志村", "和牛すき焼き 志村 富士吉田", "美食", "富士吉田的和牛壽喜燒，評價很高。", "午 11:00–15:00・晚 17:30–21:00", "", {"lat": 35.4923, "lng": 138.80208, "sub": ["鍋物・壽喜燒"], "tier": "在地推薦", "sc": 4.4}], ["fuji", "Kalyamdu 南印度料理", "Kalyamdu 富士吉田", "美食", "富士吉田的南印度料理，有不少蔬食選擇。", "週二公休", "", {"lat": 35.49269, "lng": 138.80376, "sub": ["蔬食"], "tier": "在地推薦", "sc": 4.13}], ["fuji", "THE PARK", "THE PARK 山中湖", "美食", "山中湖畔的大型咖啡餐廳，評論數多、座位寬敞。", "10:00–15:30", "12/6 山中湖", {"lat": 35.42763, "lng": 138.86807, "sub": ["咖啡廳"], "tier": "在地推薦", "sc": 4.17}], ["fuji", "河口湖自然生活館 咖啡", "河口湖自然生活館", "美食", "大石公園內，二樓看富士山，藍莓霜淇淋和果醬是招牌。", "9:15–16:45", "12/5 大石公園", {"lat": 35.52281, "lng": 138.74563, "sub": ["咖啡廳", "甜點・麵包"], "tier": "在地推薦", "sc": 4.08}], ["tokyo", "一龍 Ichiryu 拉麵", "一龍 浅草", "美食", "飯店步行就到，和牛味噌拉麵很有名，營業到半夜。", "9:30–24:00", "飯店旁", {"lat": 35.71356, "lng": 139.79789, "sub": ["拉麵・麵"], "tier": "名店級", "sc": 4.77}], ["tokyo", "牛門 清真拉麵 淺草", "Gyumon Halal Ramen Asakusa", "美食", "評論數破萬的拉麵店，有清真與純素拉麵。", "11:30–22:00", "飯店旁", {"lat": 35.7167, "lng": 139.79907, "sub": ["拉麵・麵", "蔬食"], "tier": "名店級", "sc": 4.89}], ["tokyo", "Tempura Asakusa SAKURA", "Tempura Asakusa SAKURA", "美食", "雷門旁大樓 7 樓的天婦羅，有蔬食天婦羅套餐。", "12:00–20:30", "", {"lat": 35.7102, "lng": 139.79672, "sub": ["和食・居酒屋", "蔬食"], "tier": "名店級", "sc": 4.71}], ["tokyo", "鴨と葱 鴨蔥拉麵", "鴨to葱 浅草", "美食", "鴨湯拉麵，湯頭清甜，評價很高。", "營業時間以現場為準", "", {"lat": 35.7108, "lng": 139.79557, "sub": ["拉麵・麵"], "tier": "高人氣", "sc": 4.66}], ["tokyo", "和牛壽喜燒 淺草 光太郎", "和牛すき焼き 浅草 光太郎", "美食", "淺草的和牛壽喜燒，早上 9 點就開。", "9:00–21:00", "12/8 晚餐", {"lat": 35.71148, "lng": 139.79603, "sub": ["鍋物・壽喜燒"], "tier": "高人氣", "sc": 4.63}], ["tokyo", "Feijoa Cafe", "Feijoa Cafe Asakusa", "美食", "淺草北邊的小咖啡館，早上 7 點開，早餐好選擇。", "7:00–15:00", "12/9 早餐", {"lat": 35.7193, "lng": 139.79589, "sub": ["咖啡廳"], "tier": "高人氣", "sc": 4.65}], ["tokyo", "Chotto Matcha", "Chotto Matcha Asakusa", "美食", "抹茶飲品與甜點小店。", "9:00–18:00", "", {"lat": 35.71284, "lng": 139.79936, "sub": ["咖啡廳", "甜點・麵包"], "tier": "高人氣", "sc": 4.61}], ["tokyo", "MOCCA COFFEE", "MOCCA COFFEE Asakusa", "美食", "藏前方向的咖啡館，早上 8 點開。", "8:00–14:00", "12/9 早餐", {"lat": 35.70765, "lng": 139.79518, "sub": ["咖啡廳"], "tier": "高人氣", "sc": 4.52}], ["tokyo", "FUGLEN ASAKUSA", "FUGLEN ASAKUSA", "美食", "挪威名店的淺草分店，白天咖啡、晚上變酒吧。", "8:00–21:00", "住淺草順路", {"lat": 35.71445, "lng": 139.79398, "sub": ["咖啡廳"], "tier": "在地推薦", "sc": 4.09}], ["tokyo", "Fujifuku 蔬食居酒屋", "Fujifuku Nishiasakusa vegan", "美食", "西淺草的純素料理，只開晚上。", "18:00–22:30", "12/8 晚餐", {"lat": 35.71194, "lng": 139.791, "sub": ["蔬食"], "tier": "高人氣", "sc": 4.54}], ["tokyo", "悅納 Injoy", "悦納 浅草", "美食", "淺草站附近的蔬食餐廳兼茶屋。", "午 11:00–14:00・晚 17:00–19:00", "", {"lat": 35.71273, "lng": 139.79868, "sub": ["蔬食"], "tier": "高人氣", "sc": 4.51}], ["tokyo", "Marugoto Vegan Dining", "まるごとヴィーガン 浅草", "美食", "淺草的純素和食，丼飯和定食都有。", "午 11:30–15:00・晚 18:00–20:30", "", {"lat": 35.71174, "lng": 139.79889, "sub": ["蔬食"], "tier": "在地推薦", "sc": 4.38}], ["tokyo", "Brewman Tokyo GINZA", "Brewman Tokyo GINZA", "美食", "銀座 2 丁目的精品咖啡館。", "8:00–16:00", "12/8 順路", {"lat": 35.67155, "lng": 139.77009, "sub": ["咖啡廳"], "tier": "高人氣", "sc": 4.6}], ["tokyo", "ROAR COFFEE Ginza", "ROAR COFFEE Tokyo Ginza", "美食", "銀座的咖啡站，果汁和咖啡都有。", "8:00–18:00", "", {"lat": 35.67077, "lng": 139.76926, "sub": ["咖啡廳"], "tier": "在地推薦", "sc": 4.41}], ["tokyo", "SORANOIRO 銀座本店", "そらのいろ 銀座本店", "美食", "純素、無麩質的蔬菜拉麵，蔬食者也能吃拉麵。", "午 11:00–14:30・晚 17:00–21:00", "12/8 順路", {"lat": 35.67184, "lng": 139.76979, "sub": ["拉麵・麵", "蔬食"], "tier": "高人氣", "sc": 4.52}], ["tokyo", "Wagyu & Vegan 漢堡 銀座", "Wagyu & Vegan Hamburger Tokyo Ginza", "美食", "和牛漢堡和純素漢堡都有，一起去吃的人各點各的。", "11:00–23:00", "", {"lat": 35.66825, "lng": 139.76453, "sub": ["蔬食", "燒肉・和牛"], "tier": "高人氣", "sc": 4.67}], ["tokyo", "Ain Soph. Ginza", "Ain Soph. Ginza", "美食", "東京知名的純素餐廳，甜點也很受歡迎。", "午 11:30–16:00・晚 17:00–21:00", "", {"lat": 35.67018, "lng": 139.76798, "sub": ["蔬食", "甜點・麵包"], "tier": "在地推薦", "sc": 4.08}], ["tokyo", "壽司處 うにとら", "すし処 うにとら 築地", "美食", "築地場外的海鮮壽司，早上 7 點就開。", "7:00–22:00", "12/8 早午餐", {"lat": 35.66563, "lng": 139.77035, "sub": ["壽司・海鮮"], "tier": "在地推薦", "sc": 4.44}], ["tokyo", "築地 壽司大 本館", "築地 寿司大 本館", "美食", "築地人氣壽司老店，常常要排隊。", "10:30–21:30", "", {"lat": 35.66458, "lng": 139.7723, "sub": ["壽司・海鮮"], "tier": "在地推薦", "sc": 4.37}], ["tokyo", "薩摩 六本木 燒肉", "Satsuma Roppongi 焼肉", "美食", "六本木的黑毛和牛燒肉，評價非常高，營業到隔天早上。", "18:00–翌 8:00", "", {"lat": 35.66231, "lng": 139.7329, "sub": ["燒肉・和牛"], "tier": "名店級", "sc": 4.85}], ["tokyo", "赤べこや 麻布台", "赤べこや 麻布台", "美食", "麻布台的韓式／和牛燒肉，午晚都開。", "午 11:30–13:30・晚 17:30–22:30", "12/7 順路", {"lat": 35.66086, "lng": 139.73856, "sub": ["燒肉・和牛"], "tier": "名店級", "sc": 4.75}], ["tokyo", "肉ガトウ 六本木之丘", "Nikugatou Roppongi Hills", "美食", "六本木之丘裡的燒肉，看完燈飾就在旁邊。", "午 11:00–14:00・晚 17:00–22:00", "", {"lat": 35.66075, "lng": 139.72915, "sub": ["燒肉・和牛"], "tier": "高人氣", "sc": 4.68}], ["tokyo", "Nirai 純素壽司", "Nirai Roppongi Vegan Sushi", "美食", "六本木的純素壽司，蔬食也能吃到壽司。", "17:30–22:00", "", {"lat": 35.66327, "lng": 139.73448, "sub": ["蔬食", "壽司・海鮮"], "tier": "在地推薦", "sc": 4.3}], ["tokyo", "FALAFEL BROTHERS 六本木", "FALAFEL BROTHERS ROPPONGI", "美食", "中東炸豆丸子捲，純素又方便外帶。", "8:30–21:30", "", {"lat": 35.66235, "lng": 139.73282, "sub": ["蔬食"], "tier": "在地推薦", "sc": 4.33}], ["tokyo", "Alchemy 麻布台之丘", "Alchemy 麻布台ヒルズ", "美食", "麻布台之丘森 JP 塔 4 樓的蔬食餐廳。", "11:00–20:00", "12/7 順路", {"lat": 35.66093, "lng": 139.74045, "sub": ["蔬食"], "tier": "在地推薦", "sc": 4.12}], ["tokyo", "%ARABICA 麻布台之丘", "%ARABICA Tokyo Azabudai Hills", "美食", "京都起家的咖啡名店，麻布台之丘有兩家。", "8:00–20:00（B1F）", "12/7 順路", {"lat": 35.66204, "lng": 139.74357, "sub": ["咖啡廳"], "tier": "在地推薦", "sc": 4.14}]];
+const inPlan=(s)=>!!(s[7]&&s[7].plan);
 const AREAS=[["all","全部"],["rec","順路推薦"],["fav","我的收藏"],["fuji","富士山區"],["tokyo","東京"]];
 const CATS=["全部類型",...[...new Set(SPOTS.map(s=>s[3]))]];
-let fav=store.get("ft_fav",[]), filt="all", cat="全部類型";
-const fEl=document.getElementById("filters"), cEl=document.getElementById("cats"), sEl=document.getElementById("spots");
+const SUBS=["全部美食","燒肉・和牛","拉麵・麵","鄉土料理","壽司・海鮮","鍋物・壽喜燒","和食・居酒屋","咖啡廳","蔬食","甜點・麵包"];
+const TIERCLS={"名店級":"t1","高人氣":"t2","在地推薦":"t3"};
+let fav=store.get("ft_fav",[]), filt="all", cat="全部類型", sub="全部美食";
+const fEl=document.getElementById("filters"), cEl=document.getElementById("cats"), subEl=document.getElementById("subs"), sEl=document.getElementById("spots");
+function spotList(){
+  const rank=s=>inPlan(s)?2:(s[6]?1:0);
+  return SPOTS.filter(s=>(filt==="all"||(filt==="fav"?fav.includes(s[1]):filt==="rec"?(!!s[6]&&!inPlan(s)):s[0]===filt))
+      &&(cat==="全部類型"||s[3]===cat)
+      &&(cat!=="美食"||sub==="全部美食"||((s[7].sub||[]).includes(sub))))
+    .sort((a,b)=>(rank(b)-rank(a))||((b[7].sc||0)-(a[7].sc||0)));
+}
 function renderSpots(popName){
   fEl.innerHTML=AREAS.map(([k,l])=>`<button class="fbtn" aria-pressed="${filt===k}" data-f="${k}">${l}${k==="fav"?` ${fav.length}`:""}</button>`).join("");
   cEl.innerHTML=CATS.map(c=>`<button class="fbtn" aria-pressed="${cat===c}" data-c="${c}">${c}</button>`).join("");
-  const rank=s=>inPlan(s[1],s[2])?2:(s[6]?1:0);
-  const list=SPOTS.filter(s=>(filt==="all"||(filt==="fav"?fav.includes(s[1]):filt==="rec"?!!s[6]:s[0]===filt))&&(cat==="全部類型"||s[3]===cat))
-    .sort((a,b)=>rank(b)-rank(a));
-  sEl.innerHTML=list.length?list.map(([a,n,jp,tag,d,tip,rec])=>`<div class="spot card ${a}${inPlan(n,jp)?" inplan":""}"><span class="tag">${tag}</span>${rec&&!inPlan(n,jp)?`<span class="recb">${esc(rec)}</span>`:""}
+  if(cat==="美食"){
+    const base=SPOTS.filter(s=>s[3]==="美食"&&(filt==="all"||filt==="rec"||filt==="fav"||s[0]===filt));
+    subEl.innerHTML=SUBS.map(c=>{const n=c==="全部美食"?base.length:base.filter(s=>(s[7].sub||[]).includes(c)).length;
+      return n?`<button class="fbtn sub${c==="咖啡廳"||c==="蔬食"?" hot":""}" aria-pressed="${sub===c}" data-s="${c}">${c}<em> ${n}</em></button>`:""}).join("")+
+      `<p class="subnote">${icon("i-sparkle")}依 Google 地圖評分與評論數加權排序（2026/11 整理），分成名店級、高人氣、在地推薦三級；營業時間以現場為準。</p>`;
+    subEl.hidden=false;
+  } else subEl.hidden=true;
+  const list=spotList();
+  sEl.innerHTML=list.length?list.map(s=>{const [a,n,jp,tag,d,tip,rec,x]=s;const ip=inPlan(s);
+   return `<div class="spot card ${a}${ip?" inplan":""}" data-card="${esc(n)}"><span class="tag">${tag}</span>${rec&&!ip?`<span class="recb">${esc(rec)}</span>`:""}
    <button class="heart${popName===n?" pop":""}" aria-pressed="${fav.includes(n)}" aria-label="收藏 ${esc(n)}" data-h="${esc(n)}"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
-   <h3>${esc(n)}</h3><div class="jp">${esc(jp)}</div><p>${esc(d)}</p><div class="tip">${esc(tip)}</div>
-   <div class="row"><a class="maplink" href="${map(jp)}" target="_blank" rel="noopener">${icon("i-pin")}地圖</a><button class="mini" type="button" data-ask="介紹一下「${esc(n)}」，冬天去要注意什麼？">問小富</button></div></div>`).join("")
+   <h3>${esc(n)}</h3><div class="jp">${esc(jp)}</div>
+   ${x.tier||x.sub?`<div class="foodline">${x.tier?`<span class="tier ${TIERCLS[x.tier]}">${x.tier}</span>`:""}${(x.sub||[]).map(t=>`<span class="subchip">${esc(t)}</span>`).join("")}</div>`:""}
+   <p>${esc(d)}</p><div class="tip">${esc(tip)}</div>
+   <div class="row"><span class="rowl">${x.lat?`<button class="maplink onmap" type="button" data-onmap="${esc(n)}">${icon("i-pin")}在地圖看</button>`:""}<a class="maplink" href="${map(jp)}" target="_blank" rel="noopener">Google ↗</a></span><button class="mini" type="button" data-ask="介紹一下「${esc(n)}」，冬天去要注意什麼？">問小富</button></div></div>`}).join("")
    :`<div class="empty">${filt==="fav"?"還沒有收藏，到「全部」按愛心收藏想去的景點吧！":"這個分類沒有景點"}</div>`;
+  if(filt==="fuji"||filt==="tokyo")mapRegion=filt;
+  updateMap();
 }
-fEl.addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){filt=b.dataset.f;renderSpots()}});
-cEl.addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(b){cat=b.dataset.c;renderSpots()}});
+fEl.addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){filt=b.dataset.f;renderSpots();const nb=fEl.querySelector(`[data-f="${filt}"]`);nb&&nb.focus()}});
+cEl.addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(b){cat=b.dataset.c;sub="全部美食";renderSpots();const nb=cEl.querySelector(`[data-c="${cat}"]`);nb&&nb.focus()}});
+subEl.addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(b){sub=b.dataset.s;renderSpots();const nb=subEl.querySelector(`[data-s="${sub}"]`);nb&&nb.focus()}});
 sEl.addEventListener("click",e=>{const h=e.target.closest("[data-h]");if(h){const n=h.dataset.h;const adding=!fav.includes(n);fav=adding?[...fav,n]:fav.filter(x=>x!==n);store.set("ft_fav",fav);renderSpots(adding?n:null);
     const nb=sEl.querySelector(`[data-h="${CSS.escape(n)}"]`);nb&&nb.focus();return}
+  const m=e.target.closest("[data-onmap]");if(m){selectSpot(m.dataset.onmap,true);return}
   const a=e.target.closest("[data-ask]");if(a){go("guide");ask(a.dataset.ask)}});
+
+/* ---------- 景點地圖（Leaflet + OpenStreetMap/CARTO 底圖） ---------- */
+const HOTELS=[{n:"河口湖森林樂天住宿別墅",r:"fuji",lat:35.47875,lng:138.76059,d:"12/4–12/6"},{n:"富士河口湖溫泉飯店 Asafuji",r:"fuji",lat:35.51229,lng:138.77489,d:"12/6–12/7"},{n:"OTHER SPACE Asakusa",r:"tokyo",lat:35.71640,lng:139.79739,d:"12/7–12/9"}];
+const REG={fuji:{c:[35.485,138.80],z:11,n:"富士山區"},tokyo:{c:[35.69,139.77],z:12,n:"東京"}};
+let myPos=null, mapRegion=(dayIdx>=3&&dayIdx<6)?"tokyo":"fuji", selName=null, lastFit="";
+let lmap=null, pinLayer=null, lineLayer=null, tiles=null, tileOK=false, tileErr=0, meMarker=null;
+const mapWrap=document.getElementById("mapwrap"), mapBox=document.getElementById("spotmap"), mapInfo=document.getElementById("mapinfo"), mapHead=document.getElementById("maphead");
+const PIN={絕景:["see","i-see"],文化:["see","i-see"],冒險:["see","i-see"],夜景:["night","i-night"],購物:["shop","i-flag"],美食:["food","i-food"]};
+const km=(a,b)=>{const R=6371,r=Math.PI/180,x=(b.lat-a.lat)*r,y=(b.lng-a.lng)*r,h=Math.sin(x/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+function tileUrl(){return document.documentElement.getAttribute("data-mode")==="dark"?"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png":"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"}
+function setTiles(){
+  if(!lmap)return; if(tiles)lmap.removeLayer(tiles); tileOK=false; tileErr=0;
+  tiles=L.tileLayer(tileUrl(),{maxZoom:19,subdomains:"abcd",attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>・地點參考 Google 地圖'});
+  tiles.on("tileload",()=>{if(!tileOK){tileOK=true;mapWrap.classList.remove("notiles")}});
+  tiles.on("tileerror",()=>{if(!tileOK&&++tileErr>=3)mapWrap.classList.add("notiles")});
+  tiles.addTo(lmap);
+}
+document.addEventListener("ft-mode",()=>setTiles());
+function initMap(){
+  if(lmap)return true;
+  if(!window.L||!mapBox){mapWrap.classList.add("nolib");return false}
+  lmap=L.map(mapBox,{zoomControl:true,scrollWheelZoom:false,attributionControl:true,center:REG[mapRegion].c,zoom:REG[mapRegion].z});
+  lmap.attributionControl.setPrefix(false);
+  L.control.scale({imperial:false,maxWidth:90}).addTo(lmap);
+  pinLayer=L.layerGroup().addTo(lmap); lineLayer=L.layerGroup().addTo(lmap);
+  setTiles();
+  return true;
+}
+function pinIcon(s,sel){const [k,ic]=PIN[s[3]]||["see","i-see"];
+  return L.divIcon({className:"pinwrap",html:`<span class="pin p-${k}${inPlan(s)?" plan":""}${sel?" sel":""}"><svg class="ic" aria-hidden="true"><use href="#${ic}"/></svg></span>`,iconSize:[32,32],iconAnchor:[16,30],tooltipAnchor:[0,-28]})}
+function hotelIcon(){return L.divIcon({className:"pinwrap",html:`<span class="pin p-hotel"><svg class="ic" aria-hidden="true"><use href="#i-bed"/></svg></span>`,iconSize:[32,32],iconAnchor:[16,30],tooltipAnchor:[0,-28]})}
+function meIcon(){return L.divIcon({className:"pinwrap",html:`<span class="me-dot"></span>`,iconSize:[22,22],iconAnchor:[11,11]})}
+function originFor(region){
+  if(myPos&&km(myPos,{lat:REG[region].c[0],lng:REG[region].c[1]})<60)return {lat:myPos.lat,lng:myPos.lng,label:"你現在的位置"};
+  const h=region==="tokyo"?HOTELS[2]:((dayIdx===2)?HOTELS[1]:HOTELS[0]);
+  return {lat:h.lat,lng:h.lng,label:"住宿「"+h.n+"」"};
+}
+function regionList(){return spotList().filter(s=>s[0]===mapRegion&&s[7].lat)}
+function updateMap(){
+  if(!mapWrap||document.getElementById("v-spots").hidden)return;
+  mapHead.innerHTML=`<div class="seg" role="group" aria-label="地圖區域">${["fuji","tokyo"].map(r=>`<button type="button" class="chip-b" aria-pressed="${mapRegion===r}" data-reg="${r}">${icon(r==="fuji"?"i-mtn":"i-tower")}${REG[r].n}</button>`).join("")}</div>
+    <button type="button" class="chip-b geo" data-mloc="1">${icon("i-locate")}我的位置</button>`;
+  if(!initMap()){mapInfo.innerHTML=`<p class="mapnote">地圖元件載入不到（可能沒有網路），清單和「Google ↗」連結還是可以用。</p>`;return}
+  const list=regionList();
+  pinLayer.clearLayers();
+  for(const s of list){
+    const mk=L.marker([s[7].lat,s[7].lng],{icon:pinIcon(s,s[1]===selName),keyboard:true,title:s[1],zIndexOffset:s[1]===selName?1000:(inPlan(s)?200:0)});
+    mk.bindTooltip(esc(s[1]),{className:"cute",direction:"top"});
+    mk.on("click",()=>selectSpot(s[1],false));
+    mk.addTo(pinLayer);
+  }
+  for(const h of HOTELS.filter(h=>h.r===mapRegion)){
+    L.marker([h.lat,h.lng],{icon:hotelIcon(),zIndexOffset:500,title:h.n}).bindTooltip(`${esc(h.n)}・${h.d}`,{className:"cute",direction:"top"}).addTo(pinLayer);
+  }
+  if(meMarker){lmap.removeLayer(meMarker);meMarker=null}
+  if(myPos){meMarker=L.marker([myPos.lat,myPos.lng],{icon:meIcon(),zIndexOffset:2000,interactive:false}).addTo(lmap)}
+  const key=mapRegion+"|"+filt+"|"+cat+"|"+sub+"|"+list.length;
+  if(key!==lastFit){lastFit=key;
+    const pts=list.map(s=>[s[7].lat,s[7].lng]).concat(HOTELS.filter(h=>h.r===mapRegion).map(h=>[h.lat,h.lng]));
+    if(pts.length>1)lmap.fitBounds(pts,{padding:[28,28],maxZoom:15});else lmap.setView(REG[mapRegion].c,REG[mapRegion].z);
+  }
+  const sel=selName&&list.find(s=>s[1]===selName);
+  drawInfo(sel||null);
+}
+function drawInfo(s){
+  lineLayer.clearLayers();
+  if(!s){mapInfo.innerHTML=`<div class="legend"><span><i class="lg p-see"></i>景點</span><span><i class="lg p-food"></i>美食</span><span><i class="lg p-night"></i>夜景</span><span><i class="lg p-shop"></i>購物</span><span><i class="lg p-hotel"></i>住宿</span><span><i class="lg plan"></i>在行程中</span>${myPos?'<span><i class="lg me"></i>你在這</span>':""}</div>
+    <p class="mapnote">點地圖上的圖釘，看距離、要走多久和交通方式。目前顯示 ${regionList().length} 個${REG[mapRegion].n}的點。</p>`;return}
+  const o=originFor(mapRegion), p={lat:s[7].lat,lng:s[7].lng}, d=km(o,p);
+  const walk=Math.round(d*1.3/4.5*60), car=Math.max(3,Math.round(d*1.35/(mapRegion==="tokyo"?18:32)*60)+2);
+  const ride=mapRegion==="tokyo"?(d<1.2?"走路就到，不用搭車":`地鐵／電車約 ${Math.round(d*1.3/20*60)+10} 分（含轉乘步行，實際以路線為準）`):(d<1.2?"走路就到":"周遊巴士班次約 15–30 分一班，趕時間就搭計程車");
+  const fmtD=d<1?Math.round(d*1000)+" 公尺":d.toFixed(1)+" 公里";
+  L.polyline([[o.lat,o.lng],[p.lat,p.lng]],{color:"#FF8A4C",weight:3,dashArray:"6 8",opacity:.9}).addTo(lineLayer);
+  L.marker([(o.lat+p.lat)/2,(o.lng+p.lng)/2],{icon:L.divIcon({className:"pinwrap",html:`<span class="distlbl">${fmtD}</span>`,iconSize:[70,22],iconAnchor:[35,11]}),interactive:false}).addTo(lineLayer);
+  const x=s[7], dest=`${p.lat},${p.lng}`, orig=`${o.lat},${o.lng}`;
+  mapInfo.innerHTML=`<div class="mi">
+    <div class="mi-h"><span class="pin p-${(PIN[s[3]]||["see"])[0]} small"><svg class="ic" aria-hidden="true"><use href="#${(PIN[s[3]]||["","i-see"])[1]}"/></svg></span><div><b>${esc(s[1])}</b><small>${esc(s[3])}${x.tier?"・"+x.tier:""}${x.sub?"・"+x.sub.map(esc).join("、"):""}${inPlan(s)?"・在行程中":""}</small></div><button type="button" class="mi-x" data-mclose="1" aria-label="取消選取">×</button></div>
+    <div class="mi-d">從${esc(o.label)}出發 <b>${fmtD}</b>（直線距離）</div>
+    <div class="mi-t"><span>${icon("i-walk")}走路約 ${walk} 分</span><span>${icon("i-car")}計程車約 ${car} 分</span></div>
+    <div class="mi-r">${icon("i-bus")}${ride}</div>
+    <div class="mi-a"><a class="addbtn" href="https://www.google.com/maps/dir/?api=1&origin=${orig}&destination=${dest}&travelmode=transit" target="_blank" rel="noopener">大眾運輸路線 ↗</a><a class="chip-b" href="https://www.google.com/maps/dir/?api=1&origin=${orig}&destination=${dest}&travelmode=walking" target="_blank" rel="noopener">走路路線 ↗</a><button type="button" class="chip-b" data-tocard="${esc(s[1])}">看卡片</button></div>
+  </div>`;
+}
+function selectSpot(name,fromCard){
+  const s=SPOTS.find(x=>x[1]===name); if(!s||!s[7].lat)return;
+  if(s[0]!==mapRegion)mapRegion=s[0];
+  selName=name;
+  if(fromCard){if(!regionList().some(x=>x[1]===name)){filt="all";cat="全部類型";sub="全部美食";renderSpots()}else updateMap();
+    mapWrap.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"})} else updateMap();
+  if(lmap)lmap.setView([s[7].lat,s[7].lng],Math.max(lmap.getZoom(),14),{animate:!reduce});
+}
+mapWrap&&mapWrap.addEventListener("click",e=>{
+  const t=e.target.closest("button"); if(!t)return;
+  if(t.dataset.reg){mapRegion=t.dataset.reg;selName=null;updateMap();const nb=mapHead.querySelector(`[data-reg="${mapRegion}"]`);nb&&nb.focus()}
+  else if(t.dataset.mclose){selName=null;updateMap()}
+  else if(t.dataset.tocard){const c=sEl.querySelector(`[data-card="${CSS.escape(t.dataset.tocard)}"]`);if(c){c.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});c.classList.remove("flash");void c.offsetWidth;c.classList.add("flash")}}
+  else if(t.dataset.mloc){mapLocate(t)}
+});
+function mapLocate(btn){
+  const env=envInfo();
+  if(env.claude||!navigator.geolocation){showGuide("claude");return}
+  if(env.inapp){showGuide("inapp");return}
+  btn.disabled=true;btn.lastChild.textContent="定位中…";
+  navigator.geolocation.getCurrentPosition(pos=>{
+    myPos={lat:pos.coords.latitude,lng:pos.coords.longitude};
+    const near=Object.keys(REG).find(r=>km(myPos,{lat:REG[r].c[0],lng:REG[r].c[1]})<60);
+    if(near)mapRegion=near;
+    updateMap();
+    if(near&&lmap)lmap.setView([myPos.lat,myPos.lng],14,{animate:!reduce});
+    else mapInfo.insertAdjacentHTML("afterbegin",`<p class="mapnote warn">定位成功，不過你目前不在富士山區或東京附近，距離先從住宿算。</p>`);
+  },err=>{updateMap();showGuide(err&&err.code===1?"denied":err&&err.code===2?"off":"timeout")},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+}
+function onSpotsShown(){setTimeout(()=>{updateMap();lmap&&lmap.invalidateSize()},30)}
 renderSpots();
 
 /* ---------- confetti ---------- */
@@ -1211,6 +2040,7 @@ async function locate(retry){
     navigator.geolocation.getCurrentPosition(pos=>{
       if(finished)return; finished=true; clearTimeout(guard);
       const {latitude:la,longitude:lo}=pos.coords;
+      myPos={lat:la,lng:lo};
       let best=null,bd=1e9; for(const k in AREA){const d=distKm(la,lo,AREA[k].lat,AREA[k].lon);if(d<bd){bd=d;best=k}}
       if(bd>40){P.locArea=null;done(`定位成功，不過你目前不在行程區域附近（最近的是${AREA[best].n}，約 ${Math.round(bd)} 公里），先手動選擇吧！`,true);return}
       P.locArea=best;P.area=best;
@@ -1246,7 +2076,7 @@ renderFlex(); loadWx();
 /* ---------- tabs ---------- */
 const tabs=[...document.querySelectorAll(".tab")];
 function go(v){tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.v===v));
-  document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);store.set("ft_tab",v);window.scrollTo({top:0})}
+  document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);store.set("ft_tab",v);window.scrollTo({top:0});if(v==="spots")onSpotsShown()}
 tabs.forEach(t=>t.onclick=()=>go(t.dataset.v));
 const startTab=(location.hash||"").replace("#","");
 go(["plan","spots","flex","guide","check","links","tips"].includes(startTab)?startTab:store.get("ft_tab","plan"));
@@ -1310,6 +2140,11 @@ function smartAnswer(q){
     return "12/9 從淺草去成田機場：\n• 10:00 OTHER SPACE Asakusa 退房\n• 10:15 從淺草站搭都營淺草線，直通京成「Access 特急」往成田機場，約 1 小時、不用轉車\n• 11:45 前完成報到，13:45 JX801 起飛\n\n（12/4 是從成田第二航廈搭直達高速巴士去河口湖，約 2.5 小時。）";
   if(has(/交通|怎麼去|怎麼到|巴士|公車|電車|地鐵|計程車|周遊|JR|搭車|成田|新宿|機場/))
     return "這趟的交通：\n• 12/4 成田第二航廈 → 河口湖站：直達高速巴士約 2.5 小時，要預約\n• 河口湖周邊：周遊巴士紅線、綠線、藍線，買 1–2 日券；清晨去山中湖要搭計程車\n• 12/7 河口湖站 → 新宿：高速巴士約 1 小時 45 分\n• 新宿 → 淺草：JR 中央線到神田轉銀座線，約 35 分\n• 12/9 淺草 → 成田機場：都營淺草線直通京成 Access 特急，約 1 小時不用轉車";
+  if(has(/咖啡|cafe|café|下午茶/i)||has(/素|蔬食|vegan|vegetarian/i)){
+    const want=has(/素|蔬食|vegan|vegetarian/i)?"蔬食":"咖啡廳";
+    const reg=di>=3||has(/東京|淺草|銀座|六本木|麻布/)?"tokyo":di>=0||has(/河口湖|富士|山中湖/)?"fuji":null;
+    const L2=SPOTS.filter(s=>(s[7].sub||[]).includes(want)&&(!reg||s[0]===reg)).sort((a,b)=>(b[7].sc||0)-(a[7].sc||0)).slice(0,6);
+    return `${reg?(reg==="fuji"?"富士山區":"東京")+"的":""}${want}推薦（依 Google 地圖評分與評論數綜合）：\n`+L2.map(s=>`• ${s[1]}（${s[7].tier||""}）：${s[5]}`).join("\n")+"\n\n到「景點」→「美食」→「"+want+"」可以在地圖上看位置和距離。";}
   if(has(/吃|美食|餐廳|午餐|晚餐|早餐|咖啡|甜點|宵夜|喝/)){
     if(di>=0){const f=DAYS[di].items.filter(it=>it[1]==="food");return pre+`${DAYS[di].d} 會吃：\n`+(f.length?f.map(it=>`• ${it[0]} ${it[2]}${it[3]?"："+clean(it[3]):""}`).join("\n"):"這天行程裡沒有排餐廳，可以在路上找找～")}
     return "行程裡的美食亮點：\n• 12/5：餺飥不動茶屋（山梨名物）、Lake Bake Cafe、食呑 Hosha\n• 12/6：Yamanaka Terrace 湖畔早餐、和牛燒肉 Yoritomo\n• 12/7：HARBS 水果千層、新潟雪室熟成燒肉 Nikuine\n• 12/8：Shabusen 涮涮鍋、Glitch Coffee、Age.3 炸三明治\n\n在地必吃：餺飥、吉田烏龍麵、藍莓霜淇淋、信玄餅。問「12/6 吃什麼」可以看單日。";}
