@@ -1186,7 +1186,8 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 @keyframes ring{0%,86%,100%{transform:rotate(0)}89%{transform:rotate(14deg)}93%{transform:rotate(-12deg)}97%{transform:rotate(6deg)}}
 @media (prefers-reduced-motion:reduce){.bellbtn.on svg{animation:none}}
 .bellbtn:hover{transform:rotate(-8deg) scale(1.05)}
-.bellpop{position:absolute;z-index:30;width:min(320px,calc(100vw - 24px));padding:14px 14px 12px}
+.bellpop{position:fixed;z-index:30;width:min(320px,calc(100% - 24px));max-height:calc(100dvh - 90px);overflow:auto;box-sizing:border-box;padding:14px 14px 12px}
+.bellpop p{overflow-wrap:anywhere}
 .bp-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .bp-h b{font-family:var(--f-pop);font-weight:400;font-size:16px}
 .bp-d{margin:8px 0 10px;font-size:13.5px}
@@ -2705,8 +2706,13 @@ const bellBtn=document.getElementById("bellBtn"), bellPop=document.getElementByI
 let sent=store.get("ft_ntf_sent",{});
 document.body.appendChild(bellPop);
 function sysAvail(){try{return "Notification" in window&&!envInfo().claude&&!envInfo().inapp}catch(e){return false}}
-function placeBell(){const r=bellBtn.getBoundingClientRect();bellPop.style.top=(r.bottom+scrollY+10)+"px";bellPop.style.right=Math.max(12,document.documentElement.clientWidth-r.right)+"px"}
+function placeBell(){const r=bellBtn.getBoundingClientRect(),vw=Math.min(innerWidth,document.documentElement.clientWidth||innerWidth);
+  const w=Math.min(320,vw-24);bellPop.style.width=w+"px";bellPop.style.top=Math.max(8,r.bottom+10)+"px";
+  bellPop.style.left=Math.max(12,Math.min(vw-w-12,r.right-w))+"px";
+  if(r.bottom<0)closeBell()}
+function closeBell(){bellPop.hidden=true;bellBtn.setAttribute("aria-expanded","false")}
 addEventListener("resize",()=>{if(!bellPop.hidden)placeBell()});
+addEventListener("scroll",()=>{if(!bellPop.hidden)placeBell()},{passive:true});
 function renderBell(){
   bellBtn.setAttribute("aria-pressed",NT.on);bellBtn.classList.toggle("on",NT.on);
   bellBtn.setAttribute("aria-label",NT.on?"行程提醒：開啟中，點一下設定":"行程提醒：關閉中，點一下設定");
@@ -2744,10 +2750,10 @@ function checkReminders(){
   }
   store.set("ft_ntf_sent",sent);
 }
-bellBtn.addEventListener("click",()=>{const open=bellPop.hidden;bellPop.hidden=!open;bellBtn.setAttribute("aria-expanded",open);if(open){placeBell();renderBell();const s=bellPop.querySelector("[data-nt=toggle]");s&&s.focus()}});
+bellBtn.addEventListener("click",()=>{const open=bellPop.hidden;bellPop.hidden=!open;bellBtn.setAttribute("aria-expanded",open);if(open){placeBell();renderBell();const s=bellPop.querySelector("[data-nt=toggle]");s&&s.focus({preventScroll:true})}});
 bellPop.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.nt==="toggle"){NT.on=!NT.on;store.set("ft_ntf_on",NT.on);renderBell();bellPop.querySelector("[data-nt=toggle]").focus();if(NT.on){toast("行程提醒已開啟",`行程前 ${NT.lead} 分鐘會提醒你`,{ms:5000});checkReminders()}}
-  else if(b.dataset.nlead){NT.lead=+b.dataset.nlead;store.set("ft_ntf_lead",NT.lead);renderBell();bellPop.querySelector(`[data-nlead="${NT.lead}"]`).focus()}
+  if(b.dataset.nt==="toggle"){NT.on=!NT.on;store.set("ft_ntf_on",NT.on);renderBell();bellPop.querySelector("[data-nt=toggle]").focus({preventScroll:true});if(NT.on){toast("行程提醒已開啟",`行程前 ${NT.lead} 分鐘會提醒你`,{ms:5000});checkReminders()}}
+  else if(b.dataset.nlead){NT.lead=+b.dataset.nlead;store.set("ft_ntf_lead",NT.lead);renderBell();bellPop.querySelector(`[data-nlead="${NT.lead}"]`).focus({preventScroll:true})}
   else if(b.dataset.nt==="test"){const x=DAYS[(dayIdx>=0&&dayIdx<6)?dayIdx:0].items.find(it=>toMin(it[0])!=null);toast(`${NT.lead} 分鐘後：${x[2]}`,`${x[0]}・${clean(x[3])}`.slice(0,80),{day:(dayIdx>=0&&dayIdx<6)?dayIdx:0,tag:"test"})}
   else if(b.dataset.nt==="close"){bellPop.hidden=true;bellBtn.setAttribute("aria-expanded","false");bellBtn.focus()}
 });
