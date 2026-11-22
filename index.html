@@ -1305,6 +1305,21 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .xia b{font-size:15px}
 .xcopy{margin-top:4px}
 
+.xmine{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;font-size:13px;color:var(--muted)}
+.xmine b{color:var(--ink);font-variant-numeric:tabular-nums}
+.xmine .due b{color:var(--on);background:var(--sun);border:1.5px solid var(--edge);border-radius:999px;padding:0 7px}
+.xowe{padding:14px;margin-bottom:14px;background:linear-gradient(160deg,var(--sun-soft),var(--paper) 75%)}
+.xowe h3{font-size:16px}.xowe .note{margin:2px 0 8px;font-size:12px;color:var(--muted)}
+.xorow{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:8px 0;border-top:1.5px dashed var(--hair)}
+.xav{width:34px;height:34px;border-radius:50%;border:2px solid var(--edge);background:var(--lilac);color:var(--on);display:grid;place-items:center;font-weight:900}
+.xon{display:flex;flex-direction:column;min-width:0}.xon small{font-size:12px;color:var(--muted)}
+.xov{display:flex;flex-direction:column;align-items:flex-end;font-variant-numeric:tabular-nums}.xov small{font-size:11.5px;color:var(--muted)}
+.okc{color:var(--mint);font-size:20px}
+.xfor{color:var(--ink);font-weight:700}
+.xfor-r{align-items:start}.xfor-r .lab{padding-top:7px}
+.xnewp{display:flex;gap:6px;margin-top:8px}
+.xnewp input{flex:1;min-width:0;height:32px;border:2px dashed var(--edge);border-radius:12px;background:var(--paper);color:var(--ink);padding:0 10px;font:inherit;font-size:16px}
+.xfhint{display:block;margin-top:6px;font-size:12px;color:var(--muted)}
 /* ---------- 懸浮小富 ---------- */
 .fab{position:fixed;z-index:27;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(86px + env(safe-area-inset-bottom,0px));width:62px;height:62px;border-radius:50%;border:2.5px solid var(--edge);background:var(--sun);box-shadow:var(--shadow-lg);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .15s}
 .fab svg{width:44px;height:41px;margin-top:2px}
@@ -2562,7 +2577,7 @@ const INTENTS=[
  ["night",/聖誕|燈飾|點燈|夜景|市集|晚上去哪|晚上做什麼/],
  ["photo",/拍照|攝影|打卡|網美|好拍|拍哪/],
  ["phrase",/日文|日語|怎麼說|怎麼講|翻譯|日本話/],
- ["spent",/記帳|記一筆|花了多少|花多少了|總共花|總花費|支出|帳目|收據|明細/],
+ ["spent",/代墊|欠我|待收|幫誰付|記帳|記一筆|花了多少|花多少了|總共花|總花費|支出|帳目|收據|明細/],
  ["money",/現金|刷卡|信用卡|匯率|換錢|換匯|日圓|日幣|atm|提款|付款|行動支付|applepay/],
  ["suica",/suica|西瓜卡|交通卡|icoca|pasmo|儲值/],
  ["net",/網路|網卡|esim|wifi|wi-fi|sim卡|上網|漫遊/],
@@ -2654,7 +2669,7 @@ function answer(qRaw){
     return "這句我的小卡裡還沒有～「撇步」頁有 42 句常用日文，分成基本、餐廳、購物、交通、住宿、緊急，點一下就能放大。也可以試試問我「日文怎麼說結帳」「日文怎麼說廁所」。";}
   if(H("suica"))return "Suica（西瓜卡）小撇步：\n• iPhone 可以直接在 Apple 錢包新增 Suica，用台灣的信用卡儲值，最方便\n• 東京的電車、地鐵、便利商店、置物櫃都能刷\n• 富士山區的周遊巴士和部分小店可能只收現金，零錢要準備";
   if(H("spent")){const t=exps.reduce((s,x)=>s+toTWD(x),0);const td=todayX();const tt=exps.filter(x=>x.d===td).reduce((s,x)=>s+toTWD(x),0);
-    return exps.length?`目前記了 ${exps.length} 筆，總共約 ${yen(t/rate.v)}（≈ ${nt(t)}）。\n${td}：${nt(tt)}${budget?`\n預算還剩 ${nt(budget-t)}`:""}\n\n到「記帳」頁可以拍收據快速記一筆，小富會幫你讀金額。`:"還沒有記帳喔！到「記帳」頁按「拍明細快速記帳」，拍收據小富就會幫你讀出金額、日期和類別；也可以手動新增。";}
+    return exps.length?`目前記了 ${exps.length} 筆，總共付了約 ${yen(t/rate.v)}（≈ ${nt(t)}），其中自己的 ${nt(exps.reduce((s,x)=>s+mineT(x),0))}。\n${td}：${nt(tt)}${budget?`\n我的預算還剩 ${nt(budget-exps.reduce((s,x)=>s+mineT(x),0))}`:""}${(()=>{const o=owed();const k=Object.keys(o).filter(k=>o[k].due>0.5);return k.length?"\n待收回："+k.map(k=>`${k} ${nt(o[k].due)}`).join("、"):""})()}\n\n到「記帳」頁可以拍收據快速記一筆，小富會幫你讀金額。`:"還沒有記帳喔！到「記帳」頁按「拍明細快速記帳」，拍收據小富就會幫你讀出金額、日期和類別；也可以手動新增。";}
   if(H("money"))return "付款小撇步：\n• 東京大多可以刷卡和用 Suica\n• 富士山區的小店、餐廳和巴士常常只收現金，建議身上帶 ¥20,000–30,000\n• 7-11、全家的 ATM 可以用台灣的金融卡或信用卡提領日圓（要先開通海外提款）\n• 即時匯率可以看「連結」頁的台灣銀行匯率";
   if(H("net"))return "上網小撇步：\n• 出發前買好日本 eSIM 或網卡，到了開飛航模式以外的行動數據就能用\n• 飯店都有 Wi-Fi，密碼不知道可以用日語小卡「Wi-Fi 密碼是什麼？」問櫃台\n• 地圖、翻譯、小富都很吃網路……不過小富沒網路也能回答喔！";
   if(H("plug"))return "插座：日本電壓 100V、插頭是兩扁腳（A 型），和台灣一樣，手機、相機充電器直接插就能用，不用轉接頭。吹風機等高功率電器可能比較沒力，飯店大多有附。";
@@ -2771,7 +2786,12 @@ const XDAYS=["出發前",...DAYS.map(d=>d.d)];
 let exps=store.get("ft_exp",[]);
 let rate=store.get("ft_rate",{v:0.21,src:"預設值",at:""});
 let budget=store.get("ft_budget",0);
-let xDayF="全部", xEdit=null, xForm=null, vision=null;
+let people=store.get("ft_people",[]);
+const frOf=x=>(x.fr&&x.fr.length)?x.fr:["自己"];
+const shareOf=(x,who)=>{const f=frOf(x);return f.includes(who)?toTWD(x)/f.length:0};
+const mineT=x=>shareOf(x,"自己");
+function owed(){const m={};for(const x of exps){const f=frOf(x);for(const w of f){if(w==="自己")continue;m[w]=m[w]||{due:0,done:0,n:0};const v=toTWD(x)/f.length;if(x.st&&x.st[w])m[w].done+=v;else{m[w].due+=v;m[w].n++}}}return m}
+let xDayF="全部", xEdit=null, xForm=null, vision=null, xSettleArm=null;
 const xEl=document.getElementById("xbody");
 const saveX=()=>{try{localStorage.setItem("ft_exp",JSON.stringify(exps))}catch(e){toast("存不下了","照片太多，舊的明細照片可以刪掉一些",{ms:6000})}};
 const toTWD=x=>x.cur==="TWD"?x.amt:x.amt*rate.v;
@@ -2786,11 +2806,13 @@ function renderX(){
   const maxC=Math.max(1,...byCat.map(x=>x[1]));
   const byDay=XDAYS.map(d=>[d,exps.filter(x=>x.d===d).reduce((s,x)=>s+toTWD(x),0)]);
   const maxD=Math.max(1,...byDay.map(x=>x[1]));
-  const bp=budget?Math.min(100,Math.round(totT/budget*100)):0;
+  const myT=exps.reduce((s,x)=>s+mineT(x),0), ow=owed(), owN=Object.keys(ow), dueT=owN.reduce((s,k)=>s+ow[k].due,0);
+  const bp=budget?Math.min(100,Math.round(myT/budget*100)):0;
   xEl.innerHTML=`
   <div class="xsum card">
     <div class="xtot"><span>目前總花費</span><b>${yen(totY)}</b><em>≈ ${nt(totT)}</em></div>
-    ${budget?`<div class="xbud"><div class="bar"><i style="width:${bp}%;background:${bp>=100?"var(--tang)":"var(--mint)"}"></i></div><small>預算 ${nt(budget)}・已用 ${bp}%${totT>budget?"・超出 "+nt(totT-budget):"・還剩 "+nt(budget-totT)}</small></div>`:""}
+    ${owN.length?`<div class="xmine"><span>我自己的 <b>${nt(myT)}</b></span><span>幫別人付 <b>${nt(totT-myT)}</b></span>${dueT>0.5?`<span class="due">待收回 <b>${nt(dueT)}</b></span>`:""}</div>`:""}
+    ${budget?`<div class="xbud"><div class="bar"><i style="width:${bp}%;background:${bp>=100?"var(--tang)":"var(--mint)"}"></i></div><small>我的預算 ${nt(budget)}・已用 ${bp}%${myT>budget?"・超出 "+nt(myT-budget):"・還剩 "+nt(budget-myT)}</small></div>`:""}
     <div class="xrate"><span>1 日圓 ≈ <input id="xrate" type="number" step="0.001" min="0.05" max="1" value="${rate.v}" aria-label="日圓兌台幣匯率"> 台幣</span><small>${esc(rate.src)}${rate.at?"・"+esc(rate.at):""}</small><button type="button" class="chip-b" data-xact="rate">更新匯率</button></div>
     <div class="xbudset"><label for="xbudget">旅費預算（台幣）</label><input id="xbudget" type="number" min="0" step="1000" value="${budget||""}" placeholder="例如 40000"></div>
   </div>
@@ -2800,6 +2822,7 @@ function renderX(){
     <button type="button" class="xadd" data-xact="new">＋ 手動新增</button>
   </div>
   ${xForm?formHTML():""}
+  ${owN.length?`<div class="xowe card"><h3>幫誰付・代墊帳</h3><p class="note">平分的帳會按人數拆開算</p>${owN.map(k=>{const o=ow[k];return `<div class="xorow"><span class="xav">${esc(k.slice(0,1))}</span><span class="xon"><b>${esc(k)}</b><small>${o.due>0.5?`${o.n} 筆待收`:"都收回了"}${o.done>0.5?`・已收回 ${nt(o.done)}`:""}</small></span><span class="xov">${o.due>0.5?`<b>${nt(o.due)}</b><small>≈ ${yen(o.due/rate.v)}</small>`:`<b class="okc">✓</b>`}</span>${o.due>0.5?`<button type="button" class="chip-b" data-xsettle="${esc(k)}">${xSettleArm===k?"確定收回？":"收回了"}</button>`:""}</div>`}).join("")}</div>`:""}
   ${byCat.length?`<div class="xcats card"><h3>分類花費</h3>${byCat.map(([c,v])=>`<div class="xcrow"><span class="xci x-${c[2]}">${icon(c[1])}</span><span class="xcn">${c[0]}</span><span class="xcb"><i class="x-${c[2]}" style="width:${v/maxC*100}%"></i></span><span class="xcv">${nt(v)}</span></div>`).join("")}</div>`:""}
   ${exps.length?`<div class="xdays card"><h3>每天花多少</h3><div class="xdbars">${byDay.map(([d,v])=>`<div class="xdb"><span class="xdv">${v?Math.round(v/1000*10)/10+"k":""}</span><span class="xdc"><i style="height:${v/maxD*100}%"></i></span><span class="xdl">${d==="出發前"?"前":d.slice(3)}</span></div>`).join("")}</div><p class="note">單位：台幣（k＝千元）</p></div>`:""}
   <div class="xfilter">${["全部",...XDAYS].map(d=>`<button type="button" class="chip-b" aria-pressed="${xDayF===d}" data-xday="${d}">${d}</button>`).join("")}</div>
@@ -2811,7 +2834,7 @@ function groupX(list){
   return ds.map(d=>{const L=list.filter(x=>x.d===d);const s=L.reduce((a,x)=>a+toTWD(x),0);
     return `<div class="xgrp"><div class="xgh"><b>${d}</b><span>${nt(s)}</span></div>${L.map(x=>{const c=catOf(x.cat);return `<button type="button" class="xitem card" data-xedit="${x.id}">
       ${x.img?`<img src="${x.img}" alt="" class="xthumb">`:`<span class="xci x-${c[2]}">${icon(c[1])}</span>`}
-      <span class="xin"><b>${esc(x.note||x.cat)}</b><small>${x.cat}・${x.pay}</small></span>
+      <span class="xin"><b>${esc(x.note||x.cat)}</b><small>${x.cat}・${x.pay}${frOf(x).some(w=>w!=="自己")?`・<span class="xfor">${frOf(x).length>1&&frOf(x).includes("自己")?"和 "+esc(frOf(x).filter(w=>w!=="自己").join("、"))+" 平分":"幫 "+esc(frOf(x).join("、"))+(frOf(x).length>1?" 平分":"")+" 付"}${frOf(x).filter(w=>w!=="自己").every(w=>x.st&&x.st[w])?" ✓":""}</span>`:""}</small></span>
       <span class="xia"><b>${x.cur==="TWD"?nt(x.amt):yen(x.amt)}</b><small>${x.cur==="TWD"?"":"≈ "+nt(toTWD(x))}</small></span></button>`}).join("")}</div>`}).join("");
 }
 function formHTML(){const f=xForm;
@@ -2823,12 +2846,18 @@ function formHTML(){const f=xForm;
       ${["JPY","TWD"].map(c=>`<button type="button" class="chip-b" aria-pressed="${f.cur===c}" data-fcur="${c}">${c==="JPY"?"日圓":"台幣"}</button>`).join("")}</div></div>
     <div class="xfr"><span class="lab">類別</span><div class="chips">${CATS_X.map(c=>`<button type="button" class="chip-b" aria-pressed="${f.cat===c[0]}" data-fcat="${c[0]}">${icon(c[1])}${c[0]}</button>`).join("")}</div></div>
     <div class="xfr"><span class="lab">付款</span><div class="chips">${PAYS.map(p=>`<button type="button" class="chip-b" aria-pressed="${f.pay===p}" data-fpay="${p}">${p}</button>`).join("")}</div></div>
+    <div class="xfr xfor-r"><span class="lab">幫誰付</span><div><div class="chips">${["自己",...people].map(p=>`<button type="button" class="chip-b" aria-pressed="${f.fr.includes(p)}" data-ffor="${esc(p)}">${p==="自己"?"自己":esc(p)}</button>`).join("")}</div>
+      <div class="xnewp"><input id="xnewp" type="text" maxlength="10" placeholder="輸入名字新增同行的人" aria-label="新增同行的人"><button type="button" class="chip-b" data-xact="addp">＋ 加入</button></div>
+      <small class="xfhint">${f.fr.length>1?`${f.amt?`每人 ${f.cur==="TWD"?nt(f.amt/f.fr.length):yen(f.amt/f.fr.length)}・`:""}${f.fr.length} 人平分`:f.fr[0]==="自己"?"可以多選，會自動平分":`全額幫 ${esc(f.fr[0])} 付，會記成待收回`}</small></div></div>
     <div class="xfr"><label class="lab" for="xnote">店家</label><input id="xnote" type="text" value="${esc(f.note||"")}" placeholder="店名或備註，例如：一蘭拉麵"></div>
     <div class="xfa"><button type="submit" class="addbtn">儲存</button><button type="button" class="chip-b" data-xact="cancel">取消</button>${exps.some(x=>x.id===f.id)?`<button type="button" class="chip-b warnb" data-xact="del">${f.delArm?"再按一次刪除":"刪除"}</button>`:""}</div>
   </form>`;
 }
+function addPerson(){readForm();const i=document.getElementById("xnewp");const v=(i&&i.value||"").trim().slice(0,10);if(!v||v==="自己"){i&&i.focus();return}
+  if(!people.includes(v)){people.push(v);store.set("ft_people",people)}if(!xForm.fr.includes(v))xForm.fr.push(v);renderX();const n=document.getElementById("xnewp");n&&n.focus()}
+xEl.addEventListener("keydown",e=>{if(e.target.id==="xnewp"&&e.key==="Enter"){e.preventDefault();addPerson()}});
 function readForm(){const a=document.getElementById("xamt"),n=document.getElementById("xnote");if(a)xForm.amt=parseFloat(a.value)||0;if(n)xForm.note=n.value}
-function openForm(f){xForm=Object.assign({id:uid(),d:todayX(),amt:"",cur:"JPY",cat:"餐飲",pay:"現金",note:"",img:""},f||{});renderX();
+function openForm(f){xForm=Object.assign({id:uid(),d:todayX(),amt:"",cur:"JPY",cat:"餐飲",pay:"現金",note:"",img:"",fr:["自己"],st:{}},f||{});xForm.fr=[...frOf(xForm)];xForm.st=Object.assign({},xForm.st||{});renderX();
   const fm=document.getElementById("xform");if(fm){fm.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});const a=document.getElementById("xamt");a&&!xForm.status&&a.focus()}}
 xEl.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;
   if(b.dataset.xact==="new")openForm();
@@ -2840,12 +2869,16 @@ xEl.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)
   else if(b.dataset.fcur){readForm();xForm.cur=b.dataset.fcur;renderX();xEl.querySelector(`[data-fcur="${xForm.cur}"]`).focus()}
   else if(b.dataset.fcat){readForm();xForm.cat=b.dataset.fcat;renderX();xEl.querySelector(`[data-fcat="${xForm.cat}"]`).focus()}
   else if(b.dataset.fpay){readForm();xForm.pay=b.dataset.fpay;renderX();xEl.querySelector(`[data-fpay="${xForm.pay}"]`).focus()}
+  else if(b.dataset.ffor!=null){readForm();const w=b.dataset.ffor;const has=xForm.fr.includes(w);if(has&&xForm.fr.length>1)xForm.fr=xForm.fr.filter(x=>x!==w);else if(!has)xForm.fr.push(w);renderX();xEl.querySelector(`[data-ffor="${CSS.escape(w)}"]`).focus()}
+  else if(b.dataset.xact==="addp")addPerson();
+  else if(b.dataset.xsettle){const k=b.dataset.xsettle;if(xSettleArm!==k){xSettleArm=k;renderX();const nb=xEl.querySelector(`[data-xsettle="${CSS.escape(k)}"]`);nb&&nb.focus();setTimeout(()=>{if(xSettleArm===k){xSettleArm=null;renderX()}},4000);return}
+    xSettleArm=null;for(const x of exps){if(frOf(x).includes(k)){x.st=x.st||{};x.st[k]=true}}saveX();renderX();toast("收回了！",`${k} 的代墊帳已結清`,{ms:3500})}
   else if(b.dataset.xact==="rate")updateRate(true);
-  else if(b.dataset.xact==="copy"){const txt=["Fuji 以修妮 go 記帳",...XDAYS.filter(d=>exps.some(x=>x.d===d)).map(d=>d+"\n"+exps.filter(x=>x.d===d).map(x=>`  ${x.cat} ${x.note||""} ${x.cur==="TWD"?nt(x.amt):yen(x.amt)}（${x.pay}）`).join("\n")),`合計 ${yen(exps.reduce((s,x)=>s+toTWD(x),0)/rate.v)} ≈ ${nt(exps.reduce((s,x)=>s+toTWD(x),0))}（1 日圓≈${rate.v} 台幣）`].join("\n");
+  else if(b.dataset.xact==="copy"){const txt=["Fuji 以修妮 go 記帳",...XDAYS.filter(d=>exps.some(x=>x.d===d)).map(d=>d+"\n"+exps.filter(x=>x.d===d).map(x=>`  ${x.cat} ${x.note||""} ${x.cur==="TWD"?nt(x.amt):yen(x.amt)}（${x.pay}${frOf(x).some(w=>w!=="自己")?"・"+frOf(x).join("+")+(frOf(x).length>1?" 平分":" 代墊"):""}）`).join("\n")),...(()=>{const o=owed();const k=Object.keys(o).filter(k=>o[k].due>0.5);return k.length?["待收回："+k.map(k=>`${k} ${nt(o[k].due)}`).join("、")]:[]})(),`合計 ${yen(exps.reduce((s,x)=>s+toTWD(x),0)/rate.v)} ≈ ${nt(exps.reduce((s,x)=>s+toTWD(x),0))}（1 日圓≈${rate.v} 台幣）`].join("\n");
     try{await navigator.clipboard.writeText(txt);b.textContent="已複製 ✓"}catch(err){b.textContent="複製失敗，請手動選取";}}
 });
 xEl.addEventListener("submit",e=>{e.preventDefault();readForm();if(!(xForm.amt>0)){const a=document.getElementById("xamt");a&&a.focus();xForm.status="請輸入金額";xForm.statusCls="err";renderX();document.getElementById("xamt").focus();return}
-  const rec={id:xForm.id,d:xForm.d,amt:xForm.amt,cur:xForm.cur,cat:xForm.cat,pay:xForm.pay,note:xForm.note.trim(),img:xForm.img||""};
+  const rec={id:xForm.id,d:xForm.d,amt:xForm.amt,cur:xForm.cur,cat:xForm.cat,pay:xForm.pay,note:xForm.note.trim(),img:xForm.img||"",fr:xForm.fr,st:Object.fromEntries(Object.entries(xForm.st||{}).filter(([k])=>xForm.fr.includes(k)))};
   const i=exps.findIndex(x=>x.id===rec.id);if(i>=0)exps[i]=rec;else exps.push(rec);saveX();xForm=null;xDayF="全部";renderX();toast("記好了！",`${rec.cat} ${rec.cur==="TWD"?nt(rec.amt):yen(rec.amt)}`,{ms:3500})});
 xEl.addEventListener("change",async e=>{
   if(e.target.id==="xrate"){const v=parseFloat(e.target.value);if(v>0.05&&v<1){rate={v,src:"手動設定",at:""};store.set("ft_rate",rate);renderX()}}
