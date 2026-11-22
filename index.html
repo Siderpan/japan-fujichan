@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="apple-touch-icon" href="logo.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="冬日手帖">
 <meta name="theme-color" content="#E8F3FF">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -1324,6 +1327,15 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .xnewp{display:flex;gap:6px;margin-top:8px}
 .xnewp input{flex:1;min-width:0;height:32px;border:2px dashed var(--edge);border-radius:12px;background:var(--paper);color:var(--ink);padding:0 10px;font:inherit;font-size:16px}
 .xfhint{display:block;margin-top:6px;font-size:12px;color:var(--muted)}
+.bp-sec{margin-top:10px}
+.bp-l{display:block;font-size:12.5px;font-weight:900;color:var(--muted);margin-bottom:6px}
+.bp-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.bp-mode{height:40px;border:2px solid var(--edge);border-radius:14px;background:var(--paper);color:var(--ink);cursor:pointer;font:inherit;font-size:13px;padding:0 4px}
+.bp-mode[aria-checked="true"]{background:var(--sun);color:var(--on);box-shadow:2px 2px 0 var(--edge)}
+.bp-sub{display:block;margin-top:5px;font-size:12px;color:var(--muted)}
+.bp-perm{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding:6px 8px 6px 10px;border:2px dashed var(--edge);border-radius:14px;font-size:13px;font-weight:700;background:var(--sun-soft)}
+.bp-n.warnn{color:var(--ink);background:var(--tang-soft);border-radius:12px;padding:6px 9px}
+.bp-n.okn{color:var(--ink);font-weight:700}
 /* ---------- 懸浮小富 ---------- */
 .fab{position:fixed;z-index:27;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(86px + env(safe-area-inset-bottom,0px));width:62px;height:62px;border-radius:50%;border:2.5px solid var(--edge);background:var(--sun);box-shadow:var(--shadow-lg);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .15s}
 .fab svg{width:44px;height:41px;margin-top:2px}
@@ -2720,11 +2732,35 @@ async function ask(q,forced){
 document.getElementById("composer").addEventListener("submit",e=>{e.preventDefault();ask(qEl.value)});
 
 /* ---------- 行程提醒通知 ---------- */
-const NT={on:store.get("ft_ntf_on",false), lead:store.get("ft_ntf_lead",15), sys:store.get("ft_ntf_sys",false)};
+const NT={on:store.get("ft_ntf_on",false), lead:store.get("ft_ntf_lead",15), mode:store.get("ft_ntf_mode",store.get("ft_ntf_sys",false)?"both":"page"), atStart:store.get("ft_ntf_start",true), sound:store.get("ft_ntf_sound",false), vibe:store.get("ft_ntf_vibe",true)};
 const bellBtn=document.getElementById("bellBtn"), bellPop=document.getElementById("bellPop"), toastBox=document.getElementById("toasts");
 let sent=store.get("ft_ntf_sent",{});
 document.body.appendChild(bellPop);
 function sysAvail(){try{return "Notification" in window&&!envInfo().claude&&!envInfo().inapp}catch(e){return false}}
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const standalone=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+let swReg=null;
+if(sysAvail()&&"serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js").then(r=>{swReg=r}).catch(()=>{})}
+const sysPerm=()=>sysAvail()?Notification.permission:"unsupported";
+const sysReady=()=>sysPerm()==="granted";
+const MODES=[["page","網頁卡片","頁面上跳出提醒卡片"],["sys","手機通知","手機系統通知列（可在別的 App 看到）"],["both","兩者都要","卡片＋系統通知"]];
+function wantPage(){return NT.mode!=="sys"||!sysReady()}
+function wantSys(){return NT.mode!=="page"&&sysReady()}
+let actx=null;
+function chime(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();
+  const t0=actx.currentTime;[[880,0],[1320,.16]].forEach(([f,d])=>{const o=actx.createOscillator(),g=actx.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(0,t0+d);g.gain.linearRampToValueAtTime(.25,t0+d+.02);g.gain.exponentialRampToValueAtTime(.001,t0+d+.5);o.connect(g).connect(actx.destination);o.start(t0+d);o.stop(t0+d+.55)})}catch(e){}}
+async function sysNotify(title,body,tag){
+  const o={body,tag:tag||title,icon:"logo.png",badge:"logo.png",renotify:true,silent:!NT.sound,vibrate:NT.vibe?[120,60,120]:[]};
+  try{const r=swReg||(navigator.serviceWorker&&await navigator.serviceWorker.getRegistration());if(r&&r.showNotification){await r.showNotification(title,o);return true}}catch(e){}
+  try{new Notification(title,o);return true}catch(e){return false}
+}
+function remind(title,body,opt={}){
+  const page=wantPage(), sys=wantSys();
+  if(sys)sysNotify(title,body,opt.tag);
+  if(page)toast(title,body,Object.assign({},opt,{quiet:true}));
+  if(NT.vibe&&(page||!sys)){try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}}
+  if(NT.sound&&(page||!document.hidden))chime();
+}
 function placeBell(){const r=bellBtn.getBoundingClientRect(),vw=Math.min(innerWidth,document.documentElement.clientWidth||innerWidth);
   const w=Math.min(320,vw-24);bellPop.style.width=w+"px";bellPop.style.top=Math.max(8,r.bottom+10)+"px";
   bellPop.style.left=Math.max(12,Math.min(vw-w-12,r.right-w))+"px";
@@ -2732,28 +2768,35 @@ function placeBell(){const r=bellBtn.getBoundingClientRect(),vw=Math.min(innerWi
 function closeBell(){bellPop.hidden=true;bellBtn.setAttribute("aria-expanded","false")}
 addEventListener("resize",()=>{if(!bellPop.hidden)placeBell()});
 addEventListener("scroll",()=>{if(!bellPop.hidden)placeBell()},{passive:true});
+function sysNote(){const p=sysPerm();
+  if(p==="unsupported")return isIOS&&!envInfo().claude&&!standalone?`<p class="bp-n warnn">iPhone 要先用 Safari 的「分享 → 加入主畫面」，再從主畫面打開手冊，才能用手機通知。現在會先用網頁卡片。</p>`
+    :`<p class="bp-n warnn">這裡不支援手機系統通知（例如在 Claude 或 App 內建瀏覽器裡），會改用網頁卡片。用手機瀏覽器開網站版就能用。</p>`;
+  if(p==="denied")return `<p class="bp-n warnn">手機通知被封鎖了：到瀏覽器的「網站設定 → 通知」改成允許。在那之前會改用網頁卡片。</p>`;
+  if(p==="default")return `<div class="bp-perm"><span>還沒允許手機通知</span><button type="button" class="chip-b" data-nt="perm">允許通知</button></div>`;
+  return `<p class="bp-n okn">✓ 已允許手機通知</p>`}
 function renderBell(){
   bellBtn.setAttribute("aria-pressed",NT.on);bellBtn.classList.toggle("on",NT.on);
   bellBtn.setAttribute("aria-label",NT.on?"行程提醒：開啟中，點一下設定":"行程提醒：關閉中，點一下設定");
-  const perm=sysAvail()?Notification.permission:"unsupported";
+  const m=MODES.find(x=>x[0]===NT.mode)||MODES[0];
   bellPop.innerHTML=`<div class="bp-h"><b>行程提醒</b><button type="button" class="switch" role="switch" aria-checked="${NT.on}" data-nt="toggle" aria-label="開啟或關閉行程提醒"><span></span></button></div>
-    <p class="bp-d">${NT.on?"開啟中：行程快到時，會跳出提醒卡片。":"關閉中：打開後，旅途中行程快到時會提醒你。"}</p>
-    <div class="bp-row"><span>提前</span>${[10,15,30].map(m=>`<button type="button" class="chip-b" aria-pressed="${NT.lead===m}" data-nlead="${m}">${m} 分</button>`).join("")}</div>
-    ${perm==="unsupported"?`<p class="bp-n">在這裡只能用頁面內的提醒卡片。網站版可以再加上手機系統通知。</p>`
-      :perm==="denied"?`<p class="bp-n">手機系統通知被封鎖了，可以到瀏覽器的網站設定開啟；頁面內的提醒卡片還是會跳出來。</p>`
-      :`<label class="bp-chk"><input type="checkbox" id="ntSys" ${NT.sys&&perm==="granted"?"checked":""}> 同時用手機系統通知</label>`}
+    <p class="bp-d">${NT.on?`開啟中：行程前 ${NT.lead} 分鐘${NT.atStart?"和開始時":""}提醒你。`:"關閉中：打開後，旅途中行程快到時會提醒你。"}</p>
+    <div class="bp-sec"><span class="bp-l">提醒方式</span><div class="bp-modes" role="radiogroup" aria-label="提醒方式">${MODES.map(x=>`<button type="button" class="bp-mode" role="radio" aria-checked="${NT.mode===x[0]}" data-nmode="${x[0]}"><b>${x[1]}</b></button>`).join("")}</div>
+      <small class="bp-sub">${m[2]}</small>${NT.mode!=="page"?sysNote():""}</div>
+    <div class="bp-sec"><span class="bp-l">提前</span><div class="bp-row">${[5,10,15,30].map(n=>`<button type="button" class="chip-b" aria-pressed="${NT.lead===n}" data-nlead="${n}">${n} 分</button>`).join("")}</div></div>
+    <div class="bp-sec"><span class="bp-l">加碼</span><div class="bp-row">
+      <button type="button" class="chip-b" aria-pressed="${NT.atStart}" data-nopt="atStart">⏰ 開始時再提醒</button>
+      <button type="button" class="chip-b" aria-pressed="${NT.sound}" data-nopt="sound">🔔 提示音</button>
+      <button type="button" class="chip-b" aria-pressed="${NT.vibe}" data-nopt="vibe">📳 震動</button></div></div>
     <div class="bp-a"><button type="button" class="addbtn" data-nt="test">試一下提醒</button><button type="button" class="chip-b" data-nt="close">關閉</button></div>
-    <p class="bp-n">提醒只在這個頁面開著時運作（可以放背景），關掉瀏覽器就收不到。</p>`;
+    <p class="bp-n">提醒在這個頁面開著時運作（可以放背景）；完全關掉瀏覽器就收不到。</p>`;
 }
 function toast(title,body,opt={}){
   const t=document.createElement("div");t.className="toast card"+(opt.day!=null?" rich":"");t.setAttribute("role","status");
   t.innerHTML=`<svg class="tb" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bell"/></svg><div class="tt"><b>${esc(title)}</b>${body?`<span>${esc(body)}</span>`:""}</div><div class="ta">${opt.act?`<button type="button" class="chip-b undo" data-tact="1">${esc(opt.act.label)}</button>`:""}${opt.day!=null?`<button type="button" class="chip-b" data-tgo="${opt.day}">看行程</button>`:""}<button type="button" class="chip-b" data-tclose="1">${opt.day!=null?"知道了":"好"}</button></div>`;
   toastBox.appendChild(t);while(toastBox.children.length>2)toastBox.firstElementChild.remove();
-  try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}
   const kill=()=>{t.classList.add("bye");setTimeout(()=>t.remove(),250)};
   t.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.tgo!=null){go("plan");curDay=+b.dataset.tgo;renderDays(true)}if(b.dataset.tact&&opt.act)opt.act.fn();kill()});
   setTimeout(kill,opt.ms||15000);
-  if(NT.sys&&sysAvail()&&Notification.permission==="granted"){try{new Notification(title,{body,tag:opt.tag||title})}catch(e){}}
 }
 function nowMinutes(){const d=new Date();return d.getHours()*60+d.getMinutes()}
 function checkReminders(){
@@ -2764,21 +2807,22 @@ function checkReminders(){
   const nm=nowMinutes();
   for(const it of items){const t=toMin(it[0]);if(t==null)continue;
     const base=`${di}|${it[0]}|${it[2]}`;
-    if(nm>=t-NT.lead&&nm<t&&!sent[base+"|pre"]){sent[base+"|pre"]=1;toast(`${t-nm} 分鐘後：${it[2]}`,`${it[0]}・${clean(it[3])}`.slice(0,80),{day:di,tag:base})}
-    else if(nm>=t&&nm<t+3&&!sent[base+"|now"]&&!sent[base+"|pre"]){sent[base+"|now"]=1;toast(`現在：${it[2]}`,clean(it[3]).slice(0,80),{day:di,tag:base})}
+    if(nm>=t-NT.lead&&nm<t&&!sent[base+"|pre"]){sent[base+"|pre"]=1;remind(`${t-nm} 分鐘後：${it[2]}`,`${it[0]}・${clean(it[3])}`.slice(0,80),{day:di,tag:base})}
+    else if(NT.atStart&&nm>=t&&nm<t+3&&!sent[base+"|now"]){sent[base+"|now"]=1;remind(`現在：${it[2]}`,clean(it[3]).slice(0,80),{day:di,tag:base})}
   }
   store.set("ft_ntf_sent",sent);
 }
 bellBtn.addEventListener("click",()=>{const open=bellPop.hidden;bellPop.hidden=!open;bellBtn.setAttribute("aria-expanded",open);if(open){placeBell();renderBell();const s=bellPop.querySelector("[data-nt=toggle]");s&&s.focus({preventScroll:true})}});
 bellPop.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;
   if(b.dataset.nt==="toggle"){NT.on=!NT.on;store.set("ft_ntf_on",NT.on);renderBell();bellPop.querySelector("[data-nt=toggle]").focus({preventScroll:true});if(NT.on){toast("行程提醒已開啟",`行程前 ${NT.lead} 分鐘會提醒你`,{ms:5000});checkReminders()}}
+  else if(b.dataset.nmode){NT.mode=b.dataset.nmode;store.set("ft_ntf_mode",NT.mode);if(NT.mode!=="page"&&sysPerm()==="default")await askPerm();renderBell();const nb=bellPop.querySelector(`[data-nmode="${NT.mode}"]`);nb&&nb.focus({preventScroll:true})}
+  else if(b.dataset.nt==="perm"){await askPerm();renderBell();const nb=bellPop.querySelector(`[data-nmode="${NT.mode}"]`);nb&&nb.focus({preventScroll:true})}
+  else if(b.dataset.nopt){const k=b.dataset.nopt;NT[k]=!NT[k];store.set({atStart:"ft_ntf_start",sound:"ft_ntf_sound",vibe:"ft_ntf_vibe"}[k],NT[k]);if(k==="sound"&&NT.sound)chime();if(k==="vibe"&&NT.vibe){try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}}renderBell();bellPop.querySelector(`[data-nopt="${k}"]`).focus({preventScroll:true})}
   else if(b.dataset.nlead){NT.lead=+b.dataset.nlead;store.set("ft_ntf_lead",NT.lead);renderBell();bellPop.querySelector(`[data-nlead="${NT.lead}"]`).focus({preventScroll:true})}
-  else if(b.dataset.nt==="test"){const x=DAYS[(dayIdx>=0&&dayIdx<6)?dayIdx:0].items.find(it=>toMin(it[0])!=null);toast(`${NT.lead} 分鐘後：${x[2]}`,`${x[0]}・${clean(x[3])}`.slice(0,80),{day:(dayIdx>=0&&dayIdx<6)?dayIdx:0,tag:"test"})}
+  else if(b.dataset.nt==="test"){const x=DAYS[(dayIdx>=0&&dayIdx<6)?dayIdx:0].items.find(it=>toMin(it[0])!=null);remind(`${NT.lead} 分鐘後：${x[2]}`,`${x[0]}・${clean(x[3])}`.slice(0,80),{day:(dayIdx>=0&&dayIdx<6)?dayIdx:0,tag:"test"})}
   else if(b.dataset.nt==="close"){bellPop.hidden=true;bellBtn.setAttribute("aria-expanded","false");bellBtn.focus()}
 });
-bellPop.addEventListener("change",async e=>{if(e.target.id!=="ntSys")return;
-  if(e.target.checked&&sysAvail()){let p=Notification.permission;if(p==="default"){try{p=await Notification.requestPermission()}catch(err){p="denied"}}NT.sys=p==="granted";}else NT.sys=false;
-  store.set("ft_ntf_sys",NT.sys);renderBell();const c=document.getElementById("ntSys");c&&c.focus()});
+async function askPerm(){if(!sysAvail())return;try{const p=await Notification.requestPermission();if(p==="granted")toast("手機通知已允許",NT.mode==="sys"?"之後只用系統通知提醒你":"卡片和系統通知都會提醒你",{ms:4000})}catch(e){}}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!bellPop.hidden){bellPop.hidden=true;bellBtn.setAttribute("aria-expanded","false");bellBtn.focus()}});
 document.addEventListener("click",e=>{if(!bellPop.hidden){const path=e.composedPath();if(path.includes(bellPop)||path.includes(bellBtn))return;bellPop.hidden=true;bellBtn.setAttribute("aria-expanded","false")}});
 renderBell(); setInterval(checkReminders,20000); document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkReminders()}); setTimeout(checkReminders,1500);
