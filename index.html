@@ -1315,6 +1315,10 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .xon{display:flex;flex-direction:column;min-width:0}.xon small{font-size:12px;color:var(--muted)}
 .xov{display:flex;flex-direction:column;align-items:flex-end;font-variant-numeric:tabular-nums}.xov small{font-size:11.5px;color:var(--muted)}
 .okc{color:var(--mint);font-size:20px}
+.xobtn{display:flex;flex-direction:column;gap:4px;align-items:stretch}
+.xobtn .chip-b{justify-content:center}
+.chip-b.undo{border-style:dashed;font-size:12px;height:28px;color:var(--muted)}
+.toast .chip-b.undo{height:32px;color:var(--ink);background:var(--paper)}
 .xfor{color:var(--ink);font-weight:700}
 .xfor-r{align-items:start}.xfor-r .lab{padding-top:7px}
 .xnewp{display:flex;gap:6px;margin-top:8px}
@@ -2743,11 +2747,11 @@ function renderBell(){
 }
 function toast(title,body,opt={}){
   const t=document.createElement("div");t.className="toast card"+(opt.day!=null?" rich":"");t.setAttribute("role","status");
-  t.innerHTML=`<svg class="tb" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bell"/></svg><div class="tt"><b>${esc(title)}</b>${body?`<span>${esc(body)}</span>`:""}</div><div class="ta">${opt.day!=null?`<button type="button" class="chip-b" data-tgo="${opt.day}">看行程</button>`:""}<button type="button" class="chip-b" data-tclose="1">${opt.day!=null?"知道了":"好"}</button></div>`;
+  t.innerHTML=`<svg class="tb" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bell"/></svg><div class="tt"><b>${esc(title)}</b>${body?`<span>${esc(body)}</span>`:""}</div><div class="ta">${opt.act?`<button type="button" class="chip-b undo" data-tact="1">${esc(opt.act.label)}</button>`:""}${opt.day!=null?`<button type="button" class="chip-b" data-tgo="${opt.day}">看行程</button>`:""}<button type="button" class="chip-b" data-tclose="1">${opt.day!=null?"知道了":"好"}</button></div>`;
   toastBox.appendChild(t);while(toastBox.children.length>2)toastBox.firstElementChild.remove();
   try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}
   const kill=()=>{t.classList.add("bye");setTimeout(()=>t.remove(),250)};
-  t.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.tgo!=null){go("plan");curDay=+b.dataset.tgo;renderDays(true)}kill()});
+  t.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.tgo!=null){go("plan");curDay=+b.dataset.tgo;renderDays(true)}if(b.dataset.tact&&opt.act)opt.act.fn();kill()});
   setTimeout(kill,opt.ms||15000);
   if(NT.sys&&sysAvail()&&Notification.permission==="granted"){try{new Notification(title,{body,tag:opt.tag||title})}catch(e){}}
 }
@@ -2822,7 +2826,7 @@ function renderX(){
     <button type="button" class="xadd" data-xact="new">＋ 手動新增</button>
   </div>
   ${xForm?formHTML():""}
-  ${owN.length?`<div class="xowe card"><h3>幫誰付・代墊帳</h3><p class="note">平分的帳會按人數拆開算</p>${owN.map(k=>{const o=ow[k];return `<div class="xorow"><span class="xav">${esc(k.slice(0,1))}</span><span class="xon"><b>${esc(k)}</b><small>${o.due>0.5?`${o.n} 筆待收`:"都收回了"}${o.done>0.5?`・已收回 ${nt(o.done)}`:""}</small></span><span class="xov">${o.due>0.5?`<b>${nt(o.due)}</b><small>≈ ${yen(o.due/rate.v)}</small>`:`<b class="okc">✓</b>`}</span>${o.due>0.5?`<button type="button" class="chip-b" data-xsettle="${esc(k)}">${xSettleArm===k?"確定收回？":"收回了"}</button>`:""}</div>`}).join("")}</div>`:""}
+  ${owN.length?`<div class="xowe card"><h3>幫誰付・代墊帳</h3><p class="note">平分的帳會按人數拆開算</p>${owN.map(k=>{const o=ow[k];return `<div class="xorow"><span class="xav">${esc(k.slice(0,1))}</span><span class="xon"><b>${esc(k)}</b><small>${o.due>0.5?`${o.n} 筆待收`:"都收回了"}${o.done>0.5?`・已收回 ${nt(o.done)}`:""}</small></span><span class="xov">${o.due>0.5?`<b>${nt(o.due)}</b><small>≈ ${yen(o.due/rate.v)}</small>`:`<b class="okc">✓</b>`}</span><span class="xobtn">${o.due>0.5?`<button type="button" class="chip-b" data-xsettle="${esc(k)}">${xSettleArm===k?"確定收回？":"收回了"}</button>`:""}${o.done>0.5?`<button type="button" class="chip-b undo" data-xunsettle="${esc(k)}" aria-label="取消 ${esc(k)} 上一次的收回">↺ 取消收回</button>`:""}</span></div>`}).join("")}</div>`:""}
   ${byCat.length?`<div class="xcats card"><h3>分類花費</h3>${byCat.map(([c,v])=>`<div class="xcrow"><span class="xci x-${c[2]}">${icon(c[1])}</span><span class="xcn">${c[0]}</span><span class="xcb"><i class="x-${c[2]}" style="width:${v/maxC*100}%"></i></span><span class="xcv">${nt(v)}</span></div>`).join("")}</div>`:""}
   ${exps.length?`<div class="xdays card"><h3>每天花多少</h3><div class="xdbars">${byDay.map(([d,v])=>`<div class="xdb"><span class="xdv">${v?Math.round(v/1000*10)/10+"k":""}</span><span class="xdc"><i style="height:${v/maxD*100}%"></i></span><span class="xdl">${d==="出發前"?"前":d.slice(3)}</span></div>`).join("")}</div><p class="note">單位：台幣（k＝千元）</p></div>`:""}
   <div class="xfilter">${["全部",...XDAYS].map(d=>`<button type="button" class="chip-b" aria-pressed="${xDayF===d}" data-xday="${d}">${d}</button>`).join("")}</div>
@@ -2853,6 +2857,9 @@ function formHTML(){const f=xForm;
     <div class="xfa"><button type="submit" class="addbtn">儲存</button><button type="button" class="chip-b" data-xact="cancel">取消</button>${exps.some(x=>x.id===f.id)?`<button type="button" class="chip-b warnb" data-xact="del">${f.delArm?"再按一次刪除":"刪除"}</button>`:""}</div>
   </form>`;
 }
+function lastBatch(k){let m=0;for(const x of exps){const v=x.st&&x.st[k];if(v){const n=v===true?1:v;if(n>m)m=n}}return m}
+function unsettle(k,ts){if(!ts)return;let n=0;for(const x of exps){const v=x.st&&x.st[k];if(v&&(v===ts||(v===true&&ts===1))){delete x.st[k];n++}}saveX();renderX();
+  toast("已取消收回",`${k} 的 ${n} 筆帳改回待收`,{ms:3500});const nb=xEl.querySelector(`[data-xsettle="${CSS.escape(k)}"]`);nb&&nb.focus()}
 function addPerson(){readForm();const i=document.getElementById("xnewp");const v=(i&&i.value||"").trim().slice(0,10);if(!v||v==="自己"){i&&i.focus();return}
   if(!people.includes(v)){people.push(v);store.set("ft_people",people)}if(!xForm.fr.includes(v))xForm.fr.push(v);renderX();const n=document.getElementById("xnewp");n&&n.focus()}
 xEl.addEventListener("keydown",e=>{if(e.target.id==="xnewp"&&e.key==="Enter"){e.preventDefault();addPerson()}});
@@ -2872,7 +2879,9 @@ xEl.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)
   else if(b.dataset.ffor!=null){readForm();const w=b.dataset.ffor;const has=xForm.fr.includes(w);if(has&&xForm.fr.length>1)xForm.fr=xForm.fr.filter(x=>x!==w);else if(!has)xForm.fr.push(w);renderX();xEl.querySelector(`[data-ffor="${CSS.escape(w)}"]`).focus()}
   else if(b.dataset.xact==="addp")addPerson();
   else if(b.dataset.xsettle){const k=b.dataset.xsettle;if(xSettleArm!==k){xSettleArm=k;renderX();const nb=xEl.querySelector(`[data-xsettle="${CSS.escape(k)}"]`);nb&&nb.focus();setTimeout(()=>{if(xSettleArm===k){xSettleArm=null;renderX()}},4000);return}
-    xSettleArm=null;for(const x of exps){if(frOf(x).includes(k)){x.st=x.st||{};x.st[k]=true}}saveX();renderX();toast("收回了！",`${k} 的代墊帳已結清`,{ms:3500})}
+    xSettleArm=null;const ts=Date.now();for(const x of exps){if(frOf(x).includes(k)&&!(x.st&&x.st[k])){x.st=x.st||{};x.st[k]=ts}}saveX();renderX();
+    toast("收回了！",`${k} 的代墊帳已結清`,{ms:8000,act:{label:"按錯了，取消",fn:()=>unsettle(k,ts)}})}
+  else if(b.dataset.xunsettle){const k=b.dataset.xunsettle;unsettle(k,lastBatch(k))}
   else if(b.dataset.xact==="rate")updateRate(true);
   else if(b.dataset.xact==="copy"){const txt=["Fuji 以修妮 go 記帳",...XDAYS.filter(d=>exps.some(x=>x.d===d)).map(d=>d+"\n"+exps.filter(x=>x.d===d).map(x=>`  ${x.cat} ${x.note||""} ${x.cur==="TWD"?nt(x.amt):yen(x.amt)}（${x.pay}${frOf(x).some(w=>w!=="自己")?"・"+frOf(x).join("+")+(frOf(x).length>1?" 平分":" 代墊"):""}）`).join("\n")),...(()=>{const o=owed();const k=Object.keys(o).filter(k=>o[k].due>0.5);return k.length?["待收回："+k.map(k=>`${k} ${nt(o[k].due)}`).join("、")]:[]})(),`合計 ${yen(exps.reduce((s,x)=>s+toTWD(x),0)/rate.v)} ≈ ${nt(exps.reduce((s,x)=>s+toTWD(x),0))}（1 日圓≈${rate.v} 台幣）`].join("\n");
     try{await navigator.clipboard.writeText(txt);b.textContent="已複製 ✓"}catch(err){b.textContent="複製失敗，請手動選取";}}
