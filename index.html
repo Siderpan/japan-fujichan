@@ -1353,6 +1353,12 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .bkmsg{margin:10px 0 0;font-size:13px;font-weight:700}
 .bkconfirm{margin-top:12px;padding:10px 12px;border:2px solid var(--edge);border-radius:14px;background:var(--sun-soft);display:flex;flex-direction:column;gap:6px;font-size:13px}
 .bkconfirm div{display:flex;gap:8px}.bkconfirm .addbtn{height:34px;padding:0 18px}
+.xprevb{display:block;position:relative;padding:0;margin:0 0 12px;border:0;background:none;cursor:zoom-in;max-width:100%}
+.xprevb span{position:absolute;left:8px;bottom:8px;font-size:11.5px;font-weight:700;background:var(--paper);color:var(--ink);border:1.5px solid var(--edge);border-radius:999px;padding:2px 8px}
+.xprevb .xprev{margin:0}
+.xprevb.big{cursor:zoom-out;width:100%}
+.xprevb.big .xprev{max-height:none;width:100%}
+.xalts{margin-top:-6px}.xalts .chip-b{border-style:dashed}
 /* ---------- 懸浮小富 ---------- */
 .fab{position:fixed;z-index:27;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(86px + env(safe-area-inset-bottom,0px));width:62px;height:62px;border-radius:50%;border:2.5px solid var(--edge);background:var(--sun);box-shadow:var(--shadow-lg);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .15s}
 .fab svg{width:44px;height:41px;margin-top:2px}
@@ -2942,10 +2948,11 @@ function groupX(list){
 function formHTML(){const f=xForm;
   return `<form class="xform card" id="xform">
     <div class="xfh"><b>${f.id&&exps.some(x=>x.id===f.id)?"編輯這筆":"新增一筆"}</b>${f.status?`<span class="xstat ${f.statusCls||""}" role="status">${esc(f.status)}</span>`:""}</div>
-    ${f.img?`<img src="${f.img}" alt="收據照片" class="xprev">`:""}
+    ${f.img?`<button type="button" class="xprevb${f.big?" big":""}" data-xact="zoom" aria-label="${f.big?"縮小收據照片":"放大收據照片對照金額"}"><img src="${f.big&&f.imgBig?f.imgBig:f.img}" alt="收據照片" class="xprev"><span>${f.big?"縮小":"點一下放大對照"}</span></button>`:""}
     <div class="xfr"><span class="lab">日期</span><div class="chips">${XDAYS.map(d=>`<button type="button" class="chip-b" aria-pressed="${f.d===d}" data-fd2="${d}">${d}</button>`).join("")}</div></div>
     <div class="xfr"><label class="lab" for="xamt">金額</label><div class="chips"><input id="xamt" type="number" inputmode="decimal" min="0" step="1" value="${f.amt||""}" placeholder="0" required>
       ${["JPY","TWD"].map(c=>`<button type="button" class="chip-b" aria-pressed="${f.cur===c}" data-fcur="${c}">${c==="JPY"?"日圓":"台幣"}</button>`).join("")}</div></div>
+    ${f.alts&&f.alts.length?`<div class="xfr xalts"><span class="lab">其他可能</span><div class="chips">${f.alts.map(v=>`<button type="button" class="chip-b" data-famt="${v}">${f.cur==="TWD"?nt(v):yen(v)}</button>`).join("")}</div></div>`:""}
     <div class="xfr"><span class="lab">類別</span><div class="chips">${CATS_X.map(c=>`<button type="button" class="chip-b" aria-pressed="${f.cat===c[0]}" data-fcat="${c[0]}">${icon(c[1])}${c[0]}</button>`).join("")}</div></div>
     <div class="xfr"><span class="lab">付款</span><div class="chips">${PAYS.map(p=>`<button type="button" class="chip-b" aria-pressed="${f.pay===p}" data-fpay="${p}">${p}</button>`).join("")}</div></div>
     <div class="xfr xfor-r"><span class="lab">幫誰付</span><div><div class="chips">${["自己",...people].map(p=>`<button type="button" class="chip-b" aria-pressed="${f.fr.includes(p)}" data-ffor="${esc(p)}">${p==="自己"?"自己":esc(p)}</button>`).join("")}</div>
@@ -2980,6 +2987,8 @@ xEl.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)
     xSettleArm=null;const ts=Date.now();for(const x of exps){if(frOf(x).includes(k)&&!(x.st&&x.st[k])){x.st=x.st||{};x.st[k]=ts}}saveX();renderX();
     toast("收回了！",`${k} 的代墊帳已結清`,{ms:8000,act:{label:"按錯了，取消",fn:()=>unsettle(k,ts)}})}
   else if(b.dataset.xunsettle){const k=b.dataset.xunsettle;unsettle(k,lastBatch(k))}
+  else if(b.dataset.famt){readForm();const v=+b.dataset.famt;xForm.alts=(xForm.alts||[]).filter(x=>x!==v);if(xForm.amt>0)xForm.alts.unshift(xForm.amt);xForm.alts=xForm.alts.slice(0,4);xForm.amt=v;xForm.status="已換成 "+(xForm.cur==="TWD"?nt(v):yen(v));xForm.statusCls="ok";renderX();const a=document.getElementById("xamt");a&&a.focus()}
+  else if(b.dataset.xact==="zoom"){readForm();xForm.big=!xForm.big;renderX();const z=xEl.querySelector('[data-xact="zoom"]');z&&z.focus({preventScroll:true})}
   else if(b.dataset.olang){store.set("ft_ocr_lang",b.dataset.olang);renderX();xEl.querySelector(`[data-olang="${b.dataset.olang}"]`).focus()}
   else if(b.dataset.bk)bkAction(b.dataset.bk,b);
   else if(b.dataset.xact==="rate")updateRate(true);
@@ -3025,8 +3034,8 @@ function parseReceipt(raw,zh){
   const okS=l=>/[぀-ヿ一-鿿A-Za-z]{2,}/.test(l)&&!/(領収|レシート|receipt|tel|電話|〒|登録番号|様|^\d|電子發票|證明聯|發票|收據|統一編號|統編|格式|隨機碼|賣方|買方|期別|交易明細|客戶|地址|^[^\w\u3040-\u30ff\u4e00-\u9fff]|電子|聯$|^[A-Z]{2}-?\d{8}|^\d{2,4}[年\/.-])/i.test(l)&&(l.replace(/[\d\s¥$,.\-:\/]/g,"").length>=2);
   const BR=/(7-?ELEVEN|セブン|ローソン|ファミリーマート|統一超商|全家|萊爾富|OK超商|星巴克|STARBUCKS|麥當勞|マクドナルド|ドン・?キホーテ|ユニクロ|マツモトキヨシ|無印良品|鼎泰豐|家樂福|全聯)/i;
   const store_=lines.find(l=>BR.test(l)&&!/(賣方|統一編號|統編)/.test(l))||lines.find(l=>okS(l)&&(l.match(/[\u3040-\u30ff\u4e00-\u9fff]/g)||[]).length>=2)||lines.find(l=>okS(l)&&/^[A-Za-z][A-Za-z '&.-]{3,}$/.test(l))||"";
-  const all=t;
-  const cat=/(JR|駅|バス|タクシー|鉄道|きっぷ|乗車|運賃|交通|捷運|高鐵|台鐵|客運|計程車|車資|停車|加油|機場)/.test(all)?"交通"
+  const all=t.replace(store_,"");
+  const cat=BR.test(store_)&&/(7-?ELEVEN|セブン|ローソン|ファミリーマート|統一超商|全家|萊爾富|OK超商|星巴克|STARBUCKS|麥當勞|マクドナルド|鼎泰豐)/i.test(store_)?"餐飲":/(JR|駅|バス|タクシー|鉄道|きっぷ|乗車|運賃|交通|捷運|高鐵|台鐵|客運|計程車|車資|停車|加油|機場)/.test(all)?"交通"
     :/(ホテル|旅館|宿泊|HOTEL|INN|ゲストハウス|住宿|飯店|民宿|房費)/i.test(all)?"住宿"
     :/(入場|入館|チケット|観覧|拝観|ロープウェイ|teamlab|展望|美術館|門票|票券|入園|博物館)/i.test(all)?"門票"
     :/(レストラン|食堂|ラーメン|らーめん|うどん|ほうとう|寿司|すし|焼肉|カフェ|珈琲|コーヒー|cafe|coffee|喫茶|居酒屋|弁当|飲食|セブン|ローソン|ファミリーマート|ファミマ|マクドナルド|食事|ドリンク|餐|飯|麵|面|咖啡|茶|飲料|便當|小吃|早餐|午餐|晚餐|火鍋|燒肉|拉麵|飲品|7-?ELEVEN|統一超商|全家|萊爾富|麥當勞|星巴克|甜點|麵包)/i.test(all)?"餐飲"
@@ -3036,18 +3045,77 @@ function parseReceipt(raw,zh){
   return {total,d,store:store_.replace(/\s{2,}/g," ").slice(0,24),cat,pay,cur};
 }
 /* 讓照片更好讀：灰階＋自動對比 */
-function prepCanvas(im){const c=drawScaled(im,2000);const s=Math.max(c.width,c.height);
-  let cv=c; if(s<1200){const k=1200/s;cv=document.createElement("canvas");cv.width=Math.round(c.width*k);cv.height=Math.round(c.height*k);cv.getContext("2d").drawImage(c,0,0,cv.width,cv.height)}
-  const x=cv.getContext("2d",{willReadFrequently:true});const d=x.getImageData(0,0,cv.width,cv.height),a=d.data,hist=new Uint32Array(256);
-  for(let i=0;i<a.length;i+=4){const g=(a[i]*299+a[i+1]*587+a[i+2]*114)/1000|0;a[i]=g;hist[g]++}
-  const n=a.length/4;let lo=0,hi=255,acc=0;for(;lo<255;lo++){acc+=hist[lo];if(acc>n*0.02)break}acc=0;for(;hi>0;hi--){acc+=hist[hi];if(acc>n*0.02)break}
-  const r=Math.max(30,hi-lo);for(let i=0;i<a.length;i+=4){let g=(a[i]-lo)*255/r;g=g<0?0:g>255?255:g;a[i]=a[i+1]=a[i+2]=g}
+function prepCanvas(im){
+  let cv=drawScaled(im,2400);const s0=Math.max(cv.width,cv.height);
+  if(s0<1500){const k=1500/s0,u=document.createElement("canvas");u.width=Math.round(cv.width*k);u.height=Math.round(cv.height*k);const ux=u.getContext("2d");ux.imageSmoothingQuality="high";ux.drawImage(cv,0,0,u.width,u.height);cv=u}
+  const W=cv.width,H=cv.height,x=cv.getContext("2d",{willReadFrequently:true}),d=x.getImageData(0,0,W,H),a=d.data,n=W*H,g=new Uint8ClampedArray(n);
+  for(let i=0,j=0;j<n;i+=4,j++)g[j]=(a[i]*299+a[i+1]*587+a[i+2]*114)/1000;
+  /* 光線不均：每一小格取「紙」的亮度（第 90 百分位）當背景，再把背景拉平成白色 */
+  const T=Math.max(24,Math.round(Math.max(W,H)/42)),gw=Math.ceil(W/T),gh=Math.ceil(H/T),bgS=document.createElement("canvas");bgS.width=gw;bgS.height=gh;
+  const bsx=bgS.getContext("2d"),bd=bsx.createImageData(gw,gh),hist=new Uint32Array(256);
+  for(let ty=0;ty<gh;ty++)for(let tx=0;tx<gw;tx++){hist.fill(0);let cnt=0;const y1=Math.min(H,(ty+1)*T),x1=Math.min(W,(tx+1)*T);
+    for(let y=ty*T;y<y1;y+=2)for(let xx=tx*T;xx<x1;xx+=2){hist[g[y*W+xx]]++;cnt++}
+    let acc=0,v=255;for(let k=255;k>=0;k--){acc+=hist[k];if(acc>=cnt*0.1){v=k;break}}
+    const o=(ty*gw+tx)*4;bd.data[o]=bd.data[o+1]=bd.data[o+2]=v;bd.data[o+3]=255}
+  bsx.putImageData(bd,0,0);const bg=document.createElement("canvas");bg.width=W;bg.height=H;const bx=bg.getContext("2d",{willReadFrequently:true});bx.imageSmoothingEnabled=true;bx.imageSmoothingQuality="high";bx.drawImage(bgS,0,0,W,H);
+  const B=bx.getImageData(0,0,W,H).data;const hst=new Uint32Array(256);
+  for(let j=0,i=0;j<n;j++,i+=4){const bv=Math.max(40,B[i]);const v=Math.min(255,g[j]*255/bv);g[j]=v;hst[g[j]]++}
+  let lo=0,acc=0;for(;lo<200;lo++){acc+=hst[lo];if(acc>n*0.01)break}
+  for(let j=0,i=0;j<n;j++,i+=4){let v=(g[j]-lo)*255/Math.max(40,250-lo);v=v<0?0:v>255?255:v;v=255*Math.pow(v/255,1.4);a[i]=a[i+1]=a[i+2]=v;a[i+3]=255}
   x.putImageData(d,0,0);return cv}
+/* --- 用文字位置重建每一行，找出最像「總金額」的數字 --- */
+function ocrRows(data){
+  const ws=[],sl=[];
+  for(const b of (data&&data.blocks)||[])for(const p of b.paragraphs||[])for(const l of p.lines||[]){
+    const bl=l.baseline;if(bl&&bl.x1-bl.x0>40)sl.push((bl.y1-bl.y0)/(bl.x1-bl.x0));
+    for(const w of l.words||[]){const t=(w.text||"").trim();if(t)ws.push({t,x:w.bbox.x0,xc:(w.bbox.x0+w.bbox.x1)/2,y0:w.bbox.y0,y1:w.bbox.y1})}}
+  if(!ws.length)return [];
+  const hs=ws.map(w=>w.y1-w.y0).sort((a,b)=>a-b),mh=Math.max(6,hs[hs.length>>1]);
+  /* 找出照片的傾斜角：試不同斜率，看哪個讓文字最整齊地排成一行一行 */
+  let slope=0,bestE=-1;const bin=Math.max(2,mh/3);
+  for(let s=-0.15;s<=0.1501;s+=0.005){const m=new Map();for(const w of ws){const k=Math.round(((w.y0+w.y1)/2-s*w.xc)/bin);m.set(k,(m.get(k)||0)+1)}let e=0;for(const v of m.values())e+=v*v;if(e>bestE+1e-9||(Math.abs(e-bestE)<1e-9&&Math.abs(s)<Math.abs(slope))){if(e>bestE){bestE=e;slope=s}}}
+  for(const w of ws)w.yc=(w.y0+w.y1)/2-slope*w.xc;  /* 照片歪一邊時，先把每個字「轉正」再分行 */
+  ws.sort((a,b)=>a.yc-b.yc);const rows=[];
+  for(const w of ws){let r=null,bd=1e9;for(const q of rows){const dd=Math.abs(q.yc-w.yc);if(dd<mh*0.55&&dd<bd){bd=dd;r=q}}
+    if(!r){r={yc:w.yc,ws:[]};rows.push(r)}r.ws.push(w);r.yc=r.ws.reduce((s,q)=>s+q.yc,0)/r.ws.length}
+  rows.sort((a,b)=>a.yc-b.yc);
+  return rows.map(r=>{r.ws.sort((a,b)=>a.x-b.x);const hh=r.ws.map(w=>w.y1-w.y0).sort((a,b)=>a-b);return {text:r.ws.map(w=>w.t).join(" "),h:hh[hh.length>>1]/mh}})}
+function pickTotal(rows){
+  const R=rows.map(r=>({h:r.h,s:z2h(r.text).replace(/[｜|]/g," ").replace(/(\d)\s*[,.]\s*(\d{3})(?!\d)/g,"$1,$2").replace(/([¥$])\s+(\d)/g,"$1$2")}));
+  const TOT=/(合計|総計|合\s*計|お買上|お会計|ご請求|領収金額|請求額|お支払(?:金額|合計)|total|總計|總\s*計|総\s*計|總金額|總額|應付|應收|實付|消費金額|金額合計|合計金額|付款金額|結帳金額)/i;
+  const SUB=/(小計|小\s*計|subtotal)/i, TAX=/(消費税|内税|外税|税額|稅額|稅|税|服務費|サービス料|tax)/i, TEND=/(お預|預り|預かり|現金|實收|收現|收款|cash)/i, CHG=/(お釣|釣銭|おつり|找零|找錢|change)/i;
+  const BAD=/(tel|電話|統一編號|統編|番号|登録|ポイント|point|點數|紅利|no\.|序號|單號|發票號碼|隨機碼|賣方|〒|郵遞|会員|會員|卡號|カード番号|承認|伝票|レジ|機號|收銀機|桌號|人數|期別|有効期限)/i;
+  const numsIn=s=>{const out=[];for(const m of s.matchAll(/(\d{1,3}(?:,\d{3})+|\d+)(\.\d{1,2})?/g)){const raw=m[1],v=+raw.replace(/,/g,""),pre=s.slice(Math.max(0,m.index-2),m.index),post=s.slice(m.index+m[0].length,m.index+m[0].length+2);
+    if(raw.replace(/,/g,"").length>7)continue;if(/^[:\/\-]|^\d/.test(post)||/[:\/\-]$/.test(pre))continue;if(/^\s*(項|点|點|個|件|人|名|%|％|枚|本|杯|份|號|号|年|P\b|pt)/i.test(post))continue;if(/[x×@＠*]\s*$/i.test(pre))continue;if(/^(19|20)\d\d$/.test(raw)&&/[年\/.\-]/.test(post))continue;
+    out.push({v,cur:/[¥$円元]/.test(pre+post)||/^\s*(円|元)/.test(post)})}return out};
+  const last=r=>{const n=numsIn(r.s);return n.length?n[n.length-1].v:null};
+  let T=null,C=null,S=null,X=0;
+  R.forEach(r=>{if(BAD.test(r.s))return;const v=last(r);if(v==null)return;if(CHG.test(r.s))C=v;else if(TEND.test(r.s)&&!TOT.test(r.s))T=Math.max(T||0,v);else if(SUB.test(r.s))S=v;else if(TAX.test(r.s)&&!TOT.test(r.s))X+=v});
+  const cand=new Map();const add=(v,sc)=>{if(!(v>=10))return;cand.set(v,Math.max(cand.get(v)??-99,sc))};
+  R.forEach((r,i)=>{const ns=numsIn(r.s);if(!ns.length)return;const bad=BAD.test(r.s);
+    const prevLabel=i>0&&TOT.test(R[i-1].s)&&!numsIn(R[i-1].s).length;
+    ns.forEach((o,k)=>{let sc=0;
+      if(TOT.test(r.s)&&!SUB.test(r.s))sc+=10;else if(prevLabel)sc+=7;
+      if(SUB.test(r.s))sc+=2;if(CHG.test(r.s))sc-=8;if(TEND.test(r.s)&&!TOT.test(r.s))sc-=3;if(TAX.test(r.s)&&!TOT.test(r.s))sc-=3;
+      if(bad)sc-=12;if(o.cur)sc+=2;if(k===ns.length-1)sc+=1;
+      sc+=Math.max(-1,Math.min(4,(r.h-1)*5));sc+=i/R.length;
+      if(T&&C!=null&&Math.abs(T-C-o.v)<=1)sc+=9;
+      if(S&&X&&Math.abs(S+X-o.v)<=1)sc+=6;
+      if(o.v<10)sc-=6;
+      add(o.v,sc)})});
+  /* 品項加總剛好等於某個數字 → 很可能是總額 */
+  const items=R.filter(r=>!BAD.test(r.s)&&!TOT.test(r.s)&&!SUB.test(r.s)&&!TEND.test(r.s)&&!CHG.test(r.s)&&!TAX.test(r.s)).map(last).filter(v=>v>=10);
+  let run=0;for(const v of items){run+=v;if(cand.has(run)&&run!==v)cand.set(run,cand.get(run)+5);if(S&&cand.has(run+X)&&X)cand.set(run+X,cand.get(run+X)+3)}
+  const ranked=[...cand.entries()].sort((a,b)=>b[1]-a[1]);
+  return {total:ranked.length?ranked[0][0]:null,score:ranked.length?ranked[0][1]:-99,alts:ranked.slice(1).filter(([v,s])=>s>-2).slice(0,4).map(x=>x[0])}}
+const tWorkers={};
+function ocrWorker(L,psm){const key=L+"|"+psm;if(!tWorkers[key])tWorkers[key]=(async()=>{const w=await window.Tesseract.createWorker(L,1);await w.setParameters({tessedit_pageseg_mode:String(psm),preserve_interword_spaces:"1",user_defined_dpi:"300"});return w})().catch(e=>{delete tWorkers[key];throw e});return tWorkers[key]}
+async function ocrPass(c,L,psm){const w=await ocrWorker(L,psm);const {data}=await w.recognize(c,{},{text:true,blocks:true,hocr:false,tsv:false});const rows=ocrRows(data);const txt=rows.length?rows.map(r=>r.text).join("\n"):(data.text||"");return {rows,txt,pick:pickTotal(rows.length?rows:txt.split("\n").map(t=>({text:t,h:1})))}}
 /* --- 快速記帳：拍照 → 辨識 → 確認 --- */
 async function quickReceipt(file){
   let im; try{im=await loadImg(file)}catch(e){toast("照片讀不到","換一張再試試",{ms:5000});return}
-  const thumb=drawScaled(im,360).toDataURL("image/jpeg",0.6);
-  openForm({img:thumb,status:"小富正在看明細…",statusCls:"busy"});
+  const thumb=drawScaled(im,360).toDataURL("image/jpeg",0.6), big=drawScaled(im,1400).toDataURL("image/jpeg",0.8);
+  openForm({img:thumb,imgBig:big,status:"小富正在看明細…",statusCls:"busy"});
   let r=null, how="";
   try{
     if(vision){
@@ -3061,19 +3129,22 @@ async function quickReceipt(file){
       xForm.status="小富正在看明細…（第一次要下載文字辨識資料，約 10–30 秒）";renderX();
       await ensureTesseract();
       const c=prepCanvas(im);const lang=store.get("ft_ocr_lang","auto");
-      const run=async L=>{const res=await window.Tesseract.recognize(c,L);return (res&&res.data&&res.data.text)||""};
-      let txt="",zh=lang==="zh";
-      if(lang==="zh")txt=await run("chi_tra+eng");
-      else{txt=await run("jpn+eng");
-        if(lang==="auto"&&looksChinese(txt)){zh=true;if(xForm){xForm.status="看起來是中文明細，換中文再讀一次…";renderX()}txt=await run("chi_tra+eng")}}
-      let p=parseReceipt(txt,zh);
-      if(lang==="auto"&&!zh&&!p.total){/* 日文讀不出金額時，用中文再試一次 */const t2=await run("chi_tra+eng");const p2=parseReceipt(t2,looksChinese(t2));if(p2.total)p=p2}
-      r={total:p.total,cur:p.cur,d:p.d,store:p.store,cat:p.cat,pay:p.pay};how="ocr";
+      const say=m=>{if(xForm){xForm.status=m;renderX()}};
+      let zh=lang==="zh",best=null;
+      const better=o=>{if(!best||o.pick.score>best.pick.score)best=o};
+      if(lang==="zh")better(await ocrPass(c,"chi_tra+eng",4));
+      else{const o=await ocrPass(c,"jpn+eng",4);better(o);
+        if(lang==="auto"&&(looksChinese(o.txt)||o.pick.score<8)){say("換中文再讀一次…");const o2=await ocrPass(c,"chi_tra+eng",4);if(looksChinese(o2.txt)&&o2.pick.score>=o.pick.score-1){zh=true;best=o2}else better(o2)}}
+      if(best.pick.score<8){say("再仔細看一次…");const L=zh?"chi_tra+eng":"jpn+eng";const o3=await ocrPass(c,L,6);better(o3)}
+      window.__ocrLast={txt:best.txt,pick:best.pick};
+      const p=parseReceipt(best.txt,zh||looksChinese(best.txt));
+      p.total=best.pick.total;p.alts=best.pick.alts.filter(v=>v!==p.total);p.sure=best.pick.score>=8;
+      r={total:p.total,cur:p.cur,d:p.d,store:p.store,cat:p.cat,pay:p.pay,alts:p.alts,sure:p.sure};how="ocr";
     }catch(e){r=null}
   }
   if(!xForm)return;
   if(r&&(r.total||r.store)){
-    Object.assign(xForm,{amt:r.total||"",cur:r.cur||"JPY",d:r.d||xForm.d,cat:r.cat||xForm.cat,pay:r.pay||xForm.pay,note:r.store||"",status:r.total?"讀好了！請確認金額和類別再儲存":"讀到店名，但金額沒把握，請手動填",statusCls:r.total?"ok":"err"});
+    Object.assign(xForm,{amt:r.total||"",cur:r.cur||"JPY",d:r.d||xForm.d,cat:r.cat||xForm.cat,pay:r.pay||xForm.pay,note:r.store||"",alts:r.alts||[],status:r.total?(r.sure===false?"金額不太確定，請對照照片確認（下面有其他可能的金額）":"讀好了！請對照照片確認金額再儲存"):"讀到店名，但金額沒把握，請手動填",statusCls:r.total?"ok":"err"});
   }else Object.assign(xForm,{status:"這張讀不太出來，照片已附上，請手動填金額",statusCls:"err"});
   renderX(); const a=document.getElementById("xamt"); a&&a.focus();
 }
