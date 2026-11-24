@@ -2507,7 +2507,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!dock.hidden&&dock.
 if(!store.get("ft_fabseen",0)){fabHint.hidden=false;setTimeout(()=>{fabHint.hidden=true},7000)}
 function go(v){if(v==="guide"){openChat();return}
   tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.v===v));
-  document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);store.set("ft_tab",v);window.scrollTo({top:0});if(v==="spots")onSpotsShown();if(v==="money")setTimeout(()=>{try{bkNudge()}catch(e){}},900)}
+  document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);store.set("ft_tab",v);window.scrollTo({top:0});if(v==="spots")onSpotsShown();if(v==="money")setTimeout(()=>{try{bkNudge()}catch(e){}try{warmOCR()}catch(e){}},900)}
 tabs.forEach(t=>t.onclick=()=>go(t.dataset.v));
 const startTab=(location.hash||"").replace("#","");
 const VIEWS=["plan","spots","flex","money","check","links","tips"], savedTab=store.get("ft_tab","plan");
@@ -2998,6 +2998,7 @@ xEl.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)
 xEl.addEventListener("submit",e=>{e.preventDefault();readForm();if(!(xForm.amt>0)){const a=document.getElementById("xamt");a&&a.focus();xForm.status="請輸入金額";xForm.statusCls="err";renderX();document.getElementById("xamt").focus();return}
   const rec={id:xForm.id,d:xForm.d,amt:xForm.amt,cur:xForm.cur,cat:xForm.cat,pay:xForm.pay,note:xForm.note.trim(),img:xForm.img||"",fr:xForm.fr,st:Object.fromEntries(Object.entries(xForm.st||{}).filter(([k])=>xForm.fr.includes(k)))};
   const i=exps.findIndex(x=>x.id===rec.id);if(i>=0)exps[i]=rec;else exps.push(rec);saveX();xForm=null;xDayF="全部";renderX();toast("記好了！",`${rec.cat} ${rec.cur==="TWD"?nt(rec.amt):yen(rec.amt)}`,{ms:3500})});
+xEl.addEventListener("pointerdown",e=>{if(e.target.closest(".xcam"))warmOCR()},{passive:true});
 xEl.addEventListener("change",async e=>{
   if(e.target.id==="xrate"){const v=parseFloat(e.target.value);if(v>0.05&&v<1){rate={v,src:"手動設定",at:""};store.set("ft_rate",rate);renderX()}}
   else if(e.target.id==="xbudget"){budget=Math.max(0,parseFloat(e.target.value)||0);store.set("ft_budget",budget);renderX()}
@@ -3063,12 +3064,25 @@ function prepCanvas(im){
   let lo=0,acc=0;for(;lo<200;lo++){acc+=hst[lo];if(acc>n*0.01)break}
   for(let j=0,i=0;j<n;j++,i+=4){let v=(g[j]-lo)*255/Math.max(40,250-lo);v=v<0?0:v>255?255:v;v=255*Math.pow(v/255,1.4);a[i]=a[i+1]=a[i+2]=v;a[i+3]=255}
   x.putImageData(d,0,0);return cv}
+/* --- 照片拍歪了：用「文字排成一行一行」找出傾斜角度，把照片轉正 --- */
+function deskew(c){
+  const s=scaleCanvas(c,700),x=s.getContext("2d",{willReadFrequently:true}),d=x.getImageData(0,0,s.width,s.height).data,W=s.width,H=s.height;
+  const px=[];for(let y=0;y<H;y+=1)for(let xx=0;xx<W;xx+=1){if(d[(y*W+xx)*4]<110)px.push(xx-W/2,y-H/2)}
+  if(px.length<400)return {c,deg:0};
+  const step=Math.max(2,Math.floor(px.length/2/25000))*2,D=Math.hypot(W,H)|0;
+  const score=a=>{const sn=Math.sin(a),cs=Math.cos(a),hist=new Uint32Array(D+2);for(let i=0;i<px.length;i+=step){const yy=(-px[i]*sn+px[i+1]*cs+D/2)|0;if(yy>=0&&yy<=D)hist[yy]++}let e=0;for(let i=0;i<hist.length;i++)e+=hist[i]*hist[i];return e};
+  let best=0,be=score(0);for(let g=-15;g<=15;g+=0.75){const e=score(g*Math.PI/180);if(e>be){be=e;best=g}}
+  for(let g=best-0.6;g<=best+0.6;g+=0.15){const e=score(g*Math.PI/180);if(e>be){be=e;best=g}}
+  if(Math.abs(best)<0.5)return {c,deg:0};
+  const a=-best*Math.PI/180,sn=Math.abs(Math.sin(a)),cs=Math.abs(Math.cos(a)),nw=Math.round(c.width*cs+c.height*sn),nh=Math.round(c.width*sn+c.height*cs);
+  const o=document.createElement("canvas");o.width=nw;o.height=nh;const ox=o.getContext("2d");ox.fillStyle="#fff";ox.fillRect(0,0,nw,nh);ox.translate(nw/2,nh/2);ox.rotate(a);ox.imageSmoothingQuality="high";ox.drawImage(c,-c.width/2,-c.height/2);
+  return {c:o,deg:best}}
 /* --- 用文字位置重建每一行，找出最像「總金額」的數字 --- */
 function ocrRows(data){
   const ws=[],sl=[];
   for(const b of (data&&data.blocks)||[])for(const p of b.paragraphs||[])for(const l of p.lines||[]){
     const bl=l.baseline;if(bl&&bl.x1-bl.x0>40)sl.push((bl.y1-bl.y0)/(bl.x1-bl.x0));
-    for(const w of l.words||[]){const t=(w.text||"").trim();if(t)ws.push({t,x:w.bbox.x0,xc:(w.bbox.x0+w.bbox.x1)/2,y0:w.bbox.y0,y1:w.bbox.y1})}}
+    for(const w of l.words||[]){const t=(w.text||"").trim();if(t)ws.push({t,x:w.bbox.x0,x1:w.bbox.x1,xc:(w.bbox.x0+w.bbox.x1)/2,y0:w.bbox.y0,y1:w.bbox.y1})}}
   if(!ws.length)return [];
   const hs=ws.map(w=>w.y1-w.y0).sort((a,b)=>a-b),mh=Math.max(6,hs[hs.length>>1]);
   /* 找出照片的傾斜角：試不同斜率，看哪個讓文字最整齊地排成一行一行 */
@@ -3079,10 +3093,10 @@ function ocrRows(data){
   for(const w of ws){let r=null,bd=1e9;for(const q of rows){const dd=Math.abs(q.yc-w.yc);if(dd<mh*0.55&&dd<bd){bd=dd;r=q}}
     if(!r){r={yc:w.yc,ws:[]};rows.push(r)}r.ws.push(w);r.yc=r.ws.reduce((s,q)=>s+q.yc,0)/r.ws.length}
   rows.sort((a,b)=>a.yc-b.yc);
-  return rows.map(r=>{r.ws.sort((a,b)=>a.x-b.x);const hh=r.ws.map(w=>w.y1-w.y0).sort((a,b)=>a-b);return {text:r.ws.map(w=>w.t).join(" "),h:hh[hh.length>>1]/mh}})}
+  return rows.map(r=>{r.ws.sort((a,b)=>a.x-b.x);const hh=r.ws.map(w=>w.y1-w.y0).sort((a,b)=>a-b);return {ws:r.ws,text:r.ws.map(w=>w.t).join(" "),h:hh[hh.length>>1]/mh}})}
 function pickTotal(rows){
-  const R=rows.map(r=>({h:r.h,s:z2h(r.text).replace(/[｜|]/g," ").replace(/(\d)\s*[,.]\s*(\d{3})(?!\d)/g,"$1,$2").replace(/([¥$])\s+(\d)/g,"$1$2")}));
-  const TOT=/(合計|総計|合\s*計|お買上|お会計|ご請求|領収金額|請求額|お支払(?:金額|合計)|total|總計|總\s*計|総\s*計|總金額|總額|應付|應收|實付|消費金額|金額合計|合計金額|付款金額|結帳金額)/i;
+  const R=rows.map(r=>({h:r.h,s:z2h(r.text).replace(/[｜|]/g," ").replace(/(^|[\s:])[Y半ギ羊]\s*(?=\d)/g,"$1¥").replace(/([¥$])\s*(\d{1,3})\s+(\d{3})(?!\d)/g,"$1$2,$3").replace(/(\d)\s*[,.]\s*(\d{3})(?!\d)/g,"$1,$2").replace(/([¥$])\s+(\d)/g,"$1$2").replace(/[-−▲△]\s*[¥$]?\s*\d[\d,]*/g," ")}));
+  const TOT=/(合計|総計|合\s*計|合言十|総言十|總言十|合\s*計|[合総總]\s*[計計言]|t[o0]ta[l1]|お買上|お会計|ご請求|領収金額|請求額|お支払(?:金額|合計)|total|總計|總\s*計|総\s*計|總金額|總額|應付|應收|實付|消費金額|金額合計|合計金額|付款金額|結帳金額)/i;
   const SUB=/(小計|小\s*計|subtotal)/i, TAX=/(消費税|内税|外税|税額|稅額|稅|税|服務費|サービス料|tax)/i, TEND=/(お預|預り|預かり|現金|實收|收現|收款|cash)/i, CHG=/(お釣|釣銭|おつり|找零|找錢|change)/i;
   const BAD=/(tel|電話|統一編號|統編|番号|登録|ポイント|point|點數|紅利|no\.|序號|單號|發票號碼|隨機碼|賣方|〒|郵遞|会員|會員|卡號|カード番号|承認|伝票|レジ|機號|收銀機|桌號|人數|期別|有効期限)/i;
   const numsIn=s=>{const out=[];for(const m of s.matchAll(/(\d{1,3}(?:,\d{3})+|\d+)(\.\d{1,2})?/g)){const raw=m[1],v=+raw.replace(/,/g,""),pre=s.slice(Math.max(0,m.index-2),m.index),post=s.slice(m.index+m[0].length,m.index+m[0].length+2);
@@ -3108,9 +3122,35 @@ function pickTotal(rows){
   let run=0;for(const v of items){run+=v;if(cand.has(run)&&run!==v)cand.set(run,cand.get(run)+5);if(S&&cand.has(run+X)&&X)cand.set(run+X,cand.get(run+X)+3)}
   const ranked=[...cand.entries()].sort((a,b)=>b[1]-a[1]);
   return {total:ranked.length?ranked[0][0]:null,score:ranked.length?ranked[0][1]:-99,alts:ranked.slice(1).filter(([v,s])=>s>-2).slice(0,4).map(x=>x[0])}}
-const tWorkers={};
-function ocrWorker(L,psm){const key=L+"|"+psm;if(!tWorkers[key])tWorkers[key]=(async()=>{const w=await window.Tesseract.createWorker(L,1);await w.setParameters({tessedit_pageseg_mode:String(psm),preserve_interword_spaces:"1",user_defined_dpi:"300"});return w})().catch(e=>{delete tWorkers[key];throw e});return tWorkers[key]}
-async function ocrPass(c,L,psm){const w=await ocrWorker(L,psm);const {data}=await w.recognize(c,{},{text:true,blocks:true,hocr:false,tsv:false});const rows=ocrRows(data);const txt=rows.length?rows.map(r=>r.text).join("\n"):(data.text||"");return {rows,txt,pick:pickTotal(rows.length?rows:txt.split("\n").map(t=>({text:t,h:1})))}}
+/* --- 文字辨識引擎：一種語言只建一個 worker，先在背景暖機 --- */
+const tWorkers={};let ocrProg=null;
+function ocrLangGuess(){const l=store.get("ft_ocr_lang","auto");if(l==="zh")return "chi_tra+eng";if(l==="ja")return "jpn+eng";return (dayIdx>=0&&dayIdx<DAYS.length)?"jpn+eng":"chi_tra+eng"}
+function getWorker(L){if(!tWorkers[L])tWorkers[L]=ensureTesseract().then(()=>window.Tesseract.createWorker(L,1,{logger:m=>{if(ocrProg&&m&&m.status==="recognizing text")ocrProg(m.progress)}})).then(async w=>{await w.setParameters({preserve_interword_spaces:"1",user_defined_dpi:"300"});return w}).catch(e=>{delete tWorkers[L];throw e});return tWorkers[L]}
+function warmOCR(){if(vision)return;try{getWorker(ocrLangGuess()).catch(()=>{})}catch(e){}}
+function scaleCanvas(c,max){const s=Math.min(1,max/Math.max(c.width,c.height));if(s>=1)return c;const o=document.createElement("canvas");o.width=Math.round(c.width*s);o.height=Math.round(c.height*s);const x=o.getContext("2d");x.imageSmoothingQuality="high";x.drawImage(c,0,0,o.width,o.height);return o}
+async function ocrPass(c,L,psm){const w=await getWorker(L);await w.setParameters({tessedit_pageseg_mode:String(psm),tessedit_char_whitelist:""});
+  const {data}=await w.recognize(c,{},{text:true,blocks:true,hocr:false,tsv:false});const rows=ocrRows(data);
+  return {L,rows,txt:rows.length?rows.map(r=>r.text).join("\n"):(data.text||""),pick:pickTotal(rows.length?rows:(data.text||"").split("\n").map(t=>({text:t,h:1})))}}
+/* 金額再確認：把「合計／現金／找零／小計」那幾行的數字，從高解析度照片裁下來，只認數字再讀一次 */
+async function rereadNums(o,full,k){
+  const KEY=/(合|計|総|總|応|應|付|收|收|預|釣|零|現金|小計|税|稅|服務|total|cash|change|¥|\$|円|元)/i;
+  const rows=o.rows.filter(r=>r.ws&&r.ws.some(w=>/\d/.test(w.t))&&KEY.test(z2h(r.text)));
+  if(!rows.length)return false;
+  const top=new Set([o.pick.total,...o.pick.alts.slice(0,2)].map(String));
+  const pickRows=rows.filter(r=>/(合|計|総|總|t[o0]tal|應付|預|釣|零|現金|小計)/i.test(z2h(r.text))||[...z2h(r.text).matchAll(/\d[\d,]*/g)].some(m=>top.has(m[0].replace(/,/g,"")))).slice(0,7);
+  if(!pickRows.length)return false;
+  const w=await getWorker(o.L);await w.setParameters({tessedit_pageseg_mode:"7",tessedit_char_whitelist:"0123456789,.¥$"});
+  let changed=false;
+  try{for(const r of pickRows){const dw=r.ws.filter(x=>/\d/.test(x.t));const x0=Math.min(...dw.map(x=>x.x)),x1=Math.max(...dw.map(x=>x.x1)),y0=Math.min(...dw.map(x=>x.y0)),y1=Math.max(...dw.map(x=>x.y1));
+    const hh=(y1-y0),px=hh*0.9,py=hh*0.45;const sx=Math.max(0,(x0-px)*k),sy=Math.max(0,(y0-py)*k),sw=Math.min(full.width-sx,(x1-x0+2*px)*k),sh=Math.min(full.height-sy,(hh+2*py)*k);if(sw<8||sh<8)continue;
+    const z=Math.max(1,Math.min(3,64/(hh*k)));const cc=document.createElement("canvas");cc.width=Math.round(sw*z)+20;cc.height=Math.round(sh*z)+20;const cx=cc.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,cc.width,cc.height);cx.imageSmoothingQuality="high";cx.drawImage(full,sx,sy,sw,sh,10,10,sw*z,sh*z);
+    const {data}=await w.recognize(cc,{},{text:true,blocks:false,hocr:false,tsv:false});const t=(data.text||"").replace(/\s+/g,"").replace(/(\d)[.](\d{3})(?!\d)/g,"$1,$2");
+    const m=t.match(/\d{1,3}(?:,\d{3})+|\d+/g);if(!m)continue;const nv=m.join(" ");const old=dw.map(x=>x.t).join(" ");
+    if(z2h(old).replace(/[^\d ]/g,"").trim()!==nv.replace(/,/g,"")){changed=true}
+    dw.forEach((x,i)=>{x.t=i===0?(/[¥$]/.test(old)?(old.match(/[¥$]/)[0]):"")+m.join(" "):""});r.text=r.ws.map(x=>x.t).filter(Boolean).join(" ")}}
+  finally{await w.setParameters({tessedit_pageseg_mode:"6",tessedit_char_whitelist:""})}
+  if(changed){o.pick=pickTotal(o.rows);o.txt=o.rows.map(r=>r.text).join("\n")}
+  return changed}
 /* --- 快速記帳：拍照 → 辨識 → 確認 --- */
 async function quickReceipt(file){
   let im; try{im=await loadImg(file)}catch(e){toast("照片讀不到","換一張再試試",{ms:5000});return}
@@ -3126,18 +3166,22 @@ async function quickReceipt(file){
   }catch(e){r=null}
   if(!r){
     try{
-      xForm.status="小富正在看明細…（第一次要下載文字辨識資料，約 10–30 秒）";renderX();
-      await ensureTesseract();
-      const c=prepCanvas(im);const lang=store.get("ft_ocr_lang","auto");
-      const say=m=>{if(xForm){xForm.status=m;renderX()}};
-      let zh=lang==="zh",best=null;
-      const better=o=>{if(!best||o.pick.score>best.pick.score)best=o};
-      if(lang==="zh")better(await ocrPass(c,"chi_tra+eng",4));
-      else{const o=await ocrPass(c,"jpn+eng",4);better(o);
-        if(lang==="auto"&&(looksChinese(o.txt)||o.pick.score<8)){say("換中文再讀一次…");const o2=await ocrPass(c,"chi_tra+eng",4);if(looksChinese(o2.txt)&&o2.pick.score>=o.pick.score-1){zh=true;best=o2}else better(o2)}}
-      if(best.pick.score<8){say("再仔細看一次…");const L=zh?"chi_tra+eng":"jpn+eng";const o3=await ocrPass(c,L,6);better(o3)}
+      const lang=store.get("ft_ocr_lang","auto");
+      const say=m=>{if(xForm){xForm.status=m;xForm.statusCls="busy";renderX()}};
+      say(tWorkers[ocrLangGuess()]?"小富正在看明細…":"小富正在準備文字辨識（第一次要下載資料）…");
+      const dsk=deskew(prepCanvas(im)),full=dsk.c, small=scaleCanvas(full,2000), k=full.width/small.width;
+      let last=0;ocrProg=pr=>{const n=Math.round(pr*100);if(n-last>=10&&xForm&&xForm.statusCls==="busy"){last=n;const s=xEl.querySelector(".xstat");if(s)s.textContent=`小富正在看明細… ${n}%`}};
+      const L1=lang==="zh"?"chi_tra+eng":lang==="ja"?"jpn+eng":ocrLangGuess();
+      let best=await ocrPass(small,L1,6);
+      if(lang==="auto"&&(best.pick.score<8||(L1==="jpn+eng"&&looksChinese(best.txt)))){last=0;say("換另一種語言再讀一次…");const L2=L1==="jpn+eng"?"chi_tra+eng":"jpn+eng";const o2=await ocrPass(small,L2,6);if(o2.pick.score>best.pick.score+1)best=o2}
+      if(lang==="auto"){/* 明細日期落在旅程中 → 應該是日文；在出發前 → 應該是中文。語言猜錯就換語言重讀 */
+        const pd=parseReceipt(best.txt,false).d,want=pd&&pd!=="出發前"?"jpn+eng":pd==="出發前"?"chi_tra+eng":null;
+        if(want&&want!==best.L){last=0;say("換另一種語言再讀一次…");const o3=await ocrPass(small,want,6);if(o3.pick.score>=best.pick.score-3)best=o3}}
+      if(best.pick.score<8){last=0;say("換個方式再讀一次…");const o4=await ocrPass(small,best.L,11);if(o4.pick.score>best.pick.score)best=o4}
+      say("再確認一次金額…");try{await rereadNums(best,full,k)}catch(e){}
+      ocrProg=null;const zh=best.L.startsWith("chi");
       window.__ocrLast={txt:best.txt,pick:best.pick};
-      const p=parseReceipt(best.txt,zh||looksChinese(best.txt));
+      const p=parseReceipt(best.txt,zh);
       p.total=best.pick.total;p.alts=best.pick.alts.filter(v=>v!==p.total);p.sure=best.pick.score>=8;
       r={total:p.total,cur:p.cur,d:p.d,store:p.store,cat:p.cat,pay:p.pay,alts:p.alts,sure:p.sure};how="ocr";
     }catch(e){r=null}
