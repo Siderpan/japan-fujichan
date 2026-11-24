@@ -1336,6 +1336,23 @@ button.maplink{font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:
 .bp-perm{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding:6px 8px 6px 10px;border:2px dashed var(--edge);border-radius:14px;font-size:13px;font-weight:700;background:var(--sun-soft)}
 .bp-n.warnn{color:var(--ink);background:var(--tang-soft);border-radius:12px;padding:6px 9px}
 .bp-n.okn{color:var(--ink);font-weight:700}
+.xlang{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:-6px 0 16px;font-size:12.5px;font-weight:900;color:var(--muted)}
+.xlang span{margin-right:2px}
+.xbk{padding:14px;margin-top:18px}
+.xbk h3{font-size:16px}
+.xbk .note{margin:4px 0 6px;font-size:12.5px;line-height:1.6;color:var(--muted)}
+.xbk .note b{color:var(--ink)}
+.xbk.stale{background:var(--tang-soft);border-style:dashed}
+.bkst{margin:0 0 10px;font-size:12.5px;font-weight:700}
+.bkbtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bkbtns .addbtn{height:36px;padding:0 14px;display:inline-flex;align-items:center;gap:4px}
+.bkbtns .chip-b{height:36px;cursor:pointer}
+.xbk:has(#bkfile:focus-visible) label[for=bkfile]{outline:3px solid var(--sky);outline-offset:2px}
+.bkpaste{display:flex;gap:6px;margin-top:10px;align-items:flex-start}
+.bkpaste textarea{flex:1;min-width:0;border:2px solid var(--edge);border-radius:12px;background:var(--paper);color:var(--ink);font:inherit;font-size:16px;padding:8px}
+.bkmsg{margin:10px 0 0;font-size:13px;font-weight:700}
+.bkconfirm{margin-top:12px;padding:10px 12px;border:2px solid var(--edge);border-radius:14px;background:var(--sun-soft);display:flex;flex-direction:column;gap:6px;font-size:13px}
+.bkconfirm div{display:flex;gap:8px}.bkconfirm .addbtn{height:34px;padding:0 18px}
 /* ---------- 懸浮小富 ---------- */
 .fab{position:fixed;z-index:27;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(86px + env(safe-area-inset-bottom,0px));width:62px;height:62px;border-radius:50%;border:2.5px solid var(--edge);background:var(--sun);box-shadow:var(--shadow-lg);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .15s}
 .fab svg{width:44px;height:41px;margin-top:2px}
@@ -2484,7 +2501,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!dock.hidden&&dock.
 if(!store.get("ft_fabseen",0)){fabHint.hidden=false;setTimeout(()=>{fabHint.hidden=true},7000)}
 function go(v){if(v==="guide"){openChat();return}
   tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.v===v));
-  document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);store.set("ft_tab",v);window.scrollTo({top:0});if(v==="spots")onSpotsShown()}
+  document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="v-"+v);store.set("ft_tab",v);window.scrollTo({top:0});if(v==="spots")onSpotsShown();if(v==="money")setTimeout(()=>{try{bkNudge()}catch(e){}},900)}
 tabs.forEach(t=>t.onclick=()=>go(t.dataset.v));
 const startTab=(location.hash||"").replace("#","");
 const VIEWS=["plan","spots","flex","money","check","links","tips"], savedTab=store.get("ft_tab","plan");
@@ -2869,14 +2886,50 @@ function renderX(){
     <input id="xphoto" type="file" accept="image/*" capture="environment" class="sr">
     <button type="button" class="xadd" data-xact="new">＋ 手動新增</button>
   </div>
+  <div class="xlang"><span>明細語言</span>${[["auto","自動判斷"],["ja","日文"],["zh","中文"]].map(([k,v])=>`<button type="button" class="chip-b" aria-pressed="${store.get("ft_ocr_lang","auto")===k}" data-olang="${k}">${v}</button>`).join("")}</div>
   ${xForm?formHTML():""}
   ${owN.length?`<div class="xowe card"><h3>幫誰付・代墊帳</h3><p class="note">平分的帳會按人數拆開算</p>${owN.map(k=>{const o=ow[k];return `<div class="xorow"><span class="xav">${esc(k.slice(0,1))}</span><span class="xon"><b>${esc(k)}</b><small>${o.due>0.5?`${o.n} 筆待收`:"都收回了"}${o.done>0.5?`・已收回 ${nt(o.done)}`:""}</small></span><span class="xov">${o.due>0.5?`<b>${nt(o.due)}</b><small>≈ ${yen(o.due/rate.v)}</small>`:`<b class="okc">✓</b>`}</span><span class="xobtn">${o.due>0.5?`<button type="button" class="chip-b" data-xsettle="${esc(k)}">${xSettleArm===k?"確定收回？":"收回了"}</button>`:""}${o.done>0.5?`<button type="button" class="chip-b undo" data-xunsettle="${esc(k)}" aria-label="取消 ${esc(k)} 上一次的收回">↺ 取消收回</button>`:""}</span></div>`}).join("")}</div>`:""}
   ${byCat.length?`<div class="xcats card"><h3>分類花費</h3>${byCat.map(([c,v])=>`<div class="xcrow"><span class="xci x-${c[2]}">${icon(c[1])}</span><span class="xcn">${c[0]}</span><span class="xcb"><i class="x-${c[2]}" style="width:${v/maxC*100}%"></i></span><span class="xcv">${nt(v)}</span></div>`).join("")}</div>`:""}
   ${exps.length?`<div class="xdays card"><h3>每天花多少</h3><div class="xdbars">${byDay.map(([d,v])=>`<div class="xdb"><span class="xdv">${v?Math.round(v/1000*10)/10+"k":""}</span><span class="xdc"><i style="height:${v/maxD*100}%"></i></span><span class="xdl">${d==="出發前"?"前":d.slice(3)}</span></div>`).join("")}</div><p class="note">單位：台幣（k＝千元）</p></div>`:""}
   <div class="xfilter">${["全部",...XDAYS].map(d=>`<button type="button" class="chip-b" aria-pressed="${xDayF===d}" data-xday="${d}">${d}</button>`).join("")}</div>
   <div class="xlist">${list.length?groupX(list):`<div class="empty">${exps.length?"這天還沒有記帳":"還沒有記帳。拍一張收據，或按「手動新增」開始吧！"}</div>`}</div>
-  ${exps.length?`<button type="button" class="chip-b xcopy" data-xact="copy">${icon("i-check")}複製帳目文字</button>`:""}`;
+  ${exps.length?`<button type="button" class="chip-b xcopy" data-xact="copy">${icon("i-check")}複製帳目文字</button>`:""}
+  ${backupHTML()}`;
 }
+/* ---------- 資料備份（防止 iPhone 刪掉主畫面圖示或清除 Safari 資料後消失） ---------- */
+let bkPending=null, bkMsg="", bkPaste=false;
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+function bkData(){const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("ft_")&&k!=="ft_ntf_sent"&&k!=="ft_bk_at")o[k]=localStorage.getItem(k)}return o}
+function bkText(){return JSON.stringify({app:"fuji-tokyo-techo",v:1,at:new Date().toISOString(),data:bkData()})}
+function parseBackup(s){const j=JSON.parse(String(s).trim());if(!j||j.app!=="fuji-tokyo-techo"||!j.data)throw 0;return j}
+function bkSize(){let n=0;for(const v of Object.values(bkData()))n+=v.length;return n>1e6?(n/1e6).toFixed(1)+" MB":Math.max(1,Math.round(n/1e3))+" KB"}
+function backupHTML(){const at=store.get("ft_bk_at",""),days=at?Math.floor((Date.now()-new Date(at))/864e5):null;
+  const stale=exps.length&&(!at||days>=2);
+  return `<div class="xbk card${stale?" stale":""}" id="xbk"><h3>資料備份</h3>
+  <p class="note">記帳、清單、臨時排都只存在這支手機的瀏覽器裡。<b>iPhone 刪掉主畫面圖示、清除 Safari 資料，或很久沒打開，資料都可能被清掉</b>，記得定期備份到「檔案」或 iCloud。</p>
+  <p class="bkst">${at?`上次備份：${new Date(at).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})}${days>=2?`（${days} 天前）`:""}`:"還沒備份過"}・目前資料約 ${bkSize()}</p>
+  <div class="bkbtns"><button type="button" class="addbtn" data-bk="export">${icon("i-check")}匯出備份檔</button>
+  <label class="chip-b" for="bkfile">匯入備份檔</label><input id="bkfile" type="file" accept="application/json,.json,text/plain" class="sr">
+  <button type="button" class="chip-b" data-bk="copy">複製備份文字</button><button type="button" class="chip-b" data-bk="paste" aria-expanded="${bkPaste}">貼上備份文字</button></div>
+  ${bkPaste?`<div class="bkpaste"><label for="bktext" class="sr">貼上備份文字</label><textarea id="bktext" rows="3" placeholder="把之前複製的備份文字貼在這裡"></textarea><button type="button" class="chip-b" data-bk="readtext">讀取</button></div>`:""}
+  ${bkMsg?`<p class="bkmsg" role="status">${esc(bkMsg)}</p>`:""}
+  ${bkPending?`<div class="bkconfirm" role="alert"><b>要用這份備份還原嗎？</b><span>備份時間：${new Date(bkPending.at).toLocaleString("zh-TW")}・${Object.keys(bkPending.data).length} 項資料。這支手機上現在的記帳和清單會被換成備份的內容。</span><div><button type="button" class="addbtn" data-bk="apply">還原</button><button type="button" class="chip-b" data-bk="cancel">取消</button></div></div>`:""}
+  </div>`}
+async function bkAction(k,btn){
+  if(k==="export"){const txt=bkText(),name=`fuji-tokyo-backup-${new Date().toISOString().slice(0,10)}.json`;let ok=false;
+    try{const f=new File([txt],name,{type:"application/json"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"富士東京手帖備份"});ok=true}}catch(e){if(e&&e.name==="AbortError"){return}}
+    if(!ok){try{const u=URL.createObjectURL(new Blob([txt],{type:"application/json"}));const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);ok=true}catch(e){}}
+    if(ok){store.set("ft_bk_at",new Date().toISOString());bkMsg="備份檔已產生。iPhone 請選「儲存到檔案」，存到 iCloud 雲碟最保險。"}else bkMsg="這裡沒辦法存檔，改用「複製備份文字」貼到備忘錄吧。";renderX()}
+  else if(k==="copy"){try{await navigator.clipboard.writeText(bkText());store.set("ft_bk_at",new Date().toISOString());bkMsg="已複製！貼到備忘錄或 LINE 記事本保存。"}catch(e){bkMsg="複製失敗，請改用匯出備份檔"}renderX()}
+  else if(k==="paste"){bkPaste=!bkPaste;bkMsg="";renderX();const t=document.getElementById("bktext");t&&t.focus()}
+  else if(k==="readtext"){const t=document.getElementById("bktext");try{bkPending=parseBackup(t.value);bkMsg="";bkPaste=false}catch(e){bkPending=null;bkMsg="讀不懂這段文字，確認是完整複製的備份文字"}renderX();const c=xEl.querySelector('[data-bk="apply"]');c&&c.focus()}
+  else if(k==="cancel"){bkPending=null;bkMsg="";renderX()}
+  else if(k==="apply"&&bkPending){try{for(const [kk,v] of Object.entries(bkPending.data)){if(kk.startsWith("ft_"))localStorage.setItem(kk,v)}localStorage.setItem("ft_bk_at",JSON.stringify(bkPending.at));localStorage.setItem("ft_tab",JSON.stringify("money"))}catch(e){bkMsg="還原失敗：手機空間不足";renderX();return}
+    location.reload()}
+}
+/* 有記帳卻兩天沒備份：打開記帳頁時提醒一次 */
+function bkNudge(){const at=store.get("ft_bk_at",""),last=store.get("ft_bk_nudge",0);if(!exps.length||Date.now()-last<864e5)return;if(at&&Date.now()-new Date(at)<2*864e5)return;
+  store.set("ft_bk_nudge",Date.now());toast("記得備份記帳資料",exps.length+" 筆記帳只存在這支手機，按一下去備份",{ms:9000,act:{label:"去備份",fn:()=>{const c=document.getElementById("xbk");c&&c.scrollIntoView({behavior:"smooth",block:"center"})}}})}
 function groupX(list){
   const ds=[...new Set(list.map(x=>x.d))].sort((a,b)=>XDAYS.indexOf(a)-XDAYS.indexOf(b));
   return ds.map(d=>{const L=list.filter(x=>x.d===d);const s=L.reduce((a,x)=>a+toTWD(x),0);
@@ -2926,6 +2979,8 @@ xEl.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)
     xSettleArm=null;const ts=Date.now();for(const x of exps){if(frOf(x).includes(k)&&!(x.st&&x.st[k])){x.st=x.st||{};x.st[k]=ts}}saveX();renderX();
     toast("收回了！",`${k} 的代墊帳已結清`,{ms:8000,act:{label:"按錯了，取消",fn:()=>unsettle(k,ts)}})}
   else if(b.dataset.xunsettle){const k=b.dataset.xunsettle;unsettle(k,lastBatch(k))}
+  else if(b.dataset.olang){store.set("ft_ocr_lang",b.dataset.olang);renderX();xEl.querySelector(`[data-olang="${b.dataset.olang}"]`).focus()}
+  else if(b.dataset.bk)bkAction(b.dataset.bk,b);
   else if(b.dataset.xact==="rate")updateRate(true);
   else if(b.dataset.xact==="copy"){const txt=["Fuji 以修妮 go 記帳",...XDAYS.filter(d=>exps.some(x=>x.d===d)).map(d=>d+"\n"+exps.filter(x=>x.d===d).map(x=>`  ${x.cat} ${x.note||""} ${x.cur==="TWD"?nt(x.amt):yen(x.amt)}（${x.pay}${frOf(x).some(w=>w!=="自己")?"・"+frOf(x).join("+")+(frOf(x).length>1?" 平分":" 代墊"):""}）`).join("\n")),...(()=>{const o=owed();const k=Object.keys(o).filter(k=>o[k].due>0.5);return k.length?["待收回："+k.map(k=>`${k} ${nt(o[k].due)}`).join("、")]:[]})(),`合計 ${yen(exps.reduce((s,x)=>s+toTWD(x),0)/rate.v)} ≈ ${nt(exps.reduce((s,x)=>s+toTWD(x),0))}（1 日圓≈${rate.v} 台幣）`].join("\n");
     try{await navigator.clipboard.writeText(txt);b.textContent="已複製 ✓"}catch(err){b.textContent="複製失敗，請手動選取";}}
@@ -2936,6 +2991,7 @@ xEl.addEventListener("submit",e=>{e.preventDefault();readForm();if(!(xForm.amt>0
 xEl.addEventListener("change",async e=>{
   if(e.target.id==="xrate"){const v=parseFloat(e.target.value);if(v>0.05&&v<1){rate={v,src:"手動設定",at:""};store.set("ft_rate",rate);renderX()}}
   else if(e.target.id==="xbudget"){budget=Math.max(0,parseFloat(e.target.value)||0);store.set("ft_budget",budget);renderX()}
+  else if(e.target.id==="bkfile"&&e.target.files&&e.target.files[0]){const f=e.target.files[0];e.target.value="";try{bkPending=parseBackup(await f.text());bkMsg="";}catch(err){bkPending=null;bkMsg="這不是手冊的備份檔"}renderX();const c=xEl.querySelector('[data-bk="apply"]')||xEl.querySelector('[data-bk="export"]');c&&c.focus()}
   else if(e.target.id==="xphoto"&&e.target.files&&e.target.files[0]){const file=e.target.files[0];e.target.value="";await quickReceipt(file)}
 });
 async function updateRate(manual){
@@ -2949,23 +3005,43 @@ function drawScaled(im,max,q){const s=Math.min(1,max/Math.max(im.naturalWidth,im
 const canvasBlob=(c,q)=>new Promise(r=>c.toBlob(r,"image/jpeg",q));
 /* --- 收據文字解析 --- */
 function z2h(s){return s.replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[，、]/g,",").replace(/[￥]/g,"¥").replace(/[．]/g,".").replace(/[：]/g,":").replace(/([^\x00-\x7F])[ \t]+(?=[^\x00-\x7F])/g,"$1")}
-function parseReceipt(raw){
-  const t=z2h(raw||""); const lines=t.split(/\n/).map(l=>l.trim()).filter(Boolean);
-  const nums=l=>[...l.matchAll(/¥?\s*(\d{1,3}(?:,\d{3})+|\d{2,7})(?![\d\/:年月])/g)].map(m=>+m[1].replace(/,/g,"")).filter(n=>n>0&&n<1000000);
-  const bad=/お預|預り|預かり|お釣|釣銭|おつり|変更|ポイント|point|tel|電話|no\.|番号|登録/i;
+const KANA=/[ぁ-ヿ]/g, HAN=/[一-鿿]/g;
+function looksChinese(t){const k=(t.match(KANA)||[]).length,c=(t.match(HAN)||[]).length;return c>=6&&k<c*0.08||/(統一編號|統編|發票|新臺幣|新台幣|NT\$|營業人|賣方|收銀機|悠遊卡|找零|應付|總計)/.test(t)}
+function parseReceipt(raw,zh){
+  const t=z2h(raw||"").replace(/[｜|]/g," "); const lines=t.split(/\n/).map(l=>l.trim()).filter(Boolean);
+  const nums=l=>[...l.replace(/(\d)\s*[,.]\s*(\d{3})(?!\d)/g,"$1,$2").matchAll(/(?:¥|\$|NT\$?)?\s*(\d{1,3}(?:,\d{3})+|\d{2,7})(?![\d\/:年月\-]|\s*[%％])/g)].map(m=>+m[1].replace(/,/g,"")).filter(n=>n>0&&n<1000000);
+  const bad=/お預|預り|預かり|お釣|釣銭|おつり|変更|ポイント|point|tel|電話|no\.|番号|登録|找零|找錢|收現|現金收|實收|收款|統一編號|統編|發票號碼|隨機碼|點數|紅利|載具|電話|序號|單號|桌號|人數/i;
+  const lbl=/(合計|総計|合\s*計|お買上|お会計|ご請求|お支払|領収金額|税込|total|總計|總\s*計|總金額|總額|應付|應收|實付|消費金額|金額合計|合計金額|小計金額)/i;
   let total=null;
-  const lab=lines.filter(l=>/(合計|総計|合\s*計|お買上|お会計|ご請求|お支払|領収金額|税込|total)/i.test(l)&&!/小計/.test(l)&&!bad.test(l));
+  const lab=lines.filter(l=>lbl.test(l)&&!/(小計|小\s*計)(?!金額)/.test(l)&&!bad.test(l));
   for(const l of lab){const n=nums(l);if(n.length){const v=Math.max(...n);if(total==null||v>total)total=v}}
-  if(total==null){const yl=lines.filter(l=>/¥/.test(l)&&!bad.test(l));let all=[];for(const l of yl)all=all.concat(nums(l));if(all.length)total=Math.max(...all)}
-  let d=null;const dm=t.match(/(20\d{2})\s*[年\/.\-]\s*(\d{1,2})\s*[月\/.\-]\s*(\d{1,2})/)||null;const rm=t.match(/令和\s*(\d{1,2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})/);
-  let mo=null,da=null; if(dm){mo=+dm[2];da=+dm[3]}else if(rm){mo=+rm[2];da=+rm[3]}
-  if(mo===12&&da>=4&&da<=9)d=`12/${da}`;
-  const store_=lines.find(l=>/[぀-ヿ一-鿿A-Za-z]{2,}/.test(l)&&!/(領収|レシート|receipt|tel|電話|〒|登録番号|様|^\d)/i.test(l)&&(l.replace(/[\d\s¥,.\-:\/]/g,"").length>=2))||"";
+  if(total==null){/* 標籤和金額分在兩行 */for(let i=0;i<lines.length-1;i++){if(lbl.test(lines[i])&&!nums(lines[i]).length&&!bad.test(lines[i+1])){const n=nums(lines[i+1]);if(n.length){total=Math.max(...n);break}}}}
+  if(total==null){const yl=lines.filter(l=>/[¥$元円]/.test(l)&&!bad.test(l));let all=[];for(const l of yl)all=all.concat(nums(l));if(all.length)total=Math.max(...all)}
+  let mo=null,da=null;
+  const dm=t.match(/(20\d{2})\s*[年\/.\-]\s*(\d{1,2})\s*[月\/.\-]\s*(\d{1,2})(?!\s*月|\d)/), rm=t.match(/令和\s*(\d{1,2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})/), tw=t.match(/(?:民國\s*)?(1[01]\d)\s*[年\/.\-]\s*(\d{1,2})\s*[月\/.\-]\s*(\d{1,2})(?!\s*月|\d)/);
+  if(dm){mo=+dm[2];da=+dm[3]}else if(rm){mo=+rm[2];da=+rm[3]}else if(tw){mo=+tw[2];da=+tw[3]}
+  let d=null; if(mo===12&&da>=4&&da<=9)d=`12/${da}`; else if(mo&&(mo<12||(mo===12&&da<4)))d="出發前";
+  const okS=l=>/[぀-ヿ一-鿿A-Za-z]{2,}/.test(l)&&!/(領収|レシート|receipt|tel|電話|〒|登録番号|様|^\d|電子發票|證明聯|發票|收據|統一編號|統編|格式|隨機碼|賣方|買方|期別|交易明細|客戶|地址|^[^\w\u3040-\u30ff\u4e00-\u9fff]|電子|聯$|^[A-Z]{2}-?\d{8}|^\d{2,4}[年\/.-])/i.test(l)&&(l.replace(/[\d\s¥$,.\-:\/]/g,"").length>=2);
+  const BR=/(7-?ELEVEN|セブン|ローソン|ファミリーマート|統一超商|全家|萊爾富|OK超商|星巴克|STARBUCKS|麥當勞|マクドナルド|ドン・?キホーテ|ユニクロ|マツモトキヨシ|無印良品|鼎泰豐|家樂福|全聯)/i;
+  const store_=lines.find(l=>BR.test(l)&&!/(賣方|統一編號|統編)/.test(l))||lines.find(l=>okS(l)&&(l.match(/[\u3040-\u30ff\u4e00-\u9fff]/g)||[]).length>=2)||lines.find(l=>okS(l)&&/^[A-Za-z][A-Za-z '&.-]{3,}$/.test(l))||"";
   const all=t;
-  const cat=/(JR|駅|バス|タクシー|鉄道|きっぷ|乗車|運賃|交通)/.test(all)?"交通":/(ホテル|旅館|宿泊|HOTEL|INN|ゲストハウス)/i.test(all)?"住宿":/(入場|入館|チケット|観覧|拝観|ロープウェイ|teamlab|展望|美術館)/i.test(all)?"門票":/(レストラン|食堂|ラーメン|らーめん|うどん|ほうとう|寿司|すし|焼肉|カフェ|珈琲|コーヒー|cafe|coffee|喫茶|居酒屋|弁当|飲食|セブン|ローソン|ファミリーマート|ファミマ|マクドナルド|食事|ドリンク)/i.test(all)?"餐飲":/(ドラッグ|薬局|マツモトキヨシ|ドン・キホーテ|ドンキ|ユニクロ|百貨|土産|みやげ|ストア|shop|免税|雑貨)/i.test(all)?"購物":null;
-  const pay=/(クレジット|visa|master|jcb|amex|カード)/i.test(all)?"信用卡":/(交通系|suica|pasmo|ic)/i.test(all)?"Suica":/(現金|お預)/.test(all)?"現金":null;
-  return {total,d,store:store_.slice(0,24),cat,pay};
+  const cat=/(JR|駅|バス|タクシー|鉄道|きっぷ|乗車|運賃|交通|捷運|高鐵|台鐵|客運|計程車|車資|停車|加油|機場)/.test(all)?"交通"
+    :/(ホテル|旅館|宿泊|HOTEL|INN|ゲストハウス|住宿|飯店|民宿|房費)/i.test(all)?"住宿"
+    :/(入場|入館|チケット|観覧|拝観|ロープウェイ|teamlab|展望|美術館|門票|票券|入園|博物館)/i.test(all)?"門票"
+    :/(レストラン|食堂|ラーメン|らーめん|うどん|ほうとう|寿司|すし|焼肉|カフェ|珈琲|コーヒー|cafe|coffee|喫茶|居酒屋|弁当|飲食|セブン|ローソン|ファミリーマート|ファミマ|マクドナルド|食事|ドリンク|餐|飯|麵|面|咖啡|茶|飲料|便當|小吃|早餐|午餐|晚餐|火鍋|燒肉|拉麵|飲品|7-?ELEVEN|統一超商|全家|萊爾富|麥當勞|星巴克|甜點|麵包)/i.test(all)?"餐飲"
+    :/(ドラッグ|薬局|マツモトキヨシ|ドン・キホーテ|ドンキ|ユニクロ|百貨|土産|みやげ|ストア|shop|免税|雑貨|藥妝|藥局|服飾|伴手禮|商店|購物|超市|家樂福|全聯)/i.test(all)?"購物":null;
+  const pay=/(クレジット|visa|master|jcb|amex|カード|信用卡|刷卡|聯合信用卡)/i.test(all)?"信用卡":/(交通系|suica|pasmo|icoca)/i.test(all)?"Suica":/(悠遊卡|一卡通|ipass|行動支付|line ?pay|街口|apple ?pay|全支付)/i.test(all)?"其他":/(現金|お預|收現|找零)/.test(all)?"現金":null;
+  const cur=zh||/(NT\$|新臺幣|新台幣|統一編號|發票|元)/.test(all)&&!/[¥円]/.test(all)?"TWD":"JPY";
+  return {total,d,store:store_.replace(/\s{2,}/g," ").slice(0,24),cat,pay,cur};
 }
+/* 讓照片更好讀：灰階＋自動對比 */
+function prepCanvas(im){const c=drawScaled(im,2000);const s=Math.max(c.width,c.height);
+  let cv=c; if(s<1200){const k=1200/s;cv=document.createElement("canvas");cv.width=Math.round(c.width*k);cv.height=Math.round(c.height*k);cv.getContext("2d").drawImage(c,0,0,cv.width,cv.height)}
+  const x=cv.getContext("2d",{willReadFrequently:true});const d=x.getImageData(0,0,cv.width,cv.height),a=d.data,hist=new Uint32Array(256);
+  for(let i=0;i<a.length;i+=4){const g=(a[i]*299+a[i+1]*587+a[i+2]*114)/1000|0;a[i]=g;hist[g]++}
+  const n=a.length/4;let lo=0,hi=255,acc=0;for(;lo<255;lo++){acc+=hist[lo];if(acc>n*0.02)break}acc=0;for(;hi>0;hi--){acc+=hist[hi];if(acc>n*0.02)break}
+  const r=Math.max(30,hi-lo);for(let i=0;i<a.length;i+=4){let g=(a[i]-lo)*255/r;g=g<0?0:g>255?255:g;a[i]=a[i+1]=a[i+2]=g}
+  x.putImageData(d,0,0);return cv}
 /* --- 快速記帳：拍照 → 辨識 → 確認 --- */
 async function quickReceipt(file){
   let im; try{im=await loadImg(file)}catch(e){toast("照片讀不到","換一張再試試",{ms:5000});return}
@@ -2975,18 +3051,23 @@ async function quickReceipt(file){
   try{
     if(vision){
       const blob=await canvasBlob(drawScaled(im,1568),0.85);
-      const j=await vision.json(`這是一張日本旅遊時的收據或明細照片。請讀出資訊，只回傳 JSON：{"total":數字（含稅總金額，不是小計、不是收到的現金、不是找零）,"currency":"JPY" 或 "TWD","date":"YYYY-MM-DD" 或 null,"store":"店名（原文，24 字內）","category":"餐飲|交通|購物|住宿|門票|其他","payment":"現金|信用卡|Suica|其他" 或 null}。讀不出來的欄位給 null。`,{images:[blob],modelTier:"quick",cache:false});
-      if(j){const dm=String(j.date||"").match(/-(\d{2})-(\d{2})$/);r={total:+j.total||null,cur:j.currency==="TWD"?"TWD":"JPY",d:dm&&+dm[1]===12&&+dm[2]>=4&&+dm[2]<=9?`12/${+dm[2]}`:null,store:j.store||"",cat:CATS_X.some(c=>c[0]===j.category)?j.category:null,pay:PAYS.includes(j.payment)?j.payment:null};how="Claude"}
+      const j=await vision.json(`這是一張收據、發票或消費明細照片，可能是日文、繁體中文或英文（日本旅遊或台灣出發前的消費）。請讀出資訊，只回傳 JSON：{"total":數字（含稅總金額，不是小計、不是收到的現金、不是找零）,"currency":"JPY"（日圓、¥、円）或 "TWD"（新台幣、NT$、元）,"date":"YYYY-MM-DD" 或 null,"store":"店名（原文，24 字內）","category":"餐飲|交通|購物|住宿|門票|其他","payment":"現金|信用卡|Suica|其他" 或 null（悠遊卡、行動支付算其他）}。讀不出來的欄位給 null。`,{images:[blob],modelTier:"quick",cache:false});
+      if(j){const dm=String(j.date||"").match(/-(\d{2})-(\d{2})$/);r={total:+j.total||null,cur:j.currency==="TWD"?"TWD":"JPY",d:dm?(+dm[1]===12&&+dm[2]>=4&&+dm[2]<=9?`12/${+dm[2]}`:(+dm[1]<12||+dm[2]<4)?"出發前":null):null,store:j.store||"",cat:CATS_X.some(c=>c[0]===j.category)?j.category:null,pay:PAYS.includes(j.payment)?j.payment:null};how="Claude"}
     }
   }catch(e){r=null}
   if(!r){
     try{
       xForm.status="小富正在看明細…（第一次要下載文字辨識資料，約 10–30 秒）";renderX();
       await ensureTesseract();
-      const c=drawScaled(im,1800);
-      const res=await window.Tesseract.recognize(c,"jpn+eng");
-      const p=parseReceipt(res&&res.data&&res.data.text);
-      r={total:p.total,cur:"JPY",d:p.d,store:p.store,cat:p.cat,pay:p.pay};how="ocr";
+      const c=prepCanvas(im);const lang=store.get("ft_ocr_lang","auto");
+      const run=async L=>{const res=await window.Tesseract.recognize(c,L);return (res&&res.data&&res.data.text)||""};
+      let txt="",zh=lang==="zh";
+      if(lang==="zh")txt=await run("chi_tra+eng");
+      else{txt=await run("jpn+eng");
+        if(lang==="auto"&&looksChinese(txt)){zh=true;if(xForm){xForm.status="看起來是中文明細，換中文再讀一次…";renderX()}txt=await run("chi_tra+eng")}}
+      let p=parseReceipt(txt,zh);
+      if(lang==="auto"&&!zh&&!p.total){/* 日文讀不出金額時，用中文再試一次 */const t2=await run("chi_tra+eng");const p2=parseReceipt(t2,looksChinese(t2));if(p2.total)p=p2}
+      r={total:p.total,cur:p.cur,d:p.d,store:p.store,cat:p.cat,pay:p.pay};how="ocr";
     }catch(e){r=null}
   }
   if(!xForm)return;
