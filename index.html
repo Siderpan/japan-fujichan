@@ -2917,6 +2917,7 @@ function backupHTML(){const at=store.get("ft_bk_at",""),days=at?Math.floor((Date
   </div>`}
 async function bkAction(k,btn){
   if(k==="export"){const txt=bkText(),name=`fuji-tokyo-backup-${new Date().toISOString().slice(0,10)}.json`;let ok=false;
+    try{if(window.claude&&window.claude.use){const dl=await window.claude.use("downloads");if(dl){try{await dl.save({filename:name,data:txt});store.set("ft_bk_at",new Date().toISOString());bkMsg="備份檔已存好。";}catch(e){bkMsg=e&&e.code==="declined"?"取消了備份":"這裡存不了檔，改用「複製備份文字」吧";}renderX();return}}}catch(e){}
     try{const f=new File([txt],name,{type:"application/json"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"富士東京手帖備份"});ok=true}}catch(e){if(e&&e.name==="AbortError"){return}}
     if(!ok){try{const u=URL.createObjectURL(new Blob([txt],{type:"application/json"}));const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);ok=true}catch(e){}}
     if(ok){store.set("ft_bk_at",new Date().toISOString());bkMsg="備份檔已產生。iPhone 請選「儲存到檔案」，存到 iCloud 雲碟最保險。"}else bkMsg="這裡沒辦法存檔，改用「複製備份文字」貼到備忘錄吧。";renderX()}
