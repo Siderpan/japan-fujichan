@@ -3228,23 +3228,53 @@ function storeScore(r,i,n){const s=cleanStore(r.text);if(!s||s.length<2||STORE_B
   let sc=0;sc+=Math.min(3,(r.h||1)-1)*4;sc+=Math.max(0,3-i*0.6);if(/(店|門市|本店|支店|店舗|館|堂|屋|亭|商店|食堂|ホテル|旅館|STORE|SHOP|CAFE|カフェ|珈琲|咖啡|餐廳|麵|麺|酒場)$/i.test(s))sc+=3;
   if(knownNames().some(K=>z2h(s).toLowerCase().replace(/[\s・\-ー]/g,"").includes(K.k)&&K.k.length>=2))sc+=6;
   const conf=r.ws?r.ws.reduce((a,w)=>a+(w.c||0),0)/r.ws.length:60;sc+=(conf-60)/15;sc-=dig*0.5;if(i>n*0.45)sc-=6;return sc}
-async function pickStore(o,full,k){
+const KANA_RE=/[ぁ-ゖァ-ヺーｦ-ﾟ]/g;
+function knownHit(s){const low=z2h(s).toLowerCase().replace(/[\s・\-ー]/g,"");return knownNames().some(K=>K.k.length>=2&&low.includes(K.k))}
+function storeLangGuess(s){const t=z2h(s),kana=(t.match(KANA_RE)||[]).length,han=(t.match(/[一-鿿]/g)||[]).length,lat=(t.match(/[A-Za-z]/g)||[]).length,n=kana+han+lat||1;
+  return lat/n>0.6?"eng":kana>0?"jpn+eng":han>0?"chi_tra+eng":"eng"}
+function rateStore(t,conf,L){if(!t||t.length<2||STORE_BAD.test(t))return -99;const s=z2h(t),kana=(s.match(KANA_RE)||[]).length,han=(s.match(/[一-鿿]/g)||[]).length,lat=(s.match(/[A-Za-z]/g)||[]).length,junk=(s.match(/[^\p{L}\p{N}\s\-・&'.]/gu)||[]).length;
+  let sc=conf;if(knownHit(s))sc+=25;else if(snapKnown(s)!==s)sc+=8;
+  if(L==="jpn+eng"&&kana)sc+=6;if(L==="chi_tra+eng"&&han&&!kana)sc+=3;if(L==="eng"&&lat/(kana+han+lat||1)>0.8)sc+=6;if(L==="eng"&&(kana+han))sc-=30;
+  sc-=junk*6;if(s.length>26)sc-=10;return sc}
+/* 裁下來的一行如果還沾到上下行的字，只留中間最主要那條字帶，其他塗白 */
+function isolateBand(c){const W=c.width,H=c.height,x=c.getContext("2d",{willReadFrequently:true}),d=x.getImageData(0,0,W,H),a=d.data,prof=new Uint32Array(H);
+  for(let y=0;y<H;y++){let n=0;for(let i=y*W*4,e=i+W*4;i<e;i+=4)if(a[i]<128)n++;prof[y]=n}
+  const on=y=>prof[y]>Math.max(1,W*0.004);const bands=[];let s=-1;for(let y=0;y<=H;y++){if(y<H&&on(y)){if(s<0)s=y}else if(s>=0){bands.push([s,y-1]);s=-1}}
+  if(bands.length<2)return;let best=null,bs=-1;for(const b of bands){let m=0;for(let y=b[0];y<=b[1];y++)m+=prof[y];const cy=(b[0]+b[1])/2,sc=m*(1-Math.abs(cy-H/2)/H);if(sc>bs){bs=sc;best=b}}
+  /* 和主字帶距離很近的小帶（例如「豐」的上半部被切開）一起保留 */
+  const gap=Math.max(2,(best[1]-best[0])*0.25);let lo=best[0],hi=best[1];
+  for(const b of bands){if(b[1]<lo&&lo-b[1]<=gap)lo=b[0];if(b[0]>hi&&b[0]-hi<=gap)hi=b[1]}
+  x.fillStyle="#fff";if(lo>0)x.fillRect(0,0,W,Math.max(0,lo-2));if(hi<H-1)x.fillRect(0,hi+3,W,H-hi-3)}
+async function readStoreLine(r,o,full,k){
+  const base=cleanStore(r.text);if(!r.ws||!r.ws.length)return base;
+  /* 用這行字的「中位數」高度決定上下範圍，避免裁到上一行或下一行 */
+  const hs=r.ws.map(x=>x.y1-x.y0).sort((a,b)=>a-b),hm=hs[hs.length>>1],ycs=r.ws.map(x=>(x.y0+x.y1)/2).sort((a,b)=>a-b),yc=ycs[ycs.length>>1];
+  const x0=Math.min(...r.ws.map(x=>x.x)),x1=Math.max(...r.ws.map(x=>x.x1)),y0=yc-hm*0.5,y1=yc+hm*0.5,hh=hm,px=hh*0.5,py=hh*0.18;
+  const sx=Math.max(0,(x0-px)*k),sy=Math.max(0,(y0-py)*k),sw=Math.min(full.width-sx,(x1-x0+2*px)*k),sh=Math.min(full.height-sy,(hh+2*py)*k);
+  const z=Math.max(1,Math.min(3,60/(hh*k)));const cc=document.createElement("canvas");cc.width=Math.round(sw*z)+24;cc.height=Math.round(sh*z)+24;const cx=cc.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,cc.width,cc.height);cx.imageSmoothingQuality="high";cx.drawImage(full,sx,sy,sw,sh,12,12,sw*z,sh*z);
+  isolateBand(cc);
+  const oldC=r.ws.reduce((a,x)=>a+(x.c||0),0)/r.ws.length;
+  const cands=[{t:base,sc:rateStore(base,oldC-4,o.L),L:o.L}];
+  /* 先用最可能的語言，再試其他語言；已經很有把握（認得的店名）就提早結束，節省時間 */
+  const g=storeLangGuess(base),order=[...new Set([g,o.L,"jpn+eng","chi_tra+eng","eng"])];
+  for(const L of order){
+    if(cands.some(c=>c.sc>=95))break;
+    if(L!==o.L&&L!==g&&!tWorkers[L])continue;   /* 還沒載入的語言就不特地載（避免拖慢） */
+    try{const w=await getWorker(L);await w.setParameters({tessedit_pageseg_mode:"7",tessedit_char_whitelist:""});
+      const {data}=await w.recognize(cc,{},{text:true,blocks:false,hocr:false,tsv:false});await w.setParameters({tessedit_pageseg_mode:"6"});
+      const t=cleanStore((data.text||"").replace(/\n/g," "));cands.push({t,sc:rateStore(t,data.confidence||0,L),L})}catch(e){}}
+  cands.sort((a,b)=>b.sc-a.sc);const best=cands[0];
+  if(best.sc<0)return base;const lg=storeLangGuess(best.t)==="eng"?"eng":best.L;if(!storeLangLast.includes(lg))storeLangLast.push(lg);return best.t}
+let storeLangLast=[];
+async function pickStore(o,full,k){storeLangLast=[];
   const R=o.rows||[];if(!R.length)return "";const n=R.length;
   const sc=R.map((r,i)=>({r,i,s:storeScore(r,i,n)})).filter(x=>x.s>-50).sort((a,b)=>b.s-a.s);
   if(!sc.length)return "";let top=sc[0];
   /* 品牌一行＋分店一行（例如「ローソン」「河口湖駅前店」）就合在一起 */
   let rowsUse=[top.r];const nx=R[top.i+1];if(nx&&storeScore(nx,top.i+1,n)>-50&&/(店|門市|館)$/.test(cleanStore(nx.text))&&!/(店|門市|館)$/.test(cleanStore(top.r.text)))rowsUse.push(nx);
   let txt=rowsUse.map(r=>cleanStore(r.text)).join(" ");
-  /* 用高解析度照片把店名那行再讀一次，挑信心比較高的結果 */
-  try{const w=await getWorker(o.L);await w.setParameters({tessedit_pageseg_mode:"7",tessedit_char_whitelist:""});
-    const out=[];for(const r of rowsUse){if(!r.ws||!r.ws.length){out.push(cleanStore(r.text));continue}
-      const x0=Math.min(...r.ws.map(x=>x.x)),x1=Math.max(...r.ws.map(x=>x.x1)),y0=Math.min(...r.ws.map(x=>x.y0)),y1=Math.max(...r.ws.map(x=>x.y1));const hh=y1-y0,px=hh*0.5,py=hh*0.3;
-      const sx=Math.max(0,(x0-px)*k),sy=Math.max(0,(y0-py)*k),sw=Math.min(full.width-sx,(x1-x0+2*px)*k),sh=Math.min(full.height-sy,(hh+2*py)*k);
-      const z=Math.max(1,Math.min(3,60/(hh*k)));const cc=document.createElement("canvas");cc.width=Math.round(sw*z)+24;cc.height=Math.round(sh*z)+24;const cx=cc.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,cc.width,cc.height);cx.imageSmoothingQuality="high";cx.drawImage(full,sx,sy,sw,sh,12,12,sw*z,sh*z);
-      const {data}=await w.recognize(cc,{},{text:true,blocks:false,hocr:false,tsv:false});const t=cleanStore((data.text||"").replace(/\n/g," "));
-      const oldC=r.ws.reduce((a,x)=>a+(x.c||0),0)/r.ws.length;
-      out.push(t&&t.length>=2&&(data.confidence||0)>=oldC-3&&!STORE_BAD.test(t)?t:cleanStore(r.text))}
-    await w.setParameters({tessedit_pageseg_mode:"6"});txt=out.join(" ")}catch(e){}
+  /* 店名那行從高解析度照片裁下來，用「日文」「繁體中文」「英文」各讀一次，自動判斷是哪種語言 */
+  try{const out=[];for(const r of rowsUse){out.push(await readStoreLine(r,o,full,k))}txt=out.filter(Boolean).join(" ")}catch(e){}
   return snapKnown(txt).replace(/([^\x00-\x7F])\s+(?=[^\x00-\x7F])/g,"$1").slice(0,28)}
 /* --- 快速記帳：拍照 → 辨識 → 確認 --- */
 function applyOCR(r,busyMsg,first,secs){if(!xForm)return;const t=xForm.touched||(xForm.touched={});
@@ -3253,7 +3283,7 @@ function applyOCR(r,busyMsg,first,secs){if(!xForm)return;const t=xForm.touched||
     if(!t.amt&&r.total)xForm.amt=r.total;if(!t.cur)xForm.cur=r.cur||xForm.cur;if(!t.d&&r.d)xForm.d=r.d;if(!t.cat&&r.cat)xForm.cat=r.cat;if(!t.pay&&r.pay)xForm.pay=r.pay;if(!t.note&&r.store)xForm.note=r.store;
     xForm.alts=(r.alts||[]).filter(v=>v!==xForm.amt);
     if(busyMsg){xForm.status=busyMsg;xForm.statusCls="busy"}
-    else{xForm.status=r.total?(r.sure===false?`金額不太確定（${secs} 秒），請對照照片，或點下面其他可能的金額`:`讀好了（${secs} 秒）！請對照照片確認金額再儲存`):"讀到店名，但金額沒把握，請手動填";xForm.statusCls=r.total?(r.sure===false?"err":"ok"):"err"}
+    else{xForm.status=r.total?(r.sure===false?`金額不太確定（${secs} 秒），請對照照片，或點下面其他可能的金額`:`讀好了（${secs} 秒${r.storeLang&&r.storeLang.length?"・店名是"+r.storeLang.map(l=>({"jpn+eng":"日文","chi_tra+eng":"中文／漢字","eng":"英文"}[l]||"")).join("＋"):""}）！請對照照片確認金額再儲存`):"讀到店名，但金額沒把握，請手動填";xForm.statusCls=r.total?(r.sure===false?"err":"ok"):"err"}
   }else if(!busyMsg){xForm.status="這張讀不太出來，照片已附上，請手動填金額";xForm.statusCls="err"}
   renderX();
   if(aid){const el=document.getElementById(aid);if(el){el.focus({preventScroll:true});try{if(sel!=null)el.setSelectionRange(sel,sel)}catch(e){}}}
@@ -3286,6 +3316,7 @@ async function quickReceipt(file){
         p.total=o.pick.total;p.alts=o.pick.alts.filter(v=>v!==p.total);p.sure=o.pick.score>=8;return {total:p.total,cur:p.cur,d:p.d,store:p.store,cat:p.cat,pay:p.pay,alts:p.alts,sure:p.sure}};
       /* 先把初步結果填上（通常 1–3 秒），再在背景精修，精修只改你還沒動過的欄位 */
       const myForm=xForm;applyOCR(build(best),`初步結果（${sec()} 秒）・小富再確認一下…`,true);
+      setTimeout(()=>{try{getWorker(L1==="jpn+eng"?"chi_tra+eng":"jpn+eng").catch(()=>{});getWorker("eng").catch(()=>{})}catch(e){}},3000);
       const fid=myForm&&myForm.id;
       (async()=>{try{
         if(lang==="auto"){const pd=parseReceipt(best.txt,false).d,want=pd&&pd!=="出發前"?"jpn+eng":pd==="出發前"?"chi_tra+eng":null;
@@ -3295,7 +3326,7 @@ async function quickReceipt(file){
         try{await rereadNums(best,full,k)}catch(e){}
         let sn="";try{sn=await pickStore(best,full,k)}catch(e){}
         if(!xForm||xForm.id!==fid)return;
-        const r2=build(best);if(sn)r2.store=sn;applyOCR(r2,null,false,sec());
+        const r2=build(best);if(sn)r2.store=sn;r2.storeLang=sn?storeLangLast.slice():[];applyOCR(r2,null,false,sec());
       }catch(e){if(xForm&&xForm.id===fid&&xForm.statusCls==="busy"){xForm.status="讀好了（精修沒完成），請對照照片確認";xForm.statusCls="ok";renderX()}}})();
       return;
     }catch(e){r=null}
